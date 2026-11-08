@@ -1,13 +1,13 @@
 
 // ── Helper Real-Time Formatting ─────────────────────────────────────────────
-function formatDateTimeID(date) {
-  const d = date || new Date();
+function formatDateTimeID(dateOrTs) {
+  const d = dateOrTs ? new Date(dateOrTs) : new Date();
   const pad = n => String(n).padStart(2, '0');
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-function formatBmkgUTC(date) {
-  const d = date || new Date();
+function formatBmkgUTC(dateOrTs) {
+  const d = dateOrTs ? new Date(dateOrTs) : new Date();
   const pad = n => String(n).padStart(2, '0');
   return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}+00`;
 }
@@ -1135,27 +1135,57 @@ function initClock() {
   setInterval(tick, 1000);
 }
 
-// ── Data stasiun + telemetri (simulasi) ────────────────────────────────────
+// ── Data stasiun + telemetri (Real-Time SLMON & AWS Center) ───────────────
 async function loadStationData() {
   try {
     let geoRaw = null;
     let awsRaw = null;
 
-    // 1. Fetch Geofisika Riau (Akselerograf & SLMON Bali)
+    // 1. Fetch Geofisika Riau (Akselerograf & SLMON InaTEWS)
+    // Coba serverless live scraper (/api/slmon) jika berjalan di Vercel/Web Server
     try {
-      const resGeo = await fetch('data/geofisika_riau.json?t=' + Date.now());
-      if (resGeo.ok) geoRaw = await resGeo.json();
-    } catch (e) {
-      console.warn('Gagal fetch data/geofisika_riau.json (menggunakan fallback):', e);
+      const resLive = await fetch('/api/slmon?t=' + Date.now(), { cache: 'no-store' });
+      if (resLive.ok) {
+        const liveData = await resLive.json();
+        if (liveData && Array.isArray(liveData.stations) && liveData.stations.length > 0) {
+          geoRaw = liveData.stations;
+          console.log(`⚡ Live SLMON: ${geoRaw.length} stasiun geofisika langsung dari http://202.90.198.40/sismon-wrs/web/slmon`);
+        }
+      }
+    } catch (_) {}
+
+    // Fallback ke berkas lokal jika /api/slmon tidak tersedia
+    if (!geoRaw) {
+      try {
+        const resGeo = await fetch('data/geofisika_riau.json?t=' + Date.now());
+        if (resGeo.ok) geoRaw = await resGeo.json();
+      } catch (e) {
+        console.warn('Gagal fetch data/geofisika_riau.json (menggunakan fallback):', e);
+      }
     }
     if (!geoRaw || !Array.isArray(geoRaw)) geoRaw = DEFAULT_STATIONS;
 
     // 2. Fetch AWS Center Riau (AWS, ARG, AAWS, ASRS, IKRO, SOIL)
+    // Coba serverless live scraper (/api/awscenter)
     try {
-      const resAws = await fetch('data/aws_riau.json?t=' + Date.now());
-      if (resAws.ok) awsRaw = await resAws.json();
-    } catch (e) {
-      console.warn('Gagal fetch data/aws_riau.json (menggunakan fallback):', e);
+      const resAwsLive = await fetch('/api/awscenter?t=' + Date.now(), { cache: 'no-store' });
+      if (resAwsLive.ok) {
+        const liveAws = await resAwsLive.json();
+        if (liveAws && Array.isArray(liveAws.stations) && liveAws.stations.length > 0) {
+          awsRaw = liveAws.stations;
+          console.log(`⚡ Live AWS Center: ${awsRaw.length} stasiun cuaca langsung dari awscenter.bmkg.go.id`);
+        }
+      }
+    } catch (_) {}
+
+    // Fallback ke berkas lokal
+    if (!awsRaw) {
+      try {
+        const resAws = await fetch('data/aws_riau.json?t=' + Date.now());
+        if (resAws.ok) awsRaw = await resAws.json();
+      } catch (e) {
+        console.warn('Gagal fetch data/aws_riau.json (menggunakan fallback):', e);
+      }
     }
     if (!awsRaw || !Array.isArray(awsRaw)) awsRaw = DEFAULT_AWS_STATIONS;
 
@@ -1256,18 +1286,7 @@ function formatTime(ts) {
   return new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
-// Format waktu UTC standar BMKG: YYYY-MM-DD HH:mm:ss+00 (persis screenshot)
-function formatBmkgUTC(ts) {
-  const d = new Date(ts);
-  const pad = n => String(n).padStart(2, '0');
-  const YYYY = d.getUTCFullYear();
-  const MM = pad(d.getUTCMonth() + 1);
-  const DD = pad(d.getUTCDate());
-  const HH = pad(d.getUTCHours());
-  const mm = pad(d.getUTCMinutes());
-  const ss = pad(d.getUTCSeconds());
-  return `${YYYY}-${MM}-${DD} ${HH}:${mm}:${ss}+00`;
-}
+// formatBmkgUTC didefinisikan di awal berkas
 
 // Format selisih waktu standar BMKG: 0 Hari 0 Jam 5 Menit (persis screenshot)
 function formatBmkgDiff(s) {

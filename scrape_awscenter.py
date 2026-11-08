@@ -21,6 +21,7 @@ from datetime import datetime
 
 AWS_CENTER_URL = "https://awscenter.bmkg.go.id/base/marker_login_map"
 OUTPUT_FILE = os.path.join(os.path.dirname(__file__), "data", "aws_riau.json")
+CSV_OUTPUT = os.path.join(os.path.dirname(__file__), "aws_center_provinsi_riau.csv")
 
 def scrape_awscenter(timeout=15):
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Menghubungkan ke {AWS_CENTER_URL}...")
@@ -96,7 +97,16 @@ def scrape_awscenter(timeout=15):
             with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
                 json.dump(riau_stations, f, indent=2, ensure_ascii=False)
             
-            print(f"Data tersimpan di: {OUTPUT_FILE}")
+            # Simpan ke aws_center_provinsi_riau.csv
+            csv_lines = ["id_station;name_station;nama_kota;nama_provinsi;type;lat;lng;tanggal;diff_day;diff_hour;diff_minute;klasifikasi"]
+            for s in riau_stations:
+                csv_lines.append(f"{s['id_station']};{s['name_station']};{s['nama_kota']};{s['nama_provinsi']};{s['type']};{s['lat']};{s['lng']};{s['tanggal']};{s['diff_day']};{s['diff_hour']};{s['diff_minute']};{s['klasifikasi']}")
+            with open(CSV_OUTPUT, "w", encoding="utf-8") as f:
+                f.write("\n".join(csv_lines) + "\n")
+
+            print(f"Data tersimpan di:")
+            print(f"  -> {OUTPUT_FILE}")
+            print(f"  -> {CSV_OUTPUT}")
             
             # Ringkasan per tipe
             summary = {}

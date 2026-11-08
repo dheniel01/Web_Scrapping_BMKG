@@ -5,15 +5,15 @@
     "nama_kota": "Kab. Rokan Hilir",
     "nama_provinsi": "Riau",
     "type": "arg",
-    "lat": 1.558677,
-    "lng": 101.000339,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "lat": 1.5586775,
+    "lng": 101.0003386,
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Tanah Putih"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA3202",
@@ -21,15 +21,15 @@
     "nama_kota": "Kab. Kampar",
     "nama_provinsi": "Riau",
     "type": "aaws",
-    "lat": 0.407514,
-    "lng": 101.217273,
-    "tanggal": "2026-11-08 22:23:00+00",
+    "lat": 0.40751419,
+    "lng": 101.21727325,
+    "tanggal": "2026-11-08 15:30:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 18,
-    "diff_minutes_total": 18,
-    "klasifikasi": "1",
-    "site_id": "AAWS Tambang Kampar"
+    "diff_minute": 30,
+    "diff_minutes_total": 30,
+    "icon": "status_aaws_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA2176",
@@ -39,13 +39,13 @@
     "type": "aws",
     "lat": -0.297028,
     "lng": 103.13228,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "AWS Pekan Arba Indragiri Hilir"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_aws_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STW1145",
@@ -53,15 +53,15 @@
     "nama_kota": "Kota Pekanbaru",
     "nama_provinsi": "Riau",
     "type": "aws",
-    "lat": 0.470194,
-    "lng": 101.458046,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "lat": 0.47019412,
+    "lng": 101.45804555,
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "AWS Bukit Raya Pekanbaru"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_aws_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0155",
@@ -71,13 +71,13 @@
     "type": "arg",
     "lat": 0.317775,
     "lng": 100.735327,
-    "tanggal": "2026-11-08 22:23:00+00",
+    "tanggal": "2026-11-08 15:40:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 18,
-    "diff_minutes_total": 18,
-    "klasifikasi": "1",
-    "site_id": "ARG XIII Koto Kampar"
+    "diff_minute": 20,
+    "diff_minutes_total": 20,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0152",
@@ -87,13 +87,13 @@
     "type": "arg",
     "lat": 0.814548,
     "lng": 102.021211,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 14:10:00+00",
     "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Siak"
+    "diff_hour": 1,
+    "diff_minute": 50,
+    "diff_minutes_total": 110,
+    "icon": "status_arg_6_10.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0207",
@@ -103,13 +103,13 @@
     "type": "arg",
     "lat": 1.007886,
     "lng": 102.716065,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Tebing Tinggi"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA3259",
@@ -119,13 +119,13 @@
     "type": "arg",
     "lat": 0.960321,
     "lng": 102.072948,
-    "tanggal": "2026-11-08 22:23:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 18,
-    "diff_minutes_total": 18,
-    "klasifikasi": "1",
-    "site_id": "ARG SMPK Bunga Raya"
+    "tanggal": "2026-11-01 11:00:00+00",
+    "diff_day": 7,
+    "diff_hour": 5,
+    "diff_minute": 0,
+    "diff_minutes_total": 10380,
+    "icon": "status_arg_11_30.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "150118",
@@ -135,13 +135,13 @@
     "type": "arg",
     "lat": 1.017705,
     "lng": 102.116015,
-    "tanggal": "2026-11-08 22:32:00+00",
+    "tanggal": "2026-11-08 15:49:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 9,
-    "diff_minutes_total": 9,
-    "klasifikasi": "1",
-    "site_id": "ARG Pusako"
+    "diff_minute": 11,
+    "diff_minutes_total": 11,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0202",
@@ -151,13 +151,13 @@
     "type": "arg",
     "lat": 1.364224,
     "lng": 102.154964,
-    "tanggal": "2026-11-08 22:23:00+00",
+    "tanggal": "2026-11-08 15:40:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 18,
-    "diff_minutes_total": 18,
-    "klasifikasi": "1",
-    "site_id": "ARG Bukit Batu"
+    "diff_minute": 20,
+    "diff_minutes_total": 20,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STW1054",
@@ -167,13 +167,13 @@
     "type": "aws",
     "lat": 1.594608,
     "lng": 101.817134,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 12:00:00+00",
     "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "AWS Bandar Laksamana Bengkalis"
+    "diff_hour": 4,
+    "diff_minute": 0,
+    "diff_minutes_total": 240,
+    "icon": "status_aws_6_10.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0154",
@@ -183,13 +183,13 @@
     "type": "arg",
     "lat": 0.896111,
     "lng": 100.3039,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Pasir Pangaraian"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "150119",
@@ -199,13 +199,13 @@
     "type": "arg",
     "lat": 0.611507,
     "lng": 100.55404,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Tandun"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "150120",
@@ -215,13 +215,13 @@
     "type": "arg",
     "lat": 1.056944,
     "lng": 100.2611,
-    "tanggal": "2026-11-08 22:23:00+00",
+    "tanggal": "2026-11-08 15:40:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 18,
-    "diff_minutes_total": 18,
-    "klasifikasi": "1",
-    "site_id": "ARG Tambusai"
+    "diff_minute": 20,
+    "diff_minutes_total": 20,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0174",
@@ -231,13 +231,13 @@
     "type": "arg",
     "lat": 0.149333,
     "lng": 102.5604,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Teluk Meranti"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "50015",
@@ -245,15 +245,15 @@
     "nama_kota": "Kab. Kampar",
     "nama_provinsi": "Riau",
     "type": "ikro",
-    "lat": 0.407514,
-    "lng": 101.217273,
-    "tanggal": "2026-11-08 06:23:00+00",
+    "lat": 0.40751419,
+    "lng": 101.21727325,
+    "tanggal": "2026-11-07 16:20:00+00",
     "diff_day": 0,
-    "diff_hour": 16,
-    "diff_minute": 18,
-    "diff_minutes_total": 978,
-    "klasifikasi": "1",
-    "site_id": "Iklim Mikro Stasiun Klimatologi Riau"
+    "diff_hour": 23,
+    "diff_minute": 40,
+    "diff_minutes_total": 1420,
+    "icon": "status_ikro_6_10.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STM1026",
@@ -263,13 +263,13 @@
     "type": "soil",
     "lat": 0.40721,
     "lng": 101.216989,
-    "tanggal": "2026-11-08 06:33:00+00",
+    "tanggal": "2026-11-08 13:00:00+00",
     "diff_day": 0,
-    "diff_hour": 16,
-    "diff_minute": 8,
-    "diff_minutes_total": 968,
-    "klasifikasi": "1",
-    "site_id": "Soil Moisture Stasiun Klimatologi Riau"
+    "diff_hour": 3,
+    "diff_minute": 0,
+    "diff_minutes_total": 180,
+    "icon": "status_soil_6_10.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA6024",
@@ -277,15 +277,15 @@
     "nama_kota": "Kab. Kampar",
     "nama_provinsi": "Riau",
     "type": "asrs",
-    "lat": 0.407514,
-    "lng": 101.217273,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "lat": 0.40751419,
+    "lng": 101.21727325,
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ASRS Stasiun Klimatologi Riau"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_asrs_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STW1032",
@@ -295,13 +295,13 @@
     "type": "aws",
     "lat": 0.841434,
     "lng": 100.3375,
-    "tanggal": "2026-11-08 22:25:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 16,
-    "diff_minutes_total": 16,
-    "klasifikasi": "1",
-    "site_id": "AWS Mesonetwork Rokan Hulu"
+    "tanggal": "2026-11-04 21:59:00+00",
+    "diff_day": 3,
+    "diff_hour": 18,
+    "diff_minute": 1,
+    "diff_minutes_total": 5401,
+    "icon": "status_aws_11_30.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0151",
@@ -311,13 +311,13 @@
     "type": "arg",
     "lat": 1.499444,
     "lng": 102.1459,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Bantan"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "150116",
@@ -327,13 +327,13 @@
     "type": "arg",
     "lat": 0.531027,
     "lng": 103.2677,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Kuala Kampar"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STAL041",
@@ -343,13 +343,13 @@
     "type": "arg",
     "lat": 0.566667,
     "lng": 101.46,
-    "tanggal": "2026-11-08 08:43:00+00",
+    "tanggal": "2026-11-08 15:40:00+00",
     "diff_day": 0,
-    "diff_hour": 13,
-    "diff_minute": 58,
-    "diff_minutes_total": 838,
-    "klasifikasi": "1",
-    "site_id": "ARG BPP Rumbai Timur"
+    "diff_hour": 0,
+    "diff_minute": 20,
+    "diff_minutes_total": 20,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "150117",
@@ -359,13 +359,13 @@
     "type": "arg",
     "lat": 0.699143,
     "lng": 101.438512,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Minas"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0205",
@@ -375,13 +375,13 @@
     "type": "arg",
     "lat": 0.571355,
     "lng": 100.427113,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Rokan IV Koto"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0133",
@@ -389,15 +389,15 @@
     "nama_kota": "Kab. Siak",
     "nama_provinsi": "Riau",
     "type": "arg",
-    "lat": 0.889693,
-    "lng": 101.236961,
-    "tanggal": "2026-11-08 22:23:00+00",
+    "lat": 0.8896927,
+    "lng": 101.2369606,
+    "tanggal": "2026-11-08 15:40:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 18,
-    "diff_minutes_total": 18,
-    "klasifikasi": "1",
-    "site_id": "ARG Kandis"
+    "diff_minute": 20,
+    "diff_minutes_total": 20,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0201",
@@ -407,13 +407,13 @@
     "type": "arg",
     "lat": 0.326326,
     "lng": 101.039558,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG SMPK Bangkinang"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0153",
@@ -423,13 +423,13 @@
     "type": "arg",
     "lat": -0.540839,
     "lng": 101.554764,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Kuantan Tengah"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "AAWS0356",
@@ -439,13 +439,13 @@
     "type": "aaws",
     "lat": -0.598066,
     "lng": 101.48648,
-    "tanggal": "2026-11-08 22:23:00+00",
+    "tanggal": "2026-11-08 15:30:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 18,
-    "diff_minutes_total": 18,
-    "klasifikasi": "1",
-    "site_id": "AAWS Gunung Toar Kuantan Singingi"
+    "diff_minute": 30,
+    "diff_minutes_total": 30,
+    "icon": "status_aaws_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STW1037",
@@ -455,13 +455,13 @@
     "type": "aws",
     "lat": 0.614,
     "lng": 100.9734,
-    "tanggal": "2026-11-03 05:40:00+00",
-    "diff_day": 5,
-    "diff_hour": 17,
-    "diff_minute": 1,
-    "diff_minutes_total": 8221,
-    "klasifikasi": "1",
-    "site_id": "AWS  Mesonetwork  Kampar"
+    "tanggal": "2026-11-02 14:56:00+00",
+    "diff_day": 6,
+    "diff_hour": 1,
+    "diff_minute": 4,
+    "diff_minutes_total": 8704,
+    "icon": "status_aws_11_30.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0209",
@@ -471,13 +471,13 @@
     "type": "arg",
     "lat": 1.669771,
     "lng": 101.459353,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Dumai Timur"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0208",
@@ -487,13 +487,13 @@
     "type": "arg",
     "lat": -0.663637,
     "lng": 102.278824,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Batang Cenaku"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA5021",
@@ -503,13 +503,13 @@
     "type": "aws",
     "lat": 0.46083,
     "lng": 101.444,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "AWS Digi Stamet Pekanbaru"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_aws_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA3203",
@@ -517,15 +517,15 @@
     "nama_kota": "Kab. Rokan Hilir",
     "nama_provinsi": "Riau",
     "type": "aaws",
-    "lat": 1.845613,
-    "lng": 100.978333,
-    "tanggal": "2026-11-08 22:19:00+00",
+    "lat": 1.84561319,
+    "lng": 100.97833333,
+    "tanggal": "2026-11-08 15:36:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 22,
-    "diff_minutes_total": 22,
-    "klasifikasi": "1",
-    "site_id": "AAWS Rimba Melintang Rokan Hilir"
+    "diff_minute": 24,
+    "diff_minutes_total": 24,
+    "icon": "status_aaws_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STA0206",
@@ -535,13 +535,13 @@
     "type": "arg",
     "lat": -0.324388,
     "lng": 103.157754,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG Tembilahan"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   },
   {
     "id_station": "STAL042",
@@ -551,12 +551,12 @@
     "type": "arg",
     "lat": 0.04721,
     "lng": 101.204541,
-    "tanggal": "2026-11-08 22:33:00+00",
+    "tanggal": "2026-11-08 15:50:00+00",
     "diff_day": 0,
     "diff_hour": 0,
-    "diff_minute": 8,
-    "diff_minutes_total": 8,
-    "klasifikasi": "1",
-    "site_id": "ARG BPP Kampar Kiri"
+    "diff_minute": 10,
+    "diff_minutes_total": 10,
+    "icon": "status_arg_1.png",
+    "klasifikasi": "1"
   }
 ]
