@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pusat Monitoring Alat Geofisika BMKG - Wilayah Riau</title>
+  <meta name="description" content="Pusat Monitoring Alat Geofisika BMKG Wilayah Riau - Pemantauan stasiun Seismograph dan Accelerograph serta info gempa terkini BMKG.">
+  <link rel="icon" href="https://awscenter.bmkg.go.id/public/assets/img/favicon.ico">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet + MarkerCluster -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    html, body {
+      height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    #map { position: absolute; inset: 0; z-index: 1; background: #f1f5f9; }
+
+    /* Panel putih gaya awscenter */
+    .aws-panel {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 10px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    .aws-select {
+      background: white; border: 1px solid #d1d5db; border-radius: 6px;
+      padding: 6px 12px; font-size: 13px; color: #374151; width: 100%;
+      outline: none; appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat; background-position: right 8px center; background-size: 14px;
+    }
+    .pill {
+      background: rgba(255, 255, 255, 0.94); border-radius: 20px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18); padding: 5px 12px;
+      display: inline-flex; align-items: center; gap: 6px; font-size: 11px;
+      color: #374151; font-weight: 500; border: 1px solid rgba(0,0,0,0.08);
+    }
+    .pill:hover { background: #fff; }
+
+    /* Tombol tipe alat resmi BMKG (awscenter.bmkg.go.id) */
+    .bmkg-type-icon {
+      transition: transform 0.15s ease, filter 0.15s ease;
+      user-select: none;
+    }
+    .bmkg-type-icon:hover {
+      transform: translateY(-2px) scale(1.08);
+    }
+
+    /* Switch clustering */
+    .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; background: #d1d5db; border-radius: 18px; transition: .3s; cursor: pointer; }
+    .slider:before { content: ""; position: absolute; height: 14px; width: 14px; left: 2px; bottom: 2px; background: #fff; border-radius: 50%; transition: .3s; }
+    input:checked + .slider { background: #f5a623; }
+    input:checked + .slider:before { transform: translateX(16px); }
+
+    /* Marker stasiun */
+    .sta-marker { position: relative; display: flex; flex-direction: column; align-items: center; }
+    .sta-marker svg { filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); transition: transform .2s; }
+    .sta-marker:hover svg { transform: scale(1.35); }
+    .sta-marker .code {
+      margin-top: 1px; font-size: 9px; font-weight: 700; color: #1e3a8a;
+      background: rgba(255,255,255,.85); padding: 0 3px; border-radius: 3px; white-space: nowrap;
+    }
+    .sta-marker .ring {
+      position: absolute; top: 0; left: 50%; width: 20px; height: 20px; margin-left: -10px;
+      border-radius: 50%; border: 2px solid #43a047; animation: ring 2.2s infinite ease-out; pointer-events: none;
+    }
+    @keyframes ring { 0% { transform: scale(.6); opacity: 1; } 100% { transform: scale(2.4); opacity: 0; } }
+
+    .region-label {
+      background: rgba(255,255,255,.85); border: 1px solid rgba(2,132,199,.35); color: #0c4a6e;
+      font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 5px;
+      white-space: nowrap; text-transform: uppercase; letter-spacing: .3px; display: inline-block;
+    }
+
+    .leaflet-popup-content-wrapper { padding: 0; overflow: hidden; border-radius: 12px; }
+    .leaflet-popup-content { margin: 0; line-height: 1.4; }
+    .leaflet-top.leaflet-left { margin-top: 4px; }
+    .leaflet-bar a { color: #374151 !important; }
+
+    .eq-tab { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #6b7280; cursor: pointer; }
+    .eq-tab.active { background: #fee2e2; color: #b91c1c; }
+
+    .thin-scroll::-webkit-scrollbar { width: 5px; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
+
+    .loading-overlay {
+      position: fixed; inset: 0; background: rgba(255,255,255,.92); z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity .5s, visibility .5s;
+    }
+    .loading-overlay.hidden { opacity: 0; visibility: hidden; }
+
+    /* Modal Dialog Stasiun */
+    .station-modal-enter {
+      animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.97) translateY(12px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .seismo-grid-bg {
+      background-color: #0b1120;
+      background-image: linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .bmkg-popup-tag {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 1.5px 6px;
+      border-radius: 9999px;
+      letter-spacing: 0.3px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Loading -->
+  <div id="loading-overlay" class="loading-overlay">
+    <img src="https://awscenter.bmkg.go.id/public/assets/img/logo_bmkg_with_text.png" alt="BMKG" class="w-16 h-16 animate-bounce mb-3">
+    <div class="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+    <div class="text-sm font-semibold text-gray-700">Memuat Peta & Data Alat Geofisika & AWS BMKG...</div>
+  </div>
+
+  <div id="map"></div>
+
+  <!-- Kiri atas: status & toggle -->
+  <div class="fixed top-3 left-14 z-[1000] hidden md:flex items-center gap-2">
+    <div class="pill">
+      <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+      <span>Live: <span id="clock-timestamp">-</span></span>
+    </div>
+    <button id="btn-toggle-mask" onclick="toggleRiauMask()" class="pill text-blue-900 font-semibold" title="Fokuskan ke wilayah Riau">
+      <i class="fa fa-bullseye text-blue-600"></i><span id="mask-status-text">Fokus: Hanya Riau</span>
+    </button>
+    <button id="btn-toggle-labels" onclick="toggleRiauLabels()" class="pill" title="Tampilkan / sembunyikan label Kabupaten/Kota">
+      <i class="fa fa-map-marked-alt text-amber-600"></i><span>Label Daerah</span>
+    </button>
+    <button id="btn-toggle-sta-labels" onclick="toggleStationLabels()" class="pill bg-amber-50 border-amber-300 text-amber-900 font-semibold" title="Tampilkan / sembunyikan label kode/nama Akselerograf di peta">
+      <i class="fa fa-wave-square text-amber-600"></i><span id="txt-toggle-sta-labels">Label Akselero: On</span>
+    </button>
+  </div>
+
+  <!-- Kanan atas: Login -->
+  <div class="fixed top-3 right-4 z-[1000]">
+    <button class="pill font-semibold" onclick="alert('Fitur login operator BMKG Geofisika')">
+      <i class="fa fa-lock text-gray-500"></i> Login
+    </button>
+  </div>
+
+  <!-- Tengah atas: Header + Filter -->
+  <div class="fixed top-3 left-1/2 -translate-x-1/2 z-[1000] w-[92%] sm:w-[520px] flex flex-col gap-1.5">
+    <div class="aws-panel flex items-center justify-center gap-3 px-4 py-2">
+      <img src="https://awscenter.bmkg.go.id/public/assets/img/logo_bmkg_with_text.png" alt="Logo BMKG" class="h-10">
+      <div class="text-center">
+        <div class="text-[13px] font-bold text-gray-800 leading-snug">BADAN METEOROLOGI KLIMATOLOGI DAN GEOFISIKA</div>
+        <h1 class="text-[12px] font-bold text-blue-900 mt-0.5">Pusat Monitoring Alat Geofisika - Wilayah Riau</h1>
+      </div>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-1.5">
+      <select id="select-kota" class="aws-select"><option value="">Semua Kabupaten / Kota</option></select>
+      <select id="select-tipe" class="aws-select"><option value="">Semua Tipe Alat</option></select>
+    </div>
+  </div>
+
+  <!-- Kiri: Panel Daftar Stasiun -->
+  <div id="station-panel" class="fixed top-14 left-14 z-[1000] w-[270px] hidden lg:block">
+    <div class="aws-panel overflow-hidden">
+      <div class="flex items-center justify-between px-3 py-2 border-b border-gray-100 cursor-pointer" onclick="toggleStationPanel()">
+        <div class="flex items-center gap-2 text-xs font-bold text-gray-700">
+          <i class="fa fa-list text-amber-500"></i> Daftar Stasiun
+          <span id="station-count" class="bg-amber-100 text-amber-700 px-1.5 rounded text-[10px]">0</span>
+        </div>
+        <i id="station-panel-chevron" class="fa fa-chevron-up text-gray-400 text-xs"></i>
+      </div>
+      <div id="station-panel-body">
+        <div class="p-2 border-b border-gray-100">
+          <div class="relative">
+            <i class="fa fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-[11px]"></i>
+            <input id="station-search" type="text" placeholder="Cari kode / nama / kabupaten..."
+              class="w-full text-xs pl-7 pr-2 py-1.5 border border-gray-200 rounded-md outline-none focus:border-amber-400">
+          </div>
+        </div>
+        <ul id="station-list" class="thin-scroll overflow-y-auto" style="max-height: 34vh;"></ul>
+        <div class="flex gap-1 p-2 border-t border-gray-100">
+          <button onclick="exportCSV()" class="flex-1 text-[10px] font-semibold text-gray-600 border border-gray-200 rounded py-1 hover:bg-gray-50">
+            <i class="fa fa-file-csv text-emerald-600"></i> Export CSV
+          </button>
+          <button onclick="toggleFullscreen()" class="flex-1 text-[10px] font-semibold text-gray-600 border border-gray-200 rounded py-1 hover:bg-gray-50">
+            <i class="fa fa-expand text-blue-600"></i> Layar Penuh
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kanan bawah: Legend & Donut + Tombol Tipe BMKG (Persis Gambar Kanan User) -->
+  <div class="fixed bottom-4 right-4 z-[1000] flex flex-col items-end gap-2">
+    <!-- Card 1: Legend SLMON Bali (Akselero) & AWS Center (Tabbed) -->
+    <div class="aws-panel px-3.5 py-2.5" style="box-shadow: 0 3px 14px rgba(0,0,0,0.18); border-radius: 12px; min-width: 295px; max-width: 330px;">
+      
+      <!-- Tab Header Pilihan Legenda -->
+      <div class="flex items-center justify-between pb-1.5 mb-2 border-b border-gray-100">
+        <div class="flex items-center gap-1">
+          <button id="tab-legend-slmon" onclick="switchLegendTab('slmon')" class="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500 text-white shadow-xs transition" title="Legenda Akselerograf standar SIMORA / SeedLink SLMON Bali">
+            <i class="fa fa-wave-square mr-1"></i>SIMORA (SLMON Bali)
+          </button>
+          <button id="tab-legend-aws" onclick="switchLegendTab('aws')" class="px-2 py-0.5 text-[10px] font-semibold rounded bg-gray-100 text-gray-600 hover:bg-gray-200 transition" title="Legenda 5 Kategori Waktu AWS Center">
+            AWS Center
+          </button>
+        </div>
+        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">LEGENDA</span>
+      </div>
+
+      <!-- KONTEN 1: LEGENDA KHUSUS AKSELERO (SLMON BALI) - DEFAULT ACTIVE -->
+      <div id="content-legend-slmon" class="space-y-2">
+        <!-- 1. Simbol Bentuk Sensor Akselerograf (Bisa diklik untuk filter) -->
+        <div>
+          <div class="text-[9.5px] font-bold text-gray-700 uppercase tracking-wider mb-1 flex items-center justify-between">
+            <span>Tipe Akselerograf</span>
+            <span class="text-[9px] font-medium text-gray-400">Klik filter</span>
+          </div>
+          <div class="grid grid-cols-3 gap-1 text-[10px]">
+            <button onclick="selectBmkgIcon('aaws')" class="flex items-center gap-1 p-1 rounded bg-amber-50/70 hover:bg-amber-100 border border-amber-200/60 text-left transition" title="Accelerograph Colocated">
+              <span class="text-amber-600 text-xs font-bold leading-none">&#9670;</span>
+              <span class="font-semibold text-gray-700 text-[9.5px] truncate">Colocated</span>
+              <span id="slmon-cnt-col" class="text-amber-800 font-bold ml-auto text-[9.5px]">9</span>
+            </button>
+            <button onclick="selectBmkgIcon('aws')" class="flex items-center gap-1 p-1 rounded bg-amber-50/70 hover:bg-amber-100 border border-amber-200/60 text-left transition" title="Accelerograph 2020">
+              <span class="text-amber-600 text-xs font-bold leading-none">&#9679;</span>
+              <span class="font-semibold text-gray-700 text-[9.5px] truncate">2020</span>
+              <span id="slmon-cnt-2020" class="text-amber-800 font-bold ml-auto text-[9.5px]">2</span>
+            </button>
+            <button onclick="selectBmkgIcon('arg')" class="flex items-center gap-1 p-1 rounded bg-amber-50/70 hover:bg-amber-100 border border-amber-200/60 text-left transition" title="Accelerograph Non Colocated">
+              <span class="text-amber-600 text-xs font-bold leading-none">&#9650;</span>
+              <span class="font-semibold text-gray-700 text-[9.5px] truncate">Non-Col</span>
+              <span id="slmon-cnt-non" class="text-amber-800 font-bold ml-auto text-[9.5px]">2</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Status Latensi SeedLink SLMON Bali + Donut Chart -->
+        <div class="pt-1.5 border-t border-gray-100 flex items-center justify-between gap-3">
+          <div class="flex-1">
+            <div class="text-[9.5px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Latensi SIMORA / SLMON
+            </div>
+            <ul class="text-[10px] text-gray-600 space-y-0.5">
+              <li class="flex items-center gap-1.5 cursor-pointer hover:font-semibold" onclick="filterByCat(0)" title="Klik filter data normal">
+                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block shadow-xs"></span>
+                <span>Normal (&lt; 10s)</span>
+                <span id="slmon-cnt-green" class="font-bold text-gray-800 ml-auto">10</span>
+              </li>
+              <li class="flex items-center gap-1.5 cursor-pointer hover:font-semibold" onclick="filterByCat(1)" title="Klik filter data delay">
+                <span class="w-2.5 h-2.5 rounded-sm bg-amber-400 inline-block shadow-xs"></span>
+                <span>Delay (10s - 60m)</span>
+                <span id="slmon-cnt-yellow" class="font-bold text-gray-800 ml-auto">2</span>
+              </li>
+              <li class="flex items-center gap-1.5 cursor-pointer hover:font-semibold" onclick="filterByCat(4)" title="Klik filter data offline">
+                <span class="w-2.5 h-2.5 rounded-sm bg-red-500 inline-block shadow-xs"></span>
+                <span>Offline (&gt; 1h / 1d)</span>
+                <span id="slmon-cnt-red" class="font-bold text-gray-800 ml-auto">1</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Donut Chart -->
+          <div class="relative w-[68px] h-[68px] shrink-0">
+            <svg id="donut-svg" class="w-full h-full -rotate-90" viewBox="0 0 36 36"></svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="donut-total" class="text-sm font-extrabold text-gray-800 leading-none">13</span>
+              <span class="text-[7px] text-amber-600 font-extrabold uppercase tracking-tight">AKSELERO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KONTEN 2: LEGENDA AWS CENTER 5 TINGKAT (OPSIONAL) -->
+      <div id="content-legend-aws" class="hidden pt-1">
+        <ul id="legend-list" class="text-[11px] text-gray-700 space-y-0.5"></ul>
+        <div class="text-[9px] text-gray-400 italic text-right mt-1">Format AWS Center</div>
+      </div>
+
+    </div>
+
+    <!-- Card 2: Tombol Tipe BMKG (Persis Gambar Kanan User) -->
+    <div class="aws-panel px-3.5 py-2.5" style="box-shadow: 0 3px 14px rgba(0,0,0,0.18); border-radius: 12px;">
+      <table style="border-collapse: separate; border-spacing: 4px 2px; margin: 0 auto;">
+        <tr>
+          <td colspan="8" style="text-align: center; padding-bottom: 6px;">
+            <label class="switch" style="vertical-align: middle; margin-right: 6px;">
+              <input type="checkbox" id="checkbox-cluster">
+              <span class="slider"></span>
+            </label>
+            <span style="font-size: 12px; color: #6b7280; font-weight: 500; vertical-align: middle;">clustering</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="text-center" style="padding: 0 2px;">
+            <img id="icon-all" class="bmkg-type-icon" style="cursor: pointer; width: 32px;" src="assets/icon/all_actived.png" alt="ALL" title="Semua Tipe Akselerograf (13 Stasiun)">
+          </td>
+          <td class="text-center" style="padding: 0 2px;">
+            <img id="icon-aws" class="bmkg-type-icon" style="cursor: pointer; width: 32px;" src="assets/icon/aws_actived.png" alt="AWS" title="Simbol Bulat: Akselerograf 2020 (2 Stasiun: BRSN, STA6024)">
+          </td>
+          <td class="text-center" style="padding: 0 2px;">
+            <img id="icon-arg" class="bmkg-type-icon" style="cursor: pointer; width: 32px;" src="assets/icon/arg_actived.png" alt="ARG" title="Simbol Segitiga: Akselerograf Non-Colocated (2 Stasiun: PATU, PESI)">
+          </td>
+          <td class="text-center" style="padding: 0 2px;">
+            <img id="icon-aaws" class="bmkg-type-icon" style="cursor: pointer; width: 32px;" src="assets/icon/aaws_actived.png" alt="AAWS" title="Simbol Belah Ketupat: Akselerograf Colocated (9 Stasiun: BKNI, GTSI, dll.)">
+          </td>
+          <td class="text-center" style="padding: 0 2px;">
+            <img id="icon-asrs" class="bmkg-type-icon" style="cursor: pointer; width: 32px;" src="assets/icon/asrs_actived.png" alt="ASRS" title="ASRS (0 Stasiun di Riau)">
+          </td>
+          <td class="text-center" style="padding: 0 2px;">
+            <img id="icon-ikro" class="bmkg-type-icon" style="cursor: pointer; width: 32px;" src="assets/icon/ikro_actived.png" alt="IKRO" title="IKRO (0 Stasiun di Riau)">
+          </td>
+          <td class="text-center" style="padding: 0 2px;">
+            <img id="icon-ship" class="bmkg-type-icon" style="cursor: pointer; width: 32px;" src="assets/icon/ship_actived.png" alt="SHIP" title="SHIP (0 Stasiun di Riau)">
+          </td>
+          <td class="text-center" style="padding: 0 2px;">
+            <img id="icon-soil" class="bmkg-type-icon" style="cursor: pointer; width: 32px;" src="assets/icon/soil_actived.png" alt="SOIL" title="SOIL (0 Stasiun di Riau)">
+          </td>
+        </tr>
+        <tr>
+          <td class="text-center"><span style="font-size: 11px; color: #4b5563; font-weight: 600;">ALL</span></td>
+          <td class="text-center"><span style="font-size: 11px; color: #4b5563; font-weight: 600;">AWS</span></td>
+          <td class="text-center"><span style="font-size: 11px; color: #4b5563; font-weight: 600;">ARG</span></td>
+          <td class="text-center"><span style="font-size: 11px; color: #4b5563; font-weight: 600;">AAWS</span></td>
+          <td class="text-center"><span style="font-size: 11px; color: #4b5563; font-weight: 600;">ASRS</span></td>
+          <td class="text-center"><span style="font-size: 11px; color: #4b5563; font-weight: 600;">IKRO</span></td>
+          <td class="text-center"><span style="font-size: 11px; color: #4b5563; font-weight: 600;">SHIP</span></td>
+          <td class="text-center"><span style="font-size: 11px; color: #4b5563; font-weight: 600;">SOIL</span></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Kiri bawah: Gempa BMKG -->
+  <div class="fixed bottom-4 left-4 z-[1000] w-[92%] sm:w-[340px]">
+    <div class="aws-panel border-red-200 px-3 py-2.5">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative rounded-full h-2.5 w-2.5 bg-red-600"></span>
+          </span>
+          <span class="text-xs font-bold text-red-600 uppercase">Gempa BMKG</span>
+        </div>
+        <div class="flex gap-1">
+          <span class="eq-tab active" data-tab="latest">Terkini</span>
+          <span class="eq-tab" data-tab="m5">M 5.0+</span>
+          <span class="eq-tab" data-tab="felt">Dirasakan</span>
+        </div>
+      </div>
+      <div id="earthquake-content" class="text-xs text-gray-600 thin-scroll overflow-y-auto" style="max-height: 190px;">
+        <div class="py-2 text-center text-gray-400"><i class="fa fa-spinner fa-spin mr-1"></i> Mengambil data InaTEWS BMKG...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detail Stasiun Komprehensif -->
+  <div id="station-detail-modal" class="fixed inset-0 z-[2000] hidden items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-sm" onclick="handleModalBackdropClick(event)">
+    <div class="station-modal-enter aws-panel w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden bg-white rounded-xl shadow-2xl border border-slate-200">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white shrink-0">
+        <div class="flex items-center gap-3">
+          <img src="https://awscenter.bmkg.go.id/public/assets/img/logo_bmkg_with_text.png" alt="BMKG" class="h-9 brightness-0 invert">
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="modal-station-code" class="text-base font-black tracking-wider text-amber-400 font-mono">PATU</span>
+              <span id="modal-station-type" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30">Broadband Seismograph</span>
+              <span id="modal-station-status" class="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Online
+              </span>
+            </div>
+            <div id="modal-station-name" class="text-xs text-slate-300 mt-0.5 truncate max-w-md">Stasiun Geofisika Pekanbaru - Tenayan</div>
+          </div>
+        </div>
+        <button onclick="closeStationModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition" title="Tutup (Esc)">
+          <i class="fa fa-times text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-4 sm:p-5 overflow-y-auto thin-scroll space-y-4 text-slate-700 bg-slate-50/50">
+
+        <!-- 2 Grid Cards: Lokasi, Geografis & Telemetri serta Detail Akselerograf -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+          
+          <!-- Card 1: Lokasi & Geografis -->
+          <div class="bg-white rounded-lg p-3.5 border border-slate-200/80 shadow-sm space-y-2">
+            <div class="flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100 pb-1.5">
+              <div class="w-5 h-5 rounded bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                <i class="fa fa-location-dot"></i>
+              </div>
+              Lokasi & Geografis
+            </div>
+            <div class="space-y-1.5 text-slate-600">
+              <div class="flex justify-between">
+                <span class="text-slate-500">ID Station:</span>
+                <span id="modal-info-id" class="font-semibold text-slate-800 font-mono text-[11px]">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500">Name Station:</span>
+                <span id="modal-info-site" class="font-semibold text-slate-800 text-[11px] text-right truncate max-w-[210px]">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Kabupaten / Kota:</span>
+                <span id="modal-info-kab" class="font-semibold text-slate-800">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500">Koordinat:</span>
+                <span class="font-mono text-[11px] font-semibold text-blue-900 flex items-center gap-1">
+                  <span id="modal-info-coords">-</span>
+                  <button id="btn-copy-modal-coords" onclick="copyModalCoords(this)" class="text-blue-600 hover:text-blue-800 p-0.5 ml-1" title="Salin koordinat">
+                    <i class="fa fa-copy"></i>
+                  </button>
+                </span>
+              </div>
+            </div>
+
+            <!-- Sub-seksi Telemetri SLMON Bali (Last Data & Data Latency) -->
+            <div class="pt-2.5 border-t border-slate-100 space-y-2">
+              <div class="flex items-center justify-between">
+                <span id="modal-telemetry-title" class="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fa fa-wave-square text-amber-500"></i> Telemetri SLMON Bali
+                </span>
+                <span id="modal-telemetry-badge" class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700">Real-time</span>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-2 mt-1">
+                <!-- Box 1: Data Latency -->
+                <div class="bg-gradient-to-br from-amber-50/60 to-white border border-amber-200/80 rounded-lg p-2.5 flex flex-col justify-between shadow-xs">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[9.5px] text-slate-500 font-semibold uppercase tracking-wider">Data Latency</span>
+                    <i class="fa fa-clock text-amber-500 text-[10px]"></i>
+                  </div>
+                  <div id="modal-slmon-latency" class="font-mono text-lg font-extrabold text-emerald-600 mt-1">5s</div>
+                  <div id="modal-slmon-latency-desc" class="text-[8.5px] text-slate-400 mt-0.5 font-medium">Normal SeedLink</div>
+                </div>
+
+                <!-- Box 2: Last Data -->
+                <div class="bg-gradient-to-br from-blue-50/60 to-white border border-blue-200/80 rounded-lg p-2.5 flex flex-col justify-between shadow-xs">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[9.5px] text-slate-500 font-semibold uppercase tracking-wider">Last Data</span>
+                    <i class="fa fa-database text-blue-500 text-[10px]"></i>
+                  </div>
+                  <div id="modal-slmon-lastdata" class="font-mono text-[11px] font-bold text-slate-800 mt-1 truncate">29/10/2026 03:55</div>
+                  <div id="modal-slmon-upt" class="text-[8.5px] text-slate-400 mt-0.5 truncate">Stageof-Padang-Panjang</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Detail Alat -->
+          <div class="bg-white rounded-lg p-3.5 border border-slate-200/80 shadow-sm space-y-2">
+            <div class="flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100 pb-1.5">
+              <div class="w-5 h-5 rounded bg-amber-50 text-amber-600 flex items-center justify-center text-[10px]">
+                <i class="fa fa-sliders"></i>
+              </div>
+              <span id="modal-card2-title">Detail Alat</span>
+            </div>
+            <div class="space-y-2 text-slate-600">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500">Tipe Alat:</span>
+                <span id="modal-detail-tipe" class="font-semibold text-slate-800 text-[11.5px]">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500">Tanggal Update:</span>
+                <span id="modal-detail-tanggal" class="font-semibold text-slate-800 font-mono text-[11px]">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500">Diff Day:</span>
+                <span id="modal-detail-diff-day" class="font-semibold text-slate-800 font-mono text-[11.5px]">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500">Diff Hour:</span>
+                <span id="modal-detail-diff-hour" class="font-semibold text-slate-800 font-mono text-[11.5px]">-</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500">Diff Minute:</span>
+                <span id="modal-detail-diff-minute" class="font-semibold text-slate-800 font-mono text-[11.5px]">-</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3 bg-white border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div class="flex items-center gap-2">
+          <button id="modal-btn-zoom" class="px-3 py-1.5 text-xs font-semibold rounded bg-amber-500 hover:bg-amber-600 text-white flex items-center gap-1.5 transition">
+            <i class="fa fa-search-plus"></i> Pusatkan di Peta
+          </button>
+          <a id="modal-btn-maps" href="#" target="_blank" rel="noopener" class="px-3 py-1.5 text-xs font-semibold rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 transition">
+            <i class="fa fa-map-marked-alt text-amber-500"></i> Google Maps
+          </a>
+          <button onclick="copyModalStationJSON()" class="px-3 py-1.5 text-xs font-semibold rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 transition">
+            <i class="fa fa-code text-blue-500"></i> Salin JSON
+          </button>
+        </div>
+        <button onclick="closeStationModal()" class="px-4 py-1.5 text-xs font-semibold rounded bg-slate-200 hover:bg-slate-300 text-slate-800 transition">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-5 right-5 z-[3000] pointer-events-none flex flex-col gap-2"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="data/riau_geojson.js?v=1793020104"></script>
+  <script src="js/app.js?v=1793655598"></script>
+</body>
+
+</html>

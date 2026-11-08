@@ -1,0 +1,101 @@
+[
+  {
+    "network": "IA",
+    "station": "BKNI",
+    "province": "Riau",
+    "location": "Bangkinang",
+    "digitizer_type": "Kinemetrics-Q330-2016-GSM",
+    "upt": "Stageof-Padang-Panjang",
+    "last_data": "29/10/2026 03:55",
+    "data_latency": "5s",
+    "color": "green"
+  },
+  {
+    "network": "IA",
+    "station": "GTSI",
+    "province": "Riau",
+    "location": "GunungToar,KuantanSingingi",
+    "digitizer_type": "Nanometrics-Centaur-2019-GSM",
+    "upt": "Stageof-Padang-Panjang",
+    "last_data": "27/10/2026 23:49",
+    "data_latency": "1d 0h",
+    "color": "black"
+  },
+  {
+    "network": "IA",
+    "station": "IHRSI",
+    "province": "Riau",
+    "location": "IndragiriHilir",
+    "digitizer_type": "GuralpMinimus+2021-GSM",
+    "upt": "Stageof-Padang-Panjang",
+    "last_data": "29/10/2026 03:55",
+    "data_latency": "8s",
+    "color": "green"
+  },
+  {
+    "network": "IA",
+    "station": "PRSI",
+    "province": "Riau",
+    "location": "Pelalawan,Riau",
+    "digitizer_type": "Guralp-Minimus+2021-Idirect",
+    "upt": "Stageof-Padang-Panjang",
+    "last_data": "29/10/2026 03:55",
+    "data_latency": "9s",
+    "color": "green"
+  },
+  {
+    "network": "IA",
+    "station": "RGRI",
+    "province": "Riau",
+    "location": "Rengat",
+    "digitizer_type": "Nanometrics-Centaur-2019-GSM",
+    "upt": "Stageof-Padang-Panjang",
+    "last_data": "29/10/2026 03:55",
+    "data_latency": "2s",
+    "color": "green"
+  },
+  {
+    "network": "IA",
+    "station": "RHRSI",
+    "province": "Riau",
+    "location": "Rokan-Hilir,Riau",
+    "digitizer_type": "Guralp-Minimus-2021-Idirect",
+    "upt": "Stageof-Padang-Panjang",
+    "last_data": "29/10/2026 03:54",
+    "data_latency": "1m 0s",
+    "color": "orange"
+  },
+  {
+    "network": "IA",
+    "station": "RRHRI",
+    "province": "Riau",
+    "location": "Rokan-IV-Kota,Rokan-Hulu",
+    "digitizer_type": "Nanometrics-Centaur-2022-Idirect",
+    "upt": "Stageof-Padang-Pajang",
+    "last_data": "29/10/2026 03:53",
+    "data_latency": "2m 0s",
+    "color": "orange"
+  },
+  {
+    "network": "IA",
+    "station": "RRSI",
+    "province": "Riau",
+    "location": "Rambah,Rokan-Hulu",
+    "digitizer_type": "Nanometrics-Centaur-2019-GSM",
+    "upt": "Stageof-Padang-Panjang",
+    "last_data": "29/10/2026 03:55",
+    "data_latency": "4s",
+    "color": "green"
+  },
+  {
+    "network": "IA",
+    "station": "SIRSI",
+    "province": "Riau",
+    "location": "Siak,Riau",
+    "digitizer_type": "Guralp-Minimus-2021-Idirect",
+    "upt": "Stageof-Padang-Panjang",
+    "last_data": "29/10/2026 03:55",
+    "data_latency": "7s",
+    "color": "green"
+  }
+]
