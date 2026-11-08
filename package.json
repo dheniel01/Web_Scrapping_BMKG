@@ -1,0 +1,20 @@
+{
+  "name": "web-scrapping-bmkg",
+  "version": "1.0.0",
+  "description": "Pusat Monitoring Alat Geofisika BMKG Wilayah Riau & Live Real-Time Scraper",
+  "type": "module",
+  "scripts": {
+    "scrape": "python scrape_all.py",
+    "scrape:slmon": "python scrape_slmon.py",
+    "scrape:aws": "python scrape_awscenter.py"
+  },
+  "keywords": [
+    "bmkg",
+    "geofisika",
+    "slmon",
+    "awscenter",
+    "riau"
+  ],
+  "author": "dheniel01 <dhenielnovelino@student.uir.ac.id>",
+  "license": "MIT"
+}
