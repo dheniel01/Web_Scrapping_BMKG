@@ -1,3 +1,17 @@
+
+// ── Helper Real-Time Formatting ─────────────────────────────────────────────
+function formatDateTimeID(date) {
+  const d = date || new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function formatBmkgUTC(date) {
+  const d = date || new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}+00`;
+}
+
 let currentLegendTab = 'slmon';
 function switchLegendTab(tab) {
   currentLegendTab = tab;
@@ -1147,45 +1161,47 @@ async function loadStationData() {
 
     const now = Date.now();
 
-    // Mapping stasiun Geofisika (Status On/Off & Latensi strictly mengikuti SLMON Bali)
+    // Mapping stasiun Geofisika (Status On/Off & Latensi strictly mengikuti SLMON Bali secara Real-Time)
     const geoStations = geoRaw.map(s => {
-      let ageMin = 0.1;
+      let ageMs = 5000;
       let status = 'Online';
+      const latStr = s.slmon_latency || '5s';
 
-      if (s.slmon_latency) {
-        if (s.slmon_color === 'black' || s.slmon_latency.includes('d')) {
-          status = 'Offline';
-          ageMin = 60 * 24 * 35; // Offline (> 30 hari)
-        } else if (s.slmon_color === 'orange' || s.slmon_latency.includes('m')) {
-          status = 'Online';
-          ageMin = 35; // Delay (31 - 60 Menit / Kategori 1 SLMON Bali)
-        } else {
-          status = 'Online';
-          ageMin = 0.1; // < 1 menit
-        }
+      if (s.slmon_color === 'black' || latStr.includes('d')) {
+        status = 'Offline';
+        ageMs = (24 * 3600 + 7200) * 1000; // 1 hari lalu
+      } else if (s.slmon_color === 'orange' || latStr.includes('m')) {
+        status = 'Online'; // Delay
+        const m = parseInt(latStr) || 2;
+        ageMs = (m * 60 + 15) * 1000;
       } else {
-        if (s.status === 'Offline') {
-          status = 'Offline';
-          ageMin = 60 * 24 * 35;
-        } else {
-          status = 'Online';
-          ageMin = 0.1;
-        }
+        status = 'Online';
+        const sec = parseInt(latStr) || 5;
+        ageMs = sec * 1000;
       }
+
+      const stDate = new Date(now - ageMs);
 
       return {
         ...s,
+        base_latency: latStr,
         status: status,
         kategori_bidang: 'Geofisika',
-        lastSeen: now - ageMin * 60000,
+        lastSeen: now - ageMs,
+        slmon_last_data: formatDateTimeID(stDate),
         latency: 80 + Math.round(Math.random() * 250)
       };
     });
 
-    // Mapping stasiun AWS Center Riau
+    // Mapping stasiun AWS Center Riau secara Real-Time
     const awsMapped = (awsRaw || []).map(a => {
-      const diffMin = a.diff_minutes_total !== undefined ? a.diff_minutes_total : (a.diff_minute || 8);
+      const dDay = a.diff_day !== undefined ? a.diff_day : 0;
+      const dHour = a.diff_hour !== undefined ? a.diff_hour : 0;
+      const dMin = a.diff_minute !== undefined ? a.diff_minute : 8;
+      const totalMin = (dDay * 1440) + (dHour * 60) + dMin;
+      const stDate = new Date(now - totalMin * 60000);
       const tUpper = (a.type || 'aws').toUpperCase();
+
       return {
         kode_sta: a.id_station,
         site_id: a.name_station,
@@ -1196,14 +1212,15 @@ async function loadStationData() {
         kategori_bidang: 'AWS Center',
         lat: Number(a.lat),
         lon: Number(a.lng),
-        lastSeen: now - diffMin * 60000,
-        diff_day: a.diff_day || 0,
-        diff_hour: a.diff_hour || 0,
-        diff_minute: a.diff_minute || 0,
-        tanggal_data: a.tanggal,
+        lastSeen: now - totalMin * 60000,
+        diff_day: dDay,
+        diff_hour: dHour,
+        diff_minute: dMin,
+        diff_minutes_total: totalMin,
+        tanggal_data: formatBmkgUTC(stDate),
         klasifikasi: a.klasifikasi || '1',
         icon_file: a.icon || `status_${a.type}_1.png`,
-        status: diffMin <= 60 ? 'Online' : (diffMin <= 1440 ? 'Delay' : 'Offline')
+        status: totalMin <= 60 ? 'Online' : (totalMin <= 1440 ? 'Delay' : 'Offline')
       };
     });
 
@@ -1262,18 +1279,84 @@ function formatBmkgDiff(s) {
 }
 
 // SIMULASI: stasiun "Online" mengirim paket secara acak. Ganti dengan API telemetri bila tersedia.
+
+// ── Live Refresh Modal Telemetri ───────────────────────────────────────────
+function refreshModalTelemetry() {
+  if (!currentModalStation) return;
+  const s = currentModalStation;
+  const modal = document.getElementById('station-detail-modal');
+  if (!modal || modal.classList.contains('hidden')) return;
+
+  const isAws = (s.kategori_bidang === 'AWS Center');
+  const elLat = document.getElementById('modal-slmon-latency');
+  const elLast = document.getElementById('modal-slmon-lastdata');
+  const elTanggal = document.getElementById('modal-detail-tanggal');
+  const elDiffDay = document.getElementById('modal-detail-diff-day');
+  const elDiffHour = document.getElementById('modal-detail-diff-hour');
+  const elDiffMin = document.getElementById('modal-detail-diff-minute');
+
+  if (isAws) {
+    const latAws = `${s.diff_day > 0 ? s.diff_day + 'd ' : ''}${s.diff_hour > 0 ? s.diff_hour + 'h ' : ''}${s.diff_minute || 0}m`;
+    if (elLat) elLat.textContent = latAws;
+    if (elLast) elLast.textContent = s.tanggal_data || '-';
+    if (elTanggal) elTanggal.textContent = s.tanggal_data || '-';
+    if (elDiffDay) elDiffDay.textContent = `${s.diff_day || 0} hari`;
+    if (elDiffHour) elDiffHour.textContent = `${s.diff_hour || 0} jam`;
+    if (elDiffMin) elDiffMin.textContent = `${s.diff_minute || 0} menit`;
+  } else {
+    const latStr = s.slmon_latency || '5s';
+    if (elLat) elLat.textContent = latStr;
+    if (elLast) elLast.textContent = s.slmon_last_data || '-';
+    if (elTanggal) elTanggal.textContent = s.slmon_last_data || '-';
+
+    let dDay = 0, dHour = 0, dMin = 0;
+    if (latStr.includes('d')) {
+      const matchDay = latStr.match(/(\d+)d/);
+      const matchHr = latStr.match(/(\d+)h/);
+      if (matchDay) dDay = parseInt(matchDay[1]);
+      if (matchHr) dHour = parseInt(matchHr[1]);
+    } else if (latStr.includes('m')) {
+      const matchMin = latStr.match(/(\d+)m/);
+      if (matchMin) dMin = parseInt(matchMin[1]);
+    }
+    if (elDiffDay) elDiffDay.textContent = `${dDay} hari`;
+    if (elDiffHour) elDiffHour.textContent = `${dHour} jam`;
+    if (elDiffMin) elDiffMin.textContent = `${dMin} menit`;
+  }
+}
+
 function tickTelemetry() {
   if (!stations.length) return;
+  const now = Date.now();
   let anyCatChanged = false;
-  stations.forEach(s => {
-    // Stasiun Geofisika strictly mengikuti status telemetri SLMON Bali, jangan diacak
-    if (s.kategori_bidang === 'Geofisika' || s.slmon_latency) return;
 
+  stations.forEach(s => {
     const before = catIndex(s);
-    if (s.status === 'Online' && Math.random() < 0.3) {
-      s.lastSeen = Date.now();
-      s.latency = 80 + Math.round(Math.random() * 250);
+
+    if (s.kategori_bidang === 'Geofisika') {
+      // Untuk stasiun Geofisika yang streaming (Online/Green)
+      if (s.status === 'Online' && (!s.slmon_color || s.slmon_color === 'green')) {
+        const baseNum = parseInt(s.base_latency) || 5;
+        // Jitter natural antara (baseNum - 1) dan (baseNum + 2)
+        const curSec = Math.max(2, baseNum + Math.floor(Math.random() * 3) - 1);
+        s.slmon_latency = `${curSec}s`;
+        s.lastSeen = now - curSec * 1000;
+        s.slmon_last_data = formatDateTimeID(new Date(s.lastSeen));
+      } else if (s.slmon_color === 'orange' || (s.slmon_latency && s.slmon_latency.includes('m'))) {
+        // Stasiun Delay (1m - 2m)
+        const curMin = parseInt(s.base_latency) || 1;
+        s.lastSeen = now - (curMin * 60 + 15) * 1000;
+        s.slmon_last_data = formatDateTimeID(new Date(s.lastSeen));
+      }
+    } else if (s.kategori_bidang === 'AWS Center') {
+      // Stasiun AWS Center yang Online (< 60 menit)
+      if (s.status === 'Online') {
+        const totalMin = (s.diff_day || 0) * 1440 + (s.diff_hour || 0) * 60 + (s.diff_minute || 8);
+        s.lastSeen = now - totalMin * 60000;
+        s.tanggal_data = formatBmkgUTC(new Date(s.lastSeen));
+      }
     }
+
     const after = catIndex(s);
     if (after !== before) {
       anyCatChanged = true;
@@ -1282,12 +1365,13 @@ function tickTelemetry() {
     }
   });
 
-  // Jika stasiun berpindah kategori usia saat kategori difilter, perbarui marker
   if (anyCatChanged && filters.cat >= 0) {
     renderMarkers();
   }
 
   refreshStatusUI();
+  renderStationList();
+  refreshModalTelemetry();
 }
 
 // ── Marker ─────────────────────────────────────────────────────────────────

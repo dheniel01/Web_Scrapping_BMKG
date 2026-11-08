@@ -1,10 +1,10 @@
-﻿network;station;province;location;digitizer_type;upt;last_data;data_latency;color
-IA;BKNI;Riau;Bangkinang;Kinemetrics-Q330-2016-GSM;Stageof-Padang-Panjang;29/10/2026 03:55;5s;green
-IA;GTSI;Riau;GunungToar,KuantanSingingi;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;27/10/2026 23:49;1d 0h;black
-IA;IHRSI;Riau;IndragiriHilir;GuralpMinimus+2021-GSM;Stageof-Padang-Panjang;29/10/2026 03:55;8s;green
-IA;PRSI;Riau;Pelalawan,Riau;Guralp-Minimus+2021-Idirect;Stageof-Padang-Panjang;29/10/2026 03:55;9s;green
-IA;RGRI;Riau;Rengat;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;29/10/2026 03:55;2s;green
-IA;RHRSI;Riau;Rokan-Hilir,Riau;Guralp-Minimus-2021-Idirect;Stageof-Padang-Panjang;29/10/2026 03:54;1m 0s;orange
-IA;RRHRI;Riau;Rokan-IV-Kota,Rokan-Hulu;Nanometrics-Centaur-2022-Idirect;Stageof-Padang-Pajang;29/10/2026 03:53;2m 0s;orange
-IA;RRSI;Riau;Rambah,Rokan-Hulu;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;29/10/2026 03:55;4s;green
-IA;SIRSI;Riau;Siak,Riau;Guralp-Minimus-2021-Idirect;Stageof-Padang-Panjang;29/10/2026 03:55;7s;green
+network;station;province;location;digitizer_type;upt;last_data;data_latency;color
+IA;BKNI;Riau;Bangkinang;Kinemetrics-Q330-2016-GSM;Stageof-Padang-Panjang;08/11/2026 22:41:34;5s;green
+IA;GTSI;Riau;GunungToar,KuantanSingingi;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;07/11/2026 20:41:39;1d 0h;black
+IA;IHRSI;Riau;IndragiriHilir;GuralpMinimus+2021-GSM;Stageof-Padang-Panjang;08/11/2026 22:41:31;8s;green
+IA;PRSI;Riau;Pelalawan,Riau;Guralp-Minimus+2021-Idirect;Stageof-Padang-Panjang;08/11/2026 22:41:30;9s;green
+IA;RGRI;Riau;Rengat;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;08/11/2026 22:41:37;2s;green
+IA;RHRSI;Riau;Rokan-Hilir,Riau;Guralp-Minimus-2021-Idirect;Stageof-Padang-Panjang;08/11/2026 22:40:24;1m 0s;orange
+IA;RRHRI;Riau;Rokan-IV-Kota,Rokan-Hulu;Nanometrics-Centaur-2022-Idirect;Stageof-Padang-Pajang;08/11/2026 22:39:24;2m 0s;orange
+IA;RRSI;Riau;Rambah,Rokan-Hulu;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;08/11/2026 22:41:35;4s;green
+IA;SIRSI;Riau;Siak,Riau;Guralp-Minimus-2021-Idirect;Stageof-Padang-Panjang;08/11/2026 22:41:32;7s;green
