@@ -878,16 +878,16 @@ const STATUS_CATS = [
 // Bentuk ikon per tipe alat (gaya tombol awscenter)
 const TYPE_CONFIG = {
   'all': { short: 'ALL', shape: 'square', icon: 'fa-check', title: 'Semua Tipe' },
-  // Geofisika (Akselerograf)
-  'Accelerograph Colocated': { short: 'COL', shape: 'diamond', icon: 'fa-wave-square', title: 'Accelerograph Colocated' },
-  'Accelerograph 2020': { short: '2020', shape: 'circle', icon: 'fa-circle-dot', title: 'Accelerograph 2020' },
-  'Accelerograph Non Colocated': { short: 'NON', shape: 'triangle', icon: 'fa-triangle-exclamation', title: 'Accelerograph Non Colocated' },
-  // AWS Center BMKG
+  // Geofisika (Akselerograf) - BENTUK SEISMIK & GEMPA KHUSUS (Beda total dari Belah Ketupat AAWS Cuaca)
+  'Accelerograph Colocated': { short: 'COL', shape: 'seismic', icon: 'fa-wave-square', title: 'Accelerograph Colocated (Seismik)' },
+  'Accelerograph 2020': { short: '2020', shape: 'octagon', icon: 'fa-circle-dot', title: 'Accelerograph 2020' },
+  'Accelerograph Non Colocated': { short: 'NON', shape: 'hexagon', icon: 'fa-tower-broadcast', title: 'Accelerograph Non Colocated' },
+  // AWS Center BMKG (Cuaca & Iklim)
   'AWS': { short: 'AWS', shape: 'circle', icon: 'fa-cloud-sun', title: 'Automatic Weather Station (AWS)' },
   'ARG': { short: 'ARG', shape: 'triangle', icon: 'fa-cloud-rain', title: 'Automatic Rain Gauge (ARG)' },
-  'AAWS': { short: 'AAWS', shape: 'diamond', icon: 'fa-seedling', title: 'Agro-climate AWS (AAWS)' },
+  'AAWS': { short: 'AAWS', shape: 'diamond', icon: 'fa-seedling', title: 'Agro-climate AWS (AAWS) - Belah Ketupat' },
   'ASRS': { short: 'ASRS', shape: 'star', icon: 'fa-sun', title: 'Solar Radiation Station (ASRS)' },
-  'IKRO': { short: 'IKRO', shape: 'hexagon', icon: 'fa-temperature-high', title: 'Stasiun Iklim Mikro (IKRO)' },
+  'IKRO': { short: 'IKRO', shape: 'square', icon: 'fa-temperature-high', title: 'Stasiun Iklim Mikro (IKRO)' },
   'SOIL': { short: 'SOIL', shape: 'rect', icon: 'fa-layer-group', title: 'Soil Moisture Station (SOIL)' },
   'SHIP': { short: 'SHIP', shape: 'octagon', icon: 'fa-ship', title: 'AWS Kapal (SHIP)' },
 };
@@ -948,6 +948,7 @@ function shapeSVG(shape, fill, size, stroke = '#ffffff', sw = 2) {
     hexagon: `<polygon points="12,2 21,7.2 21,17.8 12,23 3,17.8 3,7.2" stroke-linejoin="round"/>`,
     octagon: `<polygon points="7.5,2 16.5,2 22,7.5 22,16.5 16.5,22 7.5,22 2,16.5 2,7.5" stroke-linejoin="round"/>`,
     rect: `<rect x="2" y="6" width="20" height="12" rx="2"/>`,
+    seismic: `<polygon points="12,1.5 21.5,7 21.5,17 12,22.5 2.5,17 2.5,7" stroke-linejoin="round"/><polyline points="5.5,12 8.5,12 10.5,6.5 13.5,17.5 15.5,12 18.5,12" stroke="${stroke}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
   };
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${stroke}" stroke-width="${sw}">${shapes[shape] || shapes.circle}</svg>`;
 }
@@ -1419,12 +1420,12 @@ function filteredStationsByTypeOnly() {
     if (filters.tipe && filters.tipe !== 'all') {
       const sTipe = (s.tipe || '').toLowerCase();
       const fTipe = filters.tipe.toLowerCase();
-      if (fTipe === 'aws') {
-        if (sTipe !== 'aws' && sTipe !== 'accelerograph 2020') return false;
+      if (fTipe === 'aaws') {
+        if (sTipe !== 'aaws') return false;
+      } else if (fTipe === 'aws') {
+        if (sTipe !== 'aws') return false;
       } else if (fTipe === 'arg') {
-        if (sTipe !== 'arg' && sTipe !== 'accelerograph non colocated') return false;
-      } else if (fTipe === 'aaws') {
-        if (sTipe !== 'aaws' && sTipe !== 'accelerograph colocated') return false;
+        if (sTipe !== 'arg') return false;
       } else if (fTipe === 'asrs') {
         if (sTipe !== 'asrs') return false;
       } else if (fTipe === 'ikro') {
@@ -1433,8 +1434,6 @@ function filteredStationsByTypeOnly() {
         if (sTipe !== 'soil') return false;
       } else if (fTipe === 'ship') {
         if (sTipe !== 'ship') return false;
-      } else if (fTipe.startsWith('accelerograph')) {
-        if (sTipe !== fTipe) return false;
       } else {
         if (sTipe !== fTipe) return false;
       }
@@ -1449,12 +1448,12 @@ function filteredStations() {
     if (filters.tipe && filters.tipe !== 'all') {
       const sTipe = (s.tipe || '').toLowerCase();
       const fTipe = filters.tipe.toLowerCase();
-      if (fTipe === 'aws') {
-        if (sTipe !== 'aws' && sTipe !== 'accelerograph 2020') return false;
+      if (fTipe === 'aaws') {
+        if (sTipe !== 'aaws') return false;
+      } else if (fTipe === 'aws') {
+        if (sTipe !== 'aws') return false;
       } else if (fTipe === 'arg') {
-        if (sTipe !== 'arg' && sTipe !== 'accelerograph non colocated') return false;
-      } else if (fTipe === 'aaws') {
-        if (sTipe !== 'aaws' && sTipe !== 'accelerograph colocated') return false;
+        if (sTipe !== 'arg') return false;
       } else if (fTipe === 'asrs') {
         if (sTipe !== 'asrs') return false;
       } else if (fTipe === 'ikro') {
@@ -1463,8 +1462,6 @@ function filteredStations() {
         if (sTipe !== 'soil') return false;
       } else if (fTipe === 'ship') {
         if (sTipe !== 'ship') return false;
-      } else if (fTipe.startsWith('accelerograph')) {
-        if (sTipe !== fTipe) return false;
       } else {
         if (sTipe !== fTipe) return false;
       }
@@ -2314,4 +2311,16 @@ function toggleFullscreen() {
   } else {
     document.exitFullscreen?.().catch(() => {});
   }
+}
+
+function filterByTipeExact(tipeName) {
+  if (filters.tipe === tipeName) {
+    filters.tipe = 'all';
+  } else {
+    filters.tipe = tipeName;
+  }
+  const selTipe = document.getElementById('select-tipe');
+  if (selTipe) selTipe.value = filters.tipe === 'all' ? '' : filters.tipe;
+  renderMarkers();
+  refreshStatusUI();
 }
