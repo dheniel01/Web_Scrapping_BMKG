@@ -878,18 +878,18 @@ const STATUS_CATS = [
 // Bentuk ikon per tipe alat (gaya tombol awscenter)
 const TYPE_CONFIG = {
   'all': { short: 'ALL', shape: 'square', icon: 'fa-check', title: 'Semua Tipe' },
-  // Geofisika (Akselerograf) - BENTUK SEISMIK & GEMPA KHUSUS (Beda total dari Belah Ketupat AAWS Cuaca)
-  'Accelerograph Colocated': { short: 'COL', shape: 'seismic', icon: 'fa-wave-square', title: 'Accelerograph Colocated (Seismik)' },
-  'Accelerograph 2020': { short: '2020', shape: 'octagon', icon: 'fa-circle-dot', title: 'Accelerograph 2020' },
-  'Accelerograph Non Colocated': { short: 'NON', shape: 'hexagon', icon: 'fa-tower-broadcast', title: 'Accelerograph Non Colocated' },
-  // AWS Center BMKG (Cuaca & Iklim)
-  'AWS': { short: 'AWS', shape: 'circle', icon: 'fa-cloud-sun', title: 'Automatic Weather Station (AWS)' },
-  'ARG': { short: 'ARG', shape: 'triangle', icon: 'fa-cloud-rain', title: 'Automatic Rain Gauge (ARG)' },
-  'AAWS': { short: 'AAWS', shape: 'diamond', icon: 'fa-seedling', title: 'Agro-climate AWS (AAWS) - Belah Ketupat' },
-  'ASRS': { short: 'ASRS', shape: 'star', icon: 'fa-sun', title: 'Solar Radiation Station (ASRS)' },
-  'IKRO': { short: 'IKRO', shape: 'square', icon: 'fa-temperature-high', title: 'Stasiun Iklim Mikro (IKRO)' },
-  'SOIL': { short: 'SOIL', shape: 'rect', icon: 'fa-layer-group', title: 'Soil Moisture Station (SOIL)' },
-  'SHIP': { short: 'SHIP', shape: 'octagon', icon: 'fa-ship', title: 'AWS Kapal (SHIP)' },
+  // Geofisika (Akselerograf) - Bangun Datar Polos
+  'Accelerograph Colocated': { short: 'COL', shape: 'hexagon', icon: 'fa-wave-square', title: 'Accelerograph Colocated (Segi Enam Polos)' },
+  'Accelerograph 2020': { short: '2020', shape: 'octagon', icon: 'fa-circle-dot', title: 'Accelerograph 2020 (Segi Delapan Polos)' },
+  'Accelerograph Non Colocated': { short: 'NON', shape: 'triangle-down', icon: 'fa-triangle-exclamation', title: 'Accelerograph Non Colocated (Segitiga Terbalik Polos)' },
+  // AWS Center BMKG (Cuaca & Iklim) - Bangun Datar Polos
+  'AWS': { short: 'AWS', shape: 'circle', icon: 'fa-cloud-sun', title: 'AWS (Lingkaran Polos)' },
+  'ARG': { short: 'ARG', shape: 'triangle', icon: 'fa-cloud-rain', title: 'ARG (Segitiga Polos)' },
+  'AAWS': { short: 'AAWS', shape: 'diamond', icon: 'fa-seedling', title: 'AAWS (Belah Ketupat Polos)' },
+  'ASRS': { short: 'ASRS', shape: 'star', icon: 'fa-sun', title: 'ASRS (Bintang Polos)' },
+  'IKRO': { short: 'IKRO', shape: 'square', icon: 'fa-temperature-high', title: 'IKRO (Persegi Polos)' },
+  'SOIL': { short: 'SOIL', shape: 'rect', icon: 'fa-layer-group', title: 'SOIL (Persegi Panjang Polos)' },
+  'SHIP': { short: 'SHIP', shape: 'octagon', icon: 'fa-ship', title: 'SHIP (Segi Delapan Polos)' },
 };
 
 const RIAU_KABUPATEN = [
@@ -940,44 +940,35 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── Helper bentuk SVG ──────────────────────────────────────────────────────
 function shapeSVG(shape, fill, size, stroke = '#ffffff', sw = 2) {
   const shapes = {
-    square: `<rect x="2" y="2" width="20" height="20" rx="3" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/><path d="M12,6 L12,14 M10,15 A2,2 0 1,0 14,15 A2,2 0 1,0 10,15" stroke="#ffffff" stroke-width="1.8" fill="#ffffff"/>`,
-    circle: `<circle cx="12" cy="12" r="10" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/><circle cx="12" cy="12" r="3.5" fill="#ffffff" stroke="none"/><line x1="12" y1="5" x2="12" y2="7" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="19" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/><line x1="5" y1="12" x2="7" y2="12" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/><line x1="17" y1="12" x2="19" y2="12" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>`,
-    triangle: `<polygon points="12,1.5 23,21.5 1,21.5" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><path d="M12,8 L12,17 M9,14 L15,14" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>`,
-    droplet: `<path d="M12,2 C12,2 4.5,11.5 4.5,16 C4.5,20.14 7.86,23.5 12,23.5 C16.14,23.5 19.5,20.14 19.5,16 C19.5,11.5 12,2 Z" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/><circle cx="12" cy="16" r="3" fill="#ffffff" stroke="none"/>`,
-    diamond: `<polygon points="12,1 23,12 12,23 1,12" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><path d="M12,7 C12,11 16,11 16,11 C16,11 16,15 12,17 C8,15 8,11 8,11 C8,11 12,11 12,7 Z" fill="#ffffff" stroke="none"/>`,
-    star: `<polygon points="12,1.5 14.8,8.2 22,8.8 16.5,13.6 18.2,20.7 12,17 5.8,20.7 7.5,13.6 2,8.8 9.2,8.2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.5" fill="#ffffff" stroke="none"/>`,
-    hexagon: `<polygon points="12,2 21,7.2 21,17.8 12,23 3,17.8 3,7.2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`,
-    octagon: `<polygon points="7.5,2 16.5,2 22,7.5 22,16.5 16.5,22 7.5,22 2,16.5 2,7.5" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="#ffffff" stroke="none"/>`,
-    rect: `<rect x="2" y="6" width="20" height="12" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/><line x1="5" y1="10" x2="19" y2="10" stroke="#ffffff" stroke-width="1.5"/><line x1="7" y1="14" x2="17" y2="14" stroke="#ffffff" stroke-width="1.5"/>`,
-    seismic: `<polygon points="12,1.5 21.5,7 21.5,17 12,22.5 2.5,17 2.5,7" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><polyline points="5.5,12 8.5,12 10.5,6.5 13.5,17.5 15.5,12 18.5,12" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+    circle: `<circle cx="12" cy="12" r="10"/>`,
+    triangle: `<polygon points="12,2 22.5,21 1.5,21" stroke-linejoin="round"/>`,
+    'triangle-down': `<polygon points="1.5,3 22.5,3 12,22" stroke-linejoin="round"/>`,
+    diamond: `<polygon points="12,1.5 22.5,12 12,22.5 1.5,12" stroke-linejoin="round"/>`,
+    hexagon: `<polygon points="12,1.5 21.5,7 21.5,17 12,22.5 2.5,17 2.5,7" stroke-linejoin="round"/>`,
+    octagon: `<polygon points="7.5,1.5 16.5,1.5 22.5,7.5 22.5,16.5 16.5,22.5 7.5,22.5 1.5,16.5 1.5,7.5" stroke-linejoin="round"/>`,
+    square: `<rect x="2.5" y="2.5" width="19" height="19" rx="2"/>`,
+    rect: `<rect x="2" y="6" width="20" height="12" rx="2"/>`,
+    star: `<polygon points="12,1.5 14.8,8.2 22,8.8 16.5,13.6 18.2,20.7 12,17 5.8,20.7 7.5,13.6 2,8.8 9.2,8.2" stroke-linejoin="round"/>`,
   };
-  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24">${shapes[shape] || shapes.circle}</svg>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${stroke}" stroke-width="${sw}">${shapes[shape] || shapes.circle}</svg>`;
 }
 
 function getStationShape(s) {
   if (!s) return 'circle';
-  // 1. Geofisika
-  if (s.tipe === 'Accelerograph Colocated') return 'seismic';
-  if (s.tipe === 'Accelerograph 2020') return 'octagon';
-  if (s.tipe === 'Accelerograph Non Colocated') return 'hexagon';
+  // 1. Geofisika (Akselerograf) - Bangun Datar Polos
+  if (s.tipe === 'Accelerograph Colocated') return 'hexagon';       // Segi Enam Polos
+  if (s.tipe === 'Accelerograph 2020') return 'octagon';          // Segi Delapan Polos
+  if (s.tipe === 'Accelerograph Non Colocated') return 'triangle-down'; // Segitiga Terbalik Polos
 
-  // 2. AWS Center BMKG
+  // 2. AWS Center BMKG (Cuaca & Iklim) - Bangun Datar Polos
   const t = (s.tipe || '').toUpperCase();
-  if (t === 'AAWS') return 'diamond';
-  if (t === 'AWS') return 'circle';
-  if (t === 'ASRS') return 'star';
-  if (t === 'IKRO') return 'square';
-  if (t === 'SOIL') return 'rect';
+  if (t === 'AAWS') return 'diamond';       // Belah Ketupat Polos
+  if (t === 'AWS') return 'circle';         // Lingkaran Polos
+  if (t === 'ARG') return 'triangle';       // Segitiga Polos
+  if (t === 'ASRS') return 'star';          // Bintang Polos
+  if (t === 'IKRO') return 'square';        // Persegi Polos
+  if (t === 'SOIL') return 'rect';          // Persegi Panjang Polos
   if (t === 'SHIP') return 'octagon';
-
-  if (t === 'ARG') {
-    // Bedakan Pos Hujan Otomatis (ID Angka 6 Digit seperti 150118 Pusako) vs ARG Standar BMKG (STA3259 Bunga Raya)
-    const code = String(s.kode_sta || s.id_station || '');
-    if (/^\d{6}/.test(code)) {
-      return 'droplet'; // Tetesan Air Khusus Pos Hujan
-    }
-    return 'triangle'; // Segitiga Penakar Hujan Standar BMKG
-  }
 
   const cfg = TYPE_CONFIG[s.tipe] || TYPE_CONFIG['Accelerograph Colocated'];
   return cfg.shape || 'circle';
