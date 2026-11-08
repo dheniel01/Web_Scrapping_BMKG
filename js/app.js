@@ -1937,10 +1937,10 @@ function populateDropdowns() {
 }
 
 function setupEvents() {
-  document.getElementById('select-kota').addEventListener('change', e => { filters.kota = e.target.value; renderMarkers(true); });
-  document.getElementById('select-tipe').addEventListener('change', e => { syncBmkgIconsFromDropdown(e.target.value); });
-  document.getElementById('checkbox-cluster').addEventListener('change', e => { useClustering = e.target.checked; renderMarkers(); });
-  document.getElementById('station-search').addEventListener('input', renderStationList);
+  document.getElementById('select-kota')?.addEventListener('change', e => { filters.kota = e.target.value; renderMarkers(true); });
+  document.getElementById('select-tipe')?.addEventListener('change', e => { syncBmkgIconsFromDropdown(e.target.value); });
+  document.getElementById('checkbox-cluster')?.addEventListener('change', e => { useClustering = e.target.checked; renderMarkers(); });
+  document.getElementById('station-search')?.addEventListener('input', renderStationList);
 
   BMKG_ICONS.forEach(ico => {
     const el = document.getElementById(`icon-${ico.id}`);
