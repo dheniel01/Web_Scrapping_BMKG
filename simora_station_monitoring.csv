@@ -1,15 +1,15 @@
 network;station;province;location;digitizer_type;upt;last_data;data_latency;color
-IA;BKNI;Riau;Bangkinang;Kinemetrics-Q330-2016-GSM;Stageof-Padang-Panjang;08/11/2026 16:01:57;6s;green
-IA;BRSN;Riau;BPBD Prov. Riau;Centaur;Stageof-Padang-Panjang;08/11/2026 23:02:25;3s;green
+IA;BKNI;Riau;Bangkinang;Kinemetrics-Q330-2016-GSM;Stageof-Padang-Panjang;08/11/2026 17:05:55;8s;green
+IA;BRSN;Riau;BPBD Prov. Riau;Centaur;Stageof-Padang-Panjang;09/11/2026 00:06:18;3s;green
 IA;DDSI;Riau;Dumai Timur;Nanometrics-Centaur-2019-Idirect;Stageof-Deli-Serdang;13/10/2026 13:11:07;26d;black
-IA;GTSI;Riau;Gunung Toar;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;08/11/2026 16:01:59;4s;green
-IA;IHRSI;Riau;Indragiri Hilir;GuralpMinimus+2021-GSM;Stageof-Padang-Panjang;08/11/2026 16:01:54;9s;green
-IA;PATU;Riau;Stasiun Meteorologi Klas IV Maritim Teluk Bayur;Centaur;Stageof-Padang-Panjang;08/11/2026 23:02:25;6s;green
-IA;PESI;Riau;Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru;CENTAUR;Stageof-Padang-Panjang;08/11/2026 23:02:25;4s;green
-IA;PRSI;Riau;Pelalawan;Guralp-Minimus+2021-Idirect;Stageof-Padang-Panjang;08/11/2026 16:01:55;8s;green
-IA;RGRI;Riau;Rengat;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;08/11/2026 16:01:59;4s;green
-IA;RHRSI;Riau;Rokan Hilir;Guralp-Minimus-2021-Idirect;Stageof-Padang-Panjang;08/11/2026 16:01:54;9s;green
-IA;RRHRI;Riau;Rokan Hulu;Nanometrics-Centaur-2022-Idirect;Stageof-Padang-Pajang;08/11/2026 16:01:57;6s;green
-IA;RRSI;Riau;Rambah;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;08/11/2026 16:02:00;3s;green
-IA;SIRSI;Riau;Siak;Guralp-Minimus-2021-Idirect;Stageof-Padang-Panjang;08/11/2026 16:01:54;9s;green
-IA;STA6024;Riau;ASRS Stasiun Klimatologi Riau;Centaur;Stageof-Padang-Panjang;08/11/2026 23:02:25;8s;green
+IA;GTSI;Riau;Gunung Toar;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;08/11/2026 17:06:00;3s;green
+IA;IHRSI;Riau;Indragiri Hilir;GuralpMinimus+2021-GSM;Stageof-Padang-Panjang;08/11/2026 17:05:54;9s;green
+IA;PATU;Riau;Stasiun Meteorologi Klas IV Maritim Teluk Bayur;Centaur;Stageof-Padang-Panjang;09/11/2026 00:06:18;6s;green
+IA;PESI;Riau;Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru;CENTAUR;Stageof-Padang-Panjang;09/11/2026 00:06:18;4s;green
+IA;PRSI;Riau;Pelalawan;Guralp-Minimus+2021-Idirect;Stageof-Padang-Panjang;08/11/2026 17:05:53;10s;green
+IA;RGRI;Riau;Rengat;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;08/11/2026 17:05:58;5s;green
+IA;RHRSI;Riau;Rokan Hilir;Guralp-Minimus-2021-Idirect;Stageof-Padang-Panjang;08/11/2026 17:05:54;9s;green
+IA;RRHRI;Riau;Rokan Hulu;Nanometrics-Centaur-2022-Idirect;Stageof-Padang-Pajang;08/11/2026 17:05:59;4s;green
+IA;RRSI;Riau;Rambah;Nanometrics-Centaur-2019-GSM;Stageof-Padang-Panjang;08/11/2026 17:06:00;3s;green
+IA;SIRSI;Riau;Siak;Guralp-Minimus-2021-Idirect;Stageof-Padang-Panjang;08/11/2026 17:05:55;8s;green
+IA;STA6024;Riau;ASRS Stasiun Klimatologi Riau;Centaur;Stageof-Padang-Panjang;09/11/2026 00:06:18;8s;green

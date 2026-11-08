@@ -933,8 +933,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadEarthquakes();
   setupEvents();
 
-  setInterval(tickTelemetry, 5000);     // simulasi heartbeat stasiun
-  setInterval(loadEarthquakes, 180000); // refresh gempa tiap 3 menit
+  setInterval(tickTelemetry, 5000);                     // simulasi heartbeat stasiun
+  setInterval(refreshLiveTelemetryInBackground, 60000); // sinkronisasi otomatis telemetri BMKG live tiap 60 detik
+  setInterval(loadEarthquakes, 180000);                 // refresh gempa tiap 3 menit
 });
 
 // ── Helper bentuk SVG ──────────────────────────────────────────────────────
@@ -1158,7 +1159,7 @@ function initClock() {
 }
 
 // ── Data stasiun + telemetri (Super Cepat < 50ms & Revalidasi Background) ────
-function processAndRenderStations(geoRaw, awsRaw) {
+function processAndRenderStations(geoRaw, awsRaw, fit = false) {
   const now = Date.now();
 
   const geoStations = (geoRaw || []).map(s => {
@@ -1224,7 +1225,7 @@ function processAndRenderStations(geoRaw, awsRaw) {
 
   stations = [...geoStations, ...awsMapped];
   populateDropdowns();
-  renderMarkers(true);
+  renderMarkers(fit);
   refreshStatusUI();
 }
 
@@ -1240,7 +1241,7 @@ async function loadStationData() {
     const awsInitial = (resAws && Array.isArray(resAws)) ? resAws : DEFAULT_AWS_STATIONS;
 
     // Render seketika ke peta!
-    processAndRenderStations(geoInitial, awsInitial);
+    processAndRenderStations(geoInitial, awsInitial, true);
 
     // Hilangkan loading overlay seketika
     const overlay = document.getElementById('loading-overlay');
@@ -1291,7 +1292,7 @@ async function refreshLiveTelemetryInBackground() {
     if (hasUpdate) {
       const currentGeo = liveGeo || stations.filter(s => s.kategori_bidang === 'Geofisika');
       const currentAws = liveAws || stations.filter(s => s.kategori_bidang === 'AWS Center');
-      processAndRenderStations(currentGeo, currentAws);
+      processAndRenderStations(currentGeo, currentAws, false);
     }
   } catch (_) {}
 }
