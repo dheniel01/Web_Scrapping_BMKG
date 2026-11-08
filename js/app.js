@@ -984,13 +984,13 @@ function initMap() {
     map.setMaxBounds(RIAU_BOUNDS);
   }
 
-  // Base map Carto Voyager (CDN Edge Cloudflare super cepat di Indonesia, render instan < 20ms)
-  const cartoVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19, subdomains: 'abcd', attribution: '&copy; CARTO &copy; OpenStreetMap | BMKG',
+  // Base map gaya OpenStreetMap standar (Default aktif pertama kali buka web)
+  const osmClassic = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, subdomains: ['a', 'b', 'c'], attribution: '&copy; OpenStreetMap contributors | BMKG',
   }).addTo(map);
 
-  const osmClassic = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19, attribution: '&copy; OpenStreetMap contributors | BMKG',
+  const cartoVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19, subdomains: 'abcd', attribution: '&copy; CARTO &copy; OpenStreetMap | BMKG',
   });
 
   const osmHot = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
@@ -1006,8 +1006,8 @@ function initMap() {
   });
 
   L.control.layers({
-    '🧭 Peta Voyager (Super Cepat CDN)': cartoVoyager,
     '🗺️ Peta Standar (OSM)': osmClassic,
+    '🧭 Peta Voyager': cartoVoyager,
     '🌐 Peta OSM (HOT)': osmHot,
     '🏢 Peta Esri Street': esriStreet,
     '🛰️ Citra Satelit': sat,
