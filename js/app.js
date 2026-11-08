@@ -940,17 +940,47 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── Helper bentuk SVG ──────────────────────────────────────────────────────
 function shapeSVG(shape, fill, size, stroke = '#ffffff', sw = 2) {
   const shapes = {
-    square: `<rect x="2" y="2" width="20" height="20" rx="3"/>`,
-    circle: `<circle cx="12" cy="12" r="10"/>`,
-    triangle: `<polygon points="12,1.5 23,21.5 1,21.5" stroke-linejoin="round"/>`,
-    diamond: `<polygon points="12,1 23,12 12,23 1,12" stroke-linejoin="round"/>`,
-    star: `<polygon points="12,1.5 14.8,8.2 22,8.8 16.5,13.6 18.2,20.7 12,17 5.8,20.7 7.5,13.6 2,8.8 9.2,8.2" stroke-linejoin="round"/>`,
-    hexagon: `<polygon points="12,2 21,7.2 21,17.8 12,23 3,17.8 3,7.2" stroke-linejoin="round"/>`,
-    octagon: `<polygon points="7.5,2 16.5,2 22,7.5 22,16.5 16.5,22 7.5,22 2,16.5 2,7.5" stroke-linejoin="round"/>`,
-    rect: `<rect x="2" y="6" width="20" height="12" rx="2"/>`,
-    seismic: `<polygon points="12,1.5 21.5,7 21.5,17 12,22.5 2.5,17 2.5,7" stroke-linejoin="round"/><polyline points="5.5,12 8.5,12 10.5,6.5 13.5,17.5 15.5,12 18.5,12" stroke="${stroke}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+    square: `<rect x="2" y="2" width="20" height="20" rx="3" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/><path d="M12,6 L12,14 M10,15 A2,2 0 1,0 14,15 A2,2 0 1,0 10,15" stroke="#ffffff" stroke-width="1.8" fill="#ffffff"/>`,
+    circle: `<circle cx="12" cy="12" r="10" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/><circle cx="12" cy="12" r="3.5" fill="#ffffff" stroke="none"/><line x1="12" y1="5" x2="12" y2="7" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="19" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/><line x1="5" y1="12" x2="7" y2="12" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/><line x1="17" y1="12" x2="19" y2="12" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>`,
+    triangle: `<polygon points="12,1.5 23,21.5 1,21.5" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><path d="M12,8 L12,17 M9,14 L15,14" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>`,
+    droplet: `<path d="M12,2 C12,2 4.5,11.5 4.5,16 C4.5,20.14 7.86,23.5 12,23.5 C16.14,23.5 19.5,20.14 19.5,16 C19.5,11.5 12,2 Z" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/><circle cx="12" cy="16" r="3" fill="#ffffff" stroke="none"/>`,
+    diamond: `<polygon points="12,1 23,12 12,23 1,12" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><path d="M12,7 C12,11 16,11 16,11 C16,11 16,15 12,17 C8,15 8,11 8,11 C8,11 12,11 12,7 Z" fill="#ffffff" stroke="none"/>`,
+    star: `<polygon points="12,1.5 14.8,8.2 22,8.8 16.5,13.6 18.2,20.7 12,17 5.8,20.7 7.5,13.6 2,8.8 9.2,8.2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.5" fill="#ffffff" stroke="none"/>`,
+    hexagon: `<polygon points="12,2 21,7.2 21,17.8 12,23 3,17.8 3,7.2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`,
+    octagon: `<polygon points="7.5,2 16.5,2 22,7.5 22,16.5 16.5,22 7.5,22 2,16.5 2,7.5" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="#ffffff" stroke="none"/>`,
+    rect: `<rect x="2" y="6" width="20" height="12" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/><line x1="5" y1="10" x2="19" y2="10" stroke="#ffffff" stroke-width="1.5"/><line x1="7" y1="14" x2="17" y2="14" stroke="#ffffff" stroke-width="1.5"/>`,
+    seismic: `<polygon points="12,1.5 21.5,7 21.5,17 12,22.5 2.5,17 2.5,7" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><polyline points="5.5,12 8.5,12 10.5,6.5 13.5,17.5 15.5,12 18.5,12" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
   };
-  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${stroke}" stroke-width="${sw}">${shapes[shape] || shapes.circle}</svg>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24">${shapes[shape] || shapes.circle}</svg>`;
+}
+
+function getStationShape(s) {
+  if (!s) return 'circle';
+  // 1. Geofisika
+  if (s.tipe === 'Accelerograph Colocated') return 'seismic';
+  if (s.tipe === 'Accelerograph 2020') return 'octagon';
+  if (s.tipe === 'Accelerograph Non Colocated') return 'hexagon';
+
+  // 2. AWS Center BMKG
+  const t = (s.tipe || '').toUpperCase();
+  if (t === 'AAWS') return 'diamond';
+  if (t === 'AWS') return 'circle';
+  if (t === 'ASRS') return 'star';
+  if (t === 'IKRO') return 'square';
+  if (t === 'SOIL') return 'rect';
+  if (t === 'SHIP') return 'octagon';
+
+  if (t === 'ARG') {
+    // Bedakan Pos Hujan Otomatis (ID Angka 6 Digit seperti 150118 Pusako) vs ARG Standar BMKG (STA3259 Bunga Raya)
+    const code = String(s.kode_sta || s.id_station || '');
+    if (/^\d{6}/.test(code)) {
+      return 'droplet'; // Tetesan Air Khusus Pos Hujan
+    }
+    return 'triangle'; // Segitiga Penakar Hujan Standar BMKG
+  }
+
+  const cfg = TYPE_CONFIG[s.tipe] || TYPE_CONFIG['Accelerograph Colocated'];
+  return cfg.shape || 'circle';
 }
 
 // ── Peta ───────────────────────────────────────────────────────────────────
@@ -1396,7 +1426,7 @@ function tickTelemetry() {
 
 // ── Marker ─────────────────────────────────────────────────────────────────
 function stationIcon(s) {
-  const cfg = TYPE_CONFIG[s.tipe] || TYPE_CONFIG['Accelerograph Colocated'];
+  const shape = getStationShape(s);
   const cat = catIndex(s);
   const color = STATUS_CATS[cat].color;
   const codeDisplay = isStationLabelsActive ? 'block' : 'none';
@@ -1408,7 +1438,7 @@ function stationIcon(s) {
     html: `
       <div class="sta-marker">
         ${cat === 0 ? '<div class="ring"></div>' : ''}
-        ${shapeSVG(cfg.shape, color, 20, '#ffffff', 2.2)}
+        ${shapeSVG(shape, color, 20, '#ffffff', 2.2)}
         <div class="code" style="display:${codeDisplay}">${s.kode_sta}</div>
       </div>`,
   });
@@ -1973,7 +2003,7 @@ function renderStationList() {
     const cfg = TYPE_CONFIG[s.tipe] || TYPE_CONFIG['Accelerograph Colocated'];
     return `
       <li class="flex items-center gap-2 px-3 py-1.5 border-b border-gray-50 hover:bg-amber-50 cursor-pointer group" onclick="focusStation('${s.kode_sta}')">
-        ${shapeSVG(cfg.shape, c.color, 14, '#fff', 2)}
+        ${shapeSVG(getStationShape(s), c.color, 14, '#fff', 2)}
         <div class="flex-1 min-w-0">
           <div class="text-[11px] font-bold text-gray-800 flex items-center gap-1.5">
             <span>${s.kode_sta}</span>
