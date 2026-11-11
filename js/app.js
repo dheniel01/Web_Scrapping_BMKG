@@ -967,7 +967,7 @@ let map, clusterGroup, plainGroup, riauMaskLayer, riauLabelsLayer;
 let stations = [];             // data stasiun + telemetri
 const markerByKode = {};
 let useClustering = false;
-let isMaskActive = true, isLabelsActive = true, isStationLabelsActive = true;
+let isMaskActive = false, isLabelsActive = true, isStationLabelsActive = true;
 let filters = { kota: '', tipe: 'all', cat: -1, slmonStatus: '' };
 let rawGeoCache = [];
 let rawAwsCache = [];
@@ -1063,10 +1063,13 @@ function getStationShape(s) {
 function initMap() {
   map = L.map('map', {
     center: RIAU_CENTER, zoom: RIAU_ZOOM, zoomControl: false,
-    minZoom: 7, maxZoom: 18,
-    maxBounds: RIAU_BOUNDS,
+    minZoom: 4, maxZoom: 18,
     maxBoundsViscosity: 1.0,
   });
+  if (isMaskActive) {
+    map.setMinZoom(7);
+    map.setMaxBounds(RIAU_BOUNDS);
+  }
 
   // Base map gaya OpenStreetMap standar (Default aktif pertama kali buka web)
   const osmClassic = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1130,7 +1133,13 @@ function initMap() {
     }).addTo(riauLabelsLayer);
   });
 
-  // Event saat popup peta ditutup
+  // Klik daerah di luar Provinsi Riau tidak memunculkan menu/popup apapun
+  map.on('click', (e) => {
+    if (e && e.latlng && !isPointInRiauPolygon(e.latlng.lat, e.latlng.lng)) {
+      map.closePopup();
+      closeStationModal();
+    }
+  });
   map.on('popupclose', () => {});
 }
 
@@ -1161,12 +1170,12 @@ async function loadRiauBoundary() {
     riauMaskLayer = L.polygon(rings, {
       stroke: false,
       fillColor: '#0f172a',
-      fillOpacity: 0.68,
+      fillOpacity: 0.55,
       fillRule: 'evenodd',
       interactive: true,
     });
 
-    // Klik daerah selain Riau tidak memunculkan menu / detail apapun & menutup popup bila ada
+    // Saat Fokus Hanya Riau aktif, klik area luar Riau menutup popup/detail bila ada
     riauMaskLayer.on('click', (e) => {
       if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
       map.closePopup();
@@ -1177,7 +1186,9 @@ async function loadRiauBoundary() {
       if (el) el.style.cursor = 'default';
     });
 
-    riauMaskLayer.addTo(map);
+    if (isMaskActive) {
+      riauMaskLayer.addTo(map);
+    }
 
     L.geoJSON(gj, {
       interactive: false,
@@ -1189,10 +1200,36 @@ async function loadRiauBoundary() {
 }
 
 function toggleRiauMask() {
-  isMaskActive = true;
-  if (riauMaskLayer && !map.hasLayer(riauMaskLayer)) riauMaskLayer.addTo(map);
-  map.setMaxBounds(RIAU_BOUNDS);
-  map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 0.8 });
+  isMaskActive = !isMaskActive;
+  const btn = document.getElementById('btn-toggle-mask');
+  const textEl = document.getElementById('mask-status-text');
+
+  if (isMaskActive) {
+    // Mode Fokus Hanya Riau -> aktifkan masking luar Riau & kunci kamera di batas Riau
+    if (riauMaskLayer && !map.hasLayer(riauMaskLayer)) {
+      riauMaskLayer.addTo(map);
+    }
+    map.setMinZoom(7);
+    map.setMaxBounds(RIAU_BOUNDS);
+    map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 0.8 });
+    if (textEl) textEl.textContent = 'Fokus: Hanya Riau (Aktif)';
+    if (btn) {
+      btn.classList.remove('text-gray-700');
+      btn.classList.add('bg-blue-100', 'border-blue-400', 'text-blue-900');
+    }
+  } else {
+    // Mode Peta Penuh -> lepas masking & maxBounds agar seluruh peta membentang bebas
+    if (riauMaskLayer && map.hasLayer(riauMaskLayer)) {
+      map.removeLayer(riauMaskLayer);
+    }
+    map.setMinZoom(4);
+    map.setMaxBounds(null);
+    if (textEl) textEl.textContent = 'Fokus: Hanya Riau';
+    if (btn) {
+      btn.classList.remove('bg-blue-100', 'border-blue-400', 'text-blue-900');
+      btn.classList.add('text-gray-700');
+    }
+  }
 }
 
 function toggleRiauLabels() {
@@ -2321,13 +2358,14 @@ function goToCurrentLocation() {
       const lon = pos.coords.longitude;
       const acc = pos.coords.accuracy || 0;
 
-      // Tetap kunci peta di wilayah Provinsi Riau
       const isOutsideRiau = !isPointInRiauPolygon(lat, lon);
-      map.setMaxBounds(RIAU_BOUNDS);
-      if (isOutsideRiau) {
-        showToast('Lokasi Anda berada di luar wilayah Provinsi Riau. Peta tetap difokuskan ke Riau.', 'info');
-        map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 0.8 });
-        return;
+      if (isMaskActive) {
+        map.setMaxBounds(RIAU_BOUNDS);
+        if (isOutsideRiau) {
+          showToast('Mode Fokus Riau aktif & lokasi Anda di luar Riau.', 'info');
+          map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 0.8 });
+          return;
+        }
       }
 
       if (userLocationMarker) {
@@ -2466,9 +2504,12 @@ function plotEarthquake(g, shouldFly = false) {
     direction: 'top', offset: [0, -10]
   }).addTo(map);
 
-  // Peta selalu terkunci hanya di wilayah Provinsi Riau
   const isOutsideRiau = !RIAU_BOUNDS.contains([lat, lon]);
-  map.setMaxBounds(RIAU_BOUNDS);
+  if (isMaskActive) {
+    map.setMaxBounds(RIAU_BOUNDS);
+  } else {
+    map.setMaxBounds(null);
+  }
 
   // Hubungkan episenter gempa dengan stasiun Riau terdekat via garis putus-putus
   const near = nearestStation(g);
@@ -2479,11 +2520,11 @@ function plotEarthquake(g, shouldFly = false) {
   }
 
   if (shouldFly) {
-    if (isOutsideRiau) {
-      showToast(`Episenter M${g.Magnitude} berada di luar wilayah Provinsi Riau (${g.Wilayah})`, 'info');
+    if (isMaskActive && isOutsideRiau) {
+      showToast(`Mode Fokus Riau aktif: episenter M${g.Magnitude} berada di luar Riau`, 'info');
       if (near && near.s) focusStation(near.s.kode_sta, near.s.kategori_bidang);
     } else {
-      map.flyTo([lat, lon], Math.min(Math.max(map.getZoom(), 7), 10), { duration: 0.8 });
+      map.flyTo([lat, lon], Math.min(Math.max(map.getZoom(), 6), 9), { duration: 0.8 });
       map.once('moveend', () => earthquakeMarker?.openTooltip());
       setTimeout(() => earthquakeMarker?.openTooltip(), 900);
     }
