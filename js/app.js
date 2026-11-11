@@ -33,7 +33,8 @@ function stationKey(s) {
 
 const RIAU_KAB_REGEX = /(pekanbaru|dumai|kampar|bengkalis|siak|pelalawan|rokan\s*(hulu|hilir)|indragiri|indragri|kuantan\s*singingi|meranti|riau)/i;
 const NON_RIAU_REGEX = /(kepulauan\s*riau|kepri|padang|sumatera\s*(barat|utara|selatan)|sumbar|sumut|jambi|batam|bintan|karimun|lingga|natuna|anambas|tanjungpinang)/i;
-const EXCLUDED_NON_RIAU_CODES = new Set(['PATU']);
+const EXCLUDED_NON_RIAU_CODES = new Set(['PATU']);
+const EXCLUDED_NON_API_GEO_CODES = new Set(['BRSN', 'PESI', 'STA6024']);
 
 function pointInRing(lon, lat, ring) {
   let inside = false;
@@ -715,24 +716,6 @@ const DEFAULT_STATIONS = [
     "slmon_upt": "Stageof-Padang-Panjang"
   },
   {
-    "kode_sta": "BRSN",
-    "site_id": "BPBD Prov. Riau",
-    "nama_sta": "BPBD Prov. Riau",
-    "tipe": "Accelerograph 2020",
-    "lat": 0.51,
-    "lon": 101.45,
-    "kota_kab": "Kota Pekanbaru",
-    "provinsi": "Riau",
-    "digitizer": "Centaur",
-    "sensor": "Titan",
-    "status": "Online",
-    "tanggal_instalasi": "2020",
-    "slmon_color": "green",
-    "slmon_upt": "Stageof-Padang-Panjang",
-    "slmon_latency": "3s",
-    "slmon_last_data": "29/10/2026 03:55"
-  },
-  {
     "kode_sta": "GTSI",
     "site_id": "Gunung Toar, Kuantan Singingi",
     "nama_sta": "Gunung Toar",
@@ -767,43 +750,6 @@ const DEFAULT_STATIONS = [
     "slmon_color": "green",
     "slmon_last_data": "29/10/2026 03:55",
     "slmon_upt": "Stageof-Padang-Panjang"
-  },
-  {
-    "kode_sta": "STA6024",
-    "site_id": "ASRS Stasiun Klimatologi Riau",
-    "nama_sta": "ASRS Stasiun Klimatologi Riau",
-    "tipe": "Accelerograph 2020",
-    "lat": 0.40751419,
-    "lon": 101.21727325,
-    "kota_kab": "Kab. Kampar",
-    "provinsi": "Riau",
-    "digitizer": "Centaur",
-    "sensor": "Titan",
-    "status": "Online",
-    "tanggal_instalasi": "2020",
-    "slmon_color": "green",
-    "slmon_upt": "Stageof-Padang-Panjang",
-    "slmon_latency": "8s",
-    "slmon_last_data": "29/10/2026 04:10",
-    "alias": "KRSN"
-  },
-  {
-    "kode_sta": "PESI",
-    "site_id": "Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru",
-    "nama_sta": "Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru",
-    "tipe": "Accelerograph Non Colocated",
-    "lat": 0.46,
-    "lon": 101.45,
-    "kota_kab": "Kota Pekanbaru",
-    "provinsi": "Riau",
-    "digitizer": "CENTAUR",
-    "sensor": "Titan",
-    "status": "Online",
-    "tanggal_instalasi": "2010",
-    "slmon_color": "green",
-    "slmon_upt": "Stageof-Padang-Panjang",
-    "slmon_latency": "4s",
-    "slmon_last_data": "29/10/2026 03:55"
   },
   {
     "kode_sta": "PRSI",
@@ -929,8 +875,6 @@ const TYPE_CONFIG = {
   'all': { short: 'ALL', shape: 'square', icon: 'fa-check', title: 'Semua Tipe' },
   // Geofisika (Akselerograf) - Bangun Datar Polos
   'Accelerograph Colocated': { short: 'COL', shape: 'hexagon', icon: 'fa-wave-square', title: 'Accelerograph Colocated (Segi Enam Polos)' },
-  'Accelerograph 2020': { short: '2020', shape: 'octagon', icon: 'fa-circle-dot', title: 'Accelerograph 2020 (Segi Delapan Polos)' },
-  'Accelerograph Non Colocated': { short: 'NON', shape: 'triangle-down', icon: 'fa-triangle-exclamation', title: 'Accelerograph Non Colocated (Segitiga Terbalik Polos)' },
   // AWS Center BMKG (Cuaca & Iklim) - Bangun Datar Polos
   'AWS': { short: 'AWS', shape: 'circle', icon: 'fa-cloud-sun', title: 'AWS (Lingkaran Polos)' },
   'ARG': { short: 'ARG', shape: 'triangle', icon: 'fa-cloud-rain', title: 'ARG (Segitiga Polos)' },
@@ -1030,8 +974,6 @@ function getStationShape(s) {
   if (!s) return 'circle';
   // 1. Geofisika (Akselerograf) - Bangun Datar Polos
   if (s.tipe === 'Accelerograph Colocated') return 'hexagon';       // Segi Enam Polos
-  if (s.tipe === 'Accelerograph 2020') return 'octagon';          // Segi Delapan Polos
-  if (s.tipe === 'Accelerograph Non Colocated') return 'triangle-down'; // Segitiga Terbalik Polos
 
   // 2. AWS Center BMKG (Cuaca & Iklim) - Bangun Datar Polos
   const t = (s.tipe || '').toUpperCase();
@@ -1278,7 +1220,7 @@ function processAndRenderStations(geoRaw, awsRaw, fit = false) {
   rawGeoCache = geoRaw || rawGeoCache;
   rawAwsCache = awsRaw || rawAwsCache;
 
-  const geoStations = (rawGeoCache || []).filter(s => isRiauStation(s)).map(s => {
+  const geoStations = (rawGeoCache || []).filter(s => s && !EXCLUDED_NON_API_GEO_CODES.has(String(s.kode_sta || '').toUpperCase()) && isRiauStation(s)).map(s => {
     const latStr = String(s.slmon_latency || '5s').trim();
     const col = String(s.slmon_color || 'green').trim().toLowerCase();
     let status = 'Online';
@@ -1405,10 +1347,9 @@ async function refreshLiveTelemetryInBackground({ slmon = true, aws = true } = {
       fetchJsonWithTimeout('/api/slmon?t=' + Date.now(), 22000)
         .then(data => {
           if (data && Array.isArray(data.stations) && data.stations.length > 0) {
-            const mergedGeo = mergeGeoStations(rawGeoCache, data.stations);
             syncState.slmon = 'live';
             syncState.slmonAt = Date.now();
-            processAndRenderStations(mergedGeo, rawAwsCache, false);
+            processAndRenderStations(data.stations, rawAwsCache, false);
             updateLiveSyncBadge();
           }
         })
@@ -1972,11 +1913,7 @@ function refreshStatusUI() {
   });
 
   const elCol = document.getElementById('slmon-cnt-col');
-  const el2020 = document.getElementById('slmon-cnt-2020');
-  const elNon = document.getElementById('slmon-cnt-non');
   if (elCol) elCol.textContent = geoList.filter(s => s.tipe === 'Accelerograph Colocated').length;
-  if (el2020) el2020.textContent = geoList.filter(s => s.tipe === 'Accelerograph 2020').length;
-  if (elNon) elNon.textContent = geoList.filter(s => s.tipe === 'Accelerograph Non Colocated').length;
 
   renderStationList();
 }
@@ -1996,11 +1933,9 @@ function filterBySlmonStatus(bucket) {
 }
 
 // ── Tombol tipe alat BMKG (Persis awscenter.bmkg.go.id) ───────────────────
-// Mapping bentuk simbol BMKG ke tipe akselerograf:
-// AWS  = Bulat         -> Accelerograph 2020 (2 stasiun: BRSN, STA6024)
-// ARG  = Segitiga      -> Accelerograph Non Colocated (1 stasiun: PESI)
-// AAWS = Belah Ketupat -> Accelerograph Colocated (9 stasiun: BKNI, GTSI, IHRSI, PRSI, RGRI, RHRSI, RRHRI, RRSI, SIRSI)
-// ALL  = Semua Tipe    -> 13 stasiun
+// Mapping ikon tipe alat BMKG:
+// AWS, ARG, AAWS, ASRS, IKRO, SOIL -> AWS Center BMKG
+// Accelerograph Colocated          -> SLMON InaTEWS / Bali (10 stasiun)
 // ASRS, IKRO, SHIP, SOIL = Tipe cuaca (0 stasiun di geofisika Riau)
 const BMKG_ICONS = [
   { id: 'all',  name: 'ALL',  field: 'all',  shape: 'square',   actived: 'assets/icon/all_actived.png',  inactive: 'assets/icon/all.png' },
@@ -2057,8 +1992,8 @@ function syncBmkgIconsFromDropdown(tipeValue) {
   } else {
     let targetIconId = null;
     const tv = tipeValue.toLowerCase();
-    if (tv === 'aws' || tv === 'accelerograph 2020') targetIconId = 'aws';
-    else if (tv === 'arg' || tv === 'accelerograph non colocated') targetIconId = 'arg';
+    if (tv === 'aws') targetIconId = 'aws';
+    else if (tv === 'arg') targetIconId = 'arg';
     else if (tv === 'aaws' || tv === 'accelerograph colocated') targetIconId = 'aaws';
     else if (tv === 'asrs') targetIconId = 'asrs';
     else if (tv === 'ikro') targetIconId = 'ikro';
@@ -2093,8 +2028,6 @@ function populateDropdowns() {
   const cntIKRO = stations.filter(s => s.tipe === 'IKRO').length;
   const cntSOIL = stations.filter(s => s.tipe === 'SOIL').length;
   const cntCOL = stations.filter(s => s.tipe === 'Accelerograph Colocated').length;
-  const cnt2020 = stations.filter(s => s.tipe === 'Accelerograph 2020').length;
-  const cntNON = stations.filter(s => s.tipe === 'Accelerograph Non Colocated').length;
 
   const typeOptions = [
     { value: '', label: `Semua Peralatan BMKG (${stations.length} Stasiun)` },
@@ -2105,10 +2038,8 @@ function populateDropdowns() {
     { value: 'ASRS', label: `ASRS - Solar Radiation Station (${cntASRS})` },
     { value: 'IKRO', label: `IKRO - Stasiun Iklim Mikro (${cntIKRO})` },
     { value: 'SOIL', label: `SOIL - Soil Moisture Station (${cntSOIL})` },
-    { value: 'opt_group_geo', label: '── Peralatan Geofisika (Akselerograf) ──', disabled: true },
+    { value: 'opt_group_geo', label: '── Peralatan Geofisika (SLMON Live) ──', disabled: true },
     { value: 'Accelerograph Colocated', label: `Accelerograph Colocated (${cntCOL})` },
-    { value: 'Accelerograph 2020', label: `Accelerograph 2020 (${cnt2020})` },
-    { value: 'Accelerograph Non Colocated', label: `Accelerograph Non Colocated (${cntNON})` },
   ];
 
   tipe.innerHTML = typeOptions.map(t => 

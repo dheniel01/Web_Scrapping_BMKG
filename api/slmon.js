@@ -12,7 +12,7 @@ const SLMON_HTML_FALLBACK = 'http://202.90.198.40/sismon-wrs/web/slmon';
 
 const KAB_MAPPING = {
   'BKNI': { nama: 'Bangkinang', kota: 'Kab. Kampar' },
-  'BRSN': { nama: 'BPBD Prov. Riau', kota: 'Kota Pekanbaru' },
+  'DDSI': { nama: 'Dumai Timur', kota: 'Kota Dumai' },
   'GTSI': { nama: 'Gunung Toar', kota: 'Kab. Kuantan Singingi' },
   'IHRSI': { nama: 'Indragiri Hilir', kota: 'Kab. Indragiri Hilir' },
   'PRSI': { nama: 'Pelalawan', kota: 'Kab. Pelalawan' },
@@ -20,9 +20,7 @@ const KAB_MAPPING = {
   'RHRSI': { nama: 'Rokan Hilir', kota: 'Kab. Rokan Hilir' },
   'RRHRI': { nama: 'Rokan Hulu', kota: 'Kab. Rokan Hulu' },
   'RRSI': { nama: 'Rambah', kota: 'Kab. Rokan Hulu' },
-  'SIRSI': { nama: 'Siak', kota: 'Kab. Siak' },
-  'DDSI': { nama: 'Dumai Timur', kota: 'Kota Dumai' },
-  'PESI': { nama: 'Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru', kota: 'Kota Pekanbaru' }
+  'SIRSI': { nama: 'Siak', kota: 'Kab. Siak' }
 };
 
 const pad = n => String(n).padStart(2, '0');
@@ -140,7 +138,7 @@ export default async function handler(req, res) {
         status = 'Delay';
       }
 
-      const tipe = (bbMerk && acMerk) ? 'Accelerograph Colocated' : 'Accelerograph 2020';
+      const tipe = 'Accelerograph Colocated';
       const rawTime = p.timech4 || p.timech1 || p.time;
       const dtLast = parseSlmonUtcTime(rawTime) || now;
       const mapInfo = KAB_MAPPING[sta] || { nama: loc || sta, kota: `Kab. ${loc || prov}` };

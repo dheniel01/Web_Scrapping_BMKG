@@ -33,7 +33,6 @@ WIB_TZ = timezone(timedelta(hours=7))
 # Pemetaan nama kabupaten/kota resmi di Riau berdasarkan kode stasiun
 KAB_MAPPING = {
     "BKNI": ("Bangkinang", "Kab. Kampar"),
-    "BRSN": ("BPBD Prov. Riau", "Kota Pekanbaru"),
     "GTSI": ("Gunung Toar", "Kab. Kuantan Singingi"),
     "IHRSI": ("Indragiri Hilir", "Kab. Indragiri Hilir"),
     "PRSI": ("Pelalawan", "Kab. Pelalawan"),
@@ -114,7 +113,7 @@ def scrape_slmon(timeout=15):
     features = fc.get("features", [])
     print(f"[OK] Sukses mengunduh telemetri {len(features)} stasiun InaTEWS / SLMON Bali.")
 
-    excluded_codes = {"PATU"}
+    excluded_codes = {"PATU", "BRSN", "PESI", "STA6024"}
     existing_stations = {}
     if os.path.exists(JSON_OUTPUT):
         try:
@@ -163,7 +162,7 @@ def scrape_slmon(timeout=15):
         else:
             status = "Online"
 
-        tipe = "Accelerograph Colocated" if (bb_merk and ac_merk) else "Accelerograph 2020"
+        tipe = "Accelerograph Colocated"
 
         t_raw = p.get("timech4") or p.get("timech1") or p.get("time")
         dt_last = parse_slmon_utc_time(t_raw)
@@ -195,12 +194,6 @@ def scrape_slmon(timeout=15):
         }
         riau_scraped.append(station_obj)
 
-    for code, existing in existing_stations.items():
-        if code not in scraped_codes:
-            existing["slmon_last_data"] = format_wib_time(now_utc)
-            existing["last_data_iso"] = now_utc.isoformat().replace("+00:00", "Z")
-            existing["last_updated"] = now_utc.astimezone(WIB_TZ).strftime("%Y-%m-%d %H:%M:%S")
-            riau_scraped.append(existing)
 
     riau_scraped.sort(key=lambda x: x["kode_sta"])
 

@@ -13,34 +13,14 @@
     "sensor": "Kinemetrics",
     "sensor_accelerograph": "Kinemetrics-FBA-ES-T-2016",
     "sensor_broadband": "Streckeisen-STS-2-2016",
-    "status": "Online",
+    "status": "Delay",
     "tanggal_instalasi": "14/03/2008",
-    "slmon_latency": "4s",
-    "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:40:57 WIB",
-    "last_data_iso": "2026-11-11T02:40:57Z",
+    "slmon_latency": "15s",
+    "slmon_color": "yellow",
+    "slmon_last_data": "12/11/2026 02:09:47 WIB",
+    "last_data_iso": "2026-11-11T19:09:47Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:41:07"
-  },
-  {
-    "kode_sta": "BRSN",
-    "site_id": "BPBD Prov. Riau",
-    "nama_sta": "BPBD Prov. Riau",
-    "tipe": "Accelerograph 2020",
-    "lat": 0.51,
-    "lon": 101.45,
-    "kota_kab": "Kota Pekanbaru",
-    "provinsi": "Riau",
-    "digitizer": "Centaur",
-    "sensor": "Titan",
-    "status": "Online",
-    "tanggal_instalasi": "2020",
-    "slmon_color": "green",
-    "slmon_upt": "Stageof-Padang-Panjang",
-    "slmon_latency": "3s",
-    "slmon_last_data": "11/11/2026 09:41:07 WIB",
-    "last_updated": "2026-11-11 09:41:07",
-    "last_data_iso": "2026-11-11T02:41:07.554175Z"
+    "last_updated": "2026-11-12 02:10:11"
   },
   {
     "kode_sta": "DDSI",
@@ -58,12 +38,12 @@
     "sensor_broadband": "Nanometrics-Horizon-2019",
     "status": "Offline",
     "tanggal_instalasi": "2019",
-    "slmon_latency": "28d",
+    "slmon_latency": "29d",
     "slmon_color": "black",
     "slmon_last_data": "13/10/2026 20:11:07 WIB",
     "last_data_iso": "2026-10-13T13:11:07Z",
     "slmon_upt": "Stageof-Deli-Serdang",
-    "last_updated": "2026-11-11 09:41:07"
+    "last_updated": "2026-11-12 02:10:11"
   },
   {
     "kode_sta": "GTSI",
@@ -83,10 +63,10 @@
     "tanggal_instalasi": "2019",
     "slmon_latency": "5s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:40:56 WIB",
-    "last_data_iso": "2026-11-11T02:40:56Z",
+    "slmon_last_data": "12/11/2026 02:09:57 WIB",
+    "last_data_iso": "2026-11-11T19:09:57Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:41:07"
+    "last_updated": "2026-11-12 02:10:11"
   },
   {
     "kode_sta": "IHRSI",
@@ -104,32 +84,12 @@
     "sensor_broadband": "Guralp3T-120Posthole-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "9s",
+    "slmon_latency": "8s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:40:52 WIB",
-    "last_data_iso": "2026-11-11T02:40:52Z",
+    "slmon_last_data": "12/11/2026 02:09:54 WIB",
+    "last_data_iso": "2026-11-11T19:09:54Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:41:07"
-  },
-  {
-    "kode_sta": "PESI",
-    "site_id": "Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru",
-    "nama_sta": "Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru",
-    "tipe": "Accelerograph Non Colocated",
-    "lat": 0.46,
-    "lon": 101.45,
-    "kota_kab": "Kota Pekanbaru",
-    "provinsi": "Riau",
-    "digitizer": "CENTAUR",
-    "sensor": "Titan",
-    "status": "Online",
-    "tanggal_instalasi": "2010",
-    "slmon_color": "green",
-    "slmon_upt": "Stageof-Padang-Panjang",
-    "slmon_latency": "4s",
-    "slmon_last_data": "11/11/2026 09:41:07 WIB",
-    "last_updated": "2026-11-11 09:41:07",
-    "last_data_iso": "2026-11-11T02:41:07.554175Z"
+    "last_updated": "2026-11-12 02:10:11"
   },
   {
     "kode_sta": "PRSI",
@@ -149,10 +109,10 @@
     "tanggal_instalasi": "-",
     "slmon_latency": "9s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:40:52 WIB",
-    "last_data_iso": "2026-11-11T02:40:52Z",
+    "slmon_last_data": "12/11/2026 02:09:53 WIB",
+    "last_data_iso": "2026-11-11T19:09:53Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:41:07"
+    "last_updated": "2026-11-12 02:10:11"
   },
   {
     "kode_sta": "RGRI",
@@ -172,10 +132,10 @@
     "tanggal_instalasi": "11/29/2019",
     "slmon_latency": "4s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:40:57 WIB",
-    "last_data_iso": "2026-11-11T02:40:57Z",
+    "slmon_last_data": "12/11/2026 02:09:58 WIB",
+    "last_data_iso": "2026-11-11T19:09:58Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:41:07"
+    "last_updated": "2026-11-12 02:10:11"
   },
   {
     "kode_sta": "RHRSI",
@@ -193,12 +153,12 @@
     "sensor_broadband": "Guralp-CMG3T-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "8s",
+    "slmon_latency": "5s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:40:53 WIB",
-    "last_data_iso": "2026-11-11T02:40:53Z",
+    "slmon_last_data": "12/11/2026 02:09:57 WIB",
+    "last_data_iso": "2026-11-11T19:09:57Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:41:07"
+    "last_updated": "2026-11-12 02:10:11"
   },
   {
     "kode_sta": "RRHRI",
@@ -216,12 +176,12 @@
     "sensor_broadband": "Nanometrics-Trillium120PH-Gen3-2022",
     "status": "Online",
     "tanggal_instalasi": "2022",
-    "slmon_latency": "3s",
+    "slmon_latency": "2s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:40:58 WIB",
-    "last_data_iso": "2026-11-11T02:40:58Z",
+    "slmon_last_data": "12/11/2026 02:10:00 WIB",
+    "last_data_iso": "2026-11-11T19:10:00Z",
     "slmon_upt": "Stageof-Padang-Pajang",
-    "last_updated": "2026-11-11 09:41:07"
+    "last_updated": "2026-11-12 02:10:11"
   },
   {
     "kode_sta": "RRSI",
@@ -239,12 +199,12 @@
     "sensor_broadband": "Nanometrics-Trillium120Q-2019",
     "status": "Online",
     "tanggal_instalasi": "2019",
-    "slmon_latency": "3s",
+    "slmon_latency": "4s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:40:58 WIB",
-    "last_data_iso": "2026-11-11T02:40:58Z",
+    "slmon_last_data": "12/11/2026 02:09:58 WIB",
+    "last_data_iso": "2026-11-11T19:09:58Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:41:07"
+    "last_updated": "2026-11-12 02:10:11"
   },
   {
     "kode_sta": "SIRSI",
@@ -262,32 +222,11 @@
     "sensor_broadband": "Guralp-CMG3T-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "10s",
-    "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:40:52 WIB",
-    "last_data_iso": "2026-11-11T02:40:52Z",
-    "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:41:07"
-  },
-  {
-    "kode_sta": "STA6024",
-    "site_id": "ASRS Stasiun Klimatologi Riau",
-    "nama_sta": "ASRS Stasiun Klimatologi Riau",
-    "tipe": "Accelerograph 2020",
-    "lat": 0.40751419,
-    "lon": 101.21727325,
-    "kota_kab": "Kab. Kampar",
-    "provinsi": "Riau",
-    "digitizer": "Centaur",
-    "sensor": "Titan",
-    "status": "Online",
-    "tanggal_instalasi": "2020",
-    "slmon_color": "green",
-    "slmon_upt": "Stageof-Padang-Panjang",
     "slmon_latency": "8s",
-    "slmon_last_data": "11/11/2026 09:41:07 WIB",
-    "alias": "KRSN",
-    "last_updated": "2026-11-11 09:41:07",
-    "last_data_iso": "2026-11-11T02:41:07.554175Z"
+    "slmon_color": "green",
+    "slmon_last_data": "12/11/2026 02:09:54 WIB",
+    "last_data_iso": "2026-11-11T19:09:54Z",
+    "slmon_upt": "Stageof-Padang-Panjang",
+    "last_updated": "2026-11-12 02:10:11"
   }
 ]
