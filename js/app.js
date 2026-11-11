@@ -31,6 +31,60 @@ function stationKey(s) {
   return `${s.kategori_bidang === 'AWS Center' ? 'AWS' : 'GEO'}:${s.kode_sta}`;
 }
 
+const RIAU_KAB_REGEX = /(pekanbaru|dumai|kampar|bengkalis|siak|pelalawan|rokan\s*(hulu|hilir)|indragiri|indragri|kuantan\s*singingi|meranti|riau)/i;
+const NON_RIAU_REGEX = /(kepulauan\s*riau|kepri|padang|sumatera\s*(barat|utara|selatan)|sumbar|sumut|jambi|batam|bintan|karimun|lingga|natuna|anambas|tanjungpinang)/i;
+const EXCLUDED_NON_RIAU_CODES = new Set(['PATU']);
+
+function pointInRing(lon, lat, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1];
+    const xj = ring[j][0], yj = ring[j][1];
+    if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / ((yj - yi) || 1e-12) + xi)) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+function isPointInRiauPolygon(lat, lon) {
+  const numLat = Number(lat), numLon = Number(lon);
+  if (Number.isNaN(numLat) || Number.isNaN(numLon)) return false;
+  if (numLat < -1.18 || numLat > 2.60 || numLon < 100.0 || numLon > 103.90) return false;
+  const gj = window.RIAU_GEOJSON;
+  if (!gj || !Array.isArray(gj.features)) return true;
+
+  // Cek tepat di dalam poligon atau toleransi pesisir (~0.04 derajat / ~4.4 km untuk stasiun pantai Bengkalis/Meranti)
+  const offsets = [[0, 0], [0.04, 0], [-0.04, 0], [0, 0.04], [0, -0.04]];
+  for (const [dLat, dLon] of offsets) {
+    const tLat = numLat + dLat, tLon = numLon + dLon;
+    for (const feat of gj.features) {
+      const g = feat.geometry;
+      if (!g) continue;
+      const polys = g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates];
+      for (const poly of polys) {
+        if (poly && poly[0] && pointInRing(tLon, tLat, poly[0])) return true;
+      }
+    }
+  }
+  return false;
+}
+
+function isRiauStation(s) {
+  if (!s) return false;
+  const code = String(s.kode_sta || s.id_station || '').trim().toUpperCase();
+  if (EXCLUDED_NON_RIAU_CODES.has(code)) return false;
+  const prov = String(s.provinsi || s.nama_provinsi || '').trim();
+  const kota = String(s.kota_kab || s.nama_kota || '').trim();
+  const name = String(s.nama_sta || s.name_station || '').trim();
+  if (NON_RIAU_REGEX.test(prov) || NON_RIAU_REGEX.test(kota) || NON_RIAU_REGEX.test(name)) return false;
+  if (prov && !/^riau$/i.test(prov)) return false;
+  if (kota && !RIAU_KAB_REGEX.test(kota)) return false;
+  const lat = Number(s.lat);
+  const lon = Number(s.lon !== undefined ? s.lon : s.lng);
+  return isPointInRiauPolygon(lat, lon);
+}
+
 let currentLegendTab = 'slmon';
 function switchLegendTab(tab) {
   currentLegendTab = tab;
@@ -958,10 +1012,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initMap();
   initClock();
   loadRiauBoundary();
-  const maskBtn = document.getElementById('btn-toggle-mask');
-  const maskText = document.getElementById('mask-status-text');
-  if (maskBtn) maskBtn.classList.add('bg-blue-100', 'border-blue-400');
-  if (maskText) maskText.textContent = 'Fokus: Hanya Riau';
   loadStationData();
   loadEarthquakes();
   setupEvents();
@@ -1013,11 +1063,10 @@ function getStationShape(s) {
 function initMap() {
   map = L.map('map', {
     center: RIAU_CENTER, zoom: RIAU_ZOOM, zoomControl: false,
-    minZoom: 4, maxZoom: 18,
+    minZoom: 7, maxZoom: 18,
+    maxBounds: RIAU_BOUNDS,
+    maxBoundsViscosity: 1.0,
   });
-  if (isMaskActive) {
-    map.setMaxBounds(RIAU_BOUNDS);
-  }
 
   // Base map gaya OpenStreetMap standar (Default aktif pertama kali buka web)
   const osmClassic = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1112,14 +1161,23 @@ async function loadRiauBoundary() {
     riauMaskLayer = L.polygon(rings, {
       stroke: false,
       fillColor: '#0f172a',
-      fillOpacity: 0.45,
+      fillOpacity: 0.68,
       fillRule: 'evenodd',
-      interactive: false,
+      interactive: true,
     });
 
-    if (isMaskActive) {
-      riauMaskLayer.addTo(map);
-    }
+    // Klik daerah selain Riau tidak memunculkan menu / detail apapun & menutup popup bila ada
+    riauMaskLayer.on('click', (e) => {
+      if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+      map.closePopup();
+      closeStationModal();
+    });
+    riauMaskLayer.on('add', () => {
+      const el = riauMaskLayer.getElement?.();
+      if (el) el.style.cursor = 'default';
+    });
+
+    riauMaskLayer.addTo(map);
 
     L.geoJSON(gj, {
       interactive: false,
@@ -1131,28 +1189,10 @@ async function loadRiauBoundary() {
 }
 
 function toggleRiauMask() {
-  isMaskActive = !isMaskActive;
-  const btn = document.getElementById('btn-toggle-mask');
-  const textEl = document.getElementById('mask-status-text');
-
-  if (isMaskActive) {
-    // Mode Fokus: Hanya Riau -> Aktifkan masking, kunci batas, dan pusatkan animasi peta langsung ke Riau
-    if (riauMaskLayer && !map.hasLayer(riauMaskLayer)) {
-      map.addLayer(riauMaskLayer);
-    }
-    map.setMaxBounds(RIAU_BOUNDS);
-    map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 0.8 });
-    if (textEl) textEl.textContent = 'Fokus: Peta Penuh';
-    if (btn) btn.classList.add('bg-blue-100', 'border-blue-400');
-  } else {
-    // Mode Peta Penuh -> Lepas masking & maxBounds agar bisa navigasi bebas ke seluruh Indonesia
-    if (riauMaskLayer && map.hasLayer(riauMaskLayer)) {
-      map.removeLayer(riauMaskLayer);
-    }
-    map.setMaxBounds(null);
-    if (textEl) textEl.textContent = 'Fokus: Hanya Riau';
-    if (btn) btn.classList.remove('bg-blue-100', 'border-blue-400');
-  }
+  isMaskActive = true;
+  if (riauMaskLayer && !map.hasLayer(riauMaskLayer)) riauMaskLayer.addTo(map);
+  map.setMaxBounds(RIAU_BOUNDS);
+  map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 0.8 });
 }
 
 function toggleRiauLabels() {
@@ -1213,7 +1253,7 @@ function processAndRenderStations(geoRaw, awsRaw, fit = false) {
   rawGeoCache = geoRaw || rawGeoCache;
   rawAwsCache = awsRaw || rawAwsCache;
 
-  const geoStations = (rawGeoCache || []).filter(s => s && s.kode_sta !== 'PATU').map(s => {
+  const geoStations = (rawGeoCache || []).filter(s => isRiauStation(s)).map(s => {
     const latStr = String(s.slmon_latency || '5s').trim();
     const col = String(s.slmon_color || 'green').trim().toLowerCase();
     let status = 'Online';
@@ -1275,7 +1315,7 @@ function processAndRenderStations(geoRaw, awsRaw, fit = false) {
       icon_file: a.icon || `status_${a.type}_1.png`,
       status: realTotalMin <= 60 ? 'Online' : (realTotalMin <= 1440 ? 'Delay' : 'Offline')
     };
-  });
+  }).filter(isRiauStation);
 
   stations = [...geoStations, ...awsMapped];
   if (currentModalStation) {
@@ -1624,6 +1664,7 @@ function getChannelCode(tipe) {
 
 // ── Popup Ringkas (Standar BMKG: Site, Lat/Lon + Quick Actions) ─────────────
 function popupHTML(s) {
+  if (!isRiauStation(s)) return '';
   const siteName = s.site_id || `${s.kode_sta}-${s.nama_sta}`;
   const latStr = Number(s.lat).toFixed(8);
   const lonStr = Number(s.lon).toFixed(8);
@@ -1677,7 +1718,10 @@ function popupHTML(s) {
 function openStationModal(kode, bidang) {
   const s = stations.find(x => (x.kode_sta === kode || x.alias === kode) && (!bidang || x.kategori_bidang === bidang))
          || stations.find(x => x.kode_sta === kode || x.alias === kode);
-  if (!s) return;
+  if (!s || !isRiauStation(s)) {
+    closeStationModal();
+    return;
+  }
   currentModalStation = s;
 
   const modal = document.getElementById('station-detail-modal');
@@ -2277,12 +2321,13 @@ function goToCurrentLocation() {
       const lon = pos.coords.longitude;
       const acc = pos.coords.accuracy || 0;
 
-      // Lepas batas sementara jika koordinat user di luar batas Riau
-      const isOutsideRiau = !RIAU_BOUNDS.contains([lat, lon]);
+      // Tetap kunci peta di wilayah Provinsi Riau
+      const isOutsideRiau = !isPointInRiauPolygon(lat, lon);
+      map.setMaxBounds(RIAU_BOUNDS);
       if (isOutsideRiau) {
-        map.setMaxBounds(null);
-      } else if (isMaskActive) {
-        map.setMaxBounds(RIAU_BOUNDS);
+        showToast('Lokasi Anda berada di luar wilayah Provinsi Riau. Peta tetap difokuskan ke Riau.', 'info');
+        map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 0.8 });
+        return;
       }
 
       if (userLocationMarker) {
@@ -2421,13 +2466,9 @@ function plotEarthquake(g, shouldFly = false) {
     direction: 'top', offset: [0, -10]
   }).addTo(map);
 
-  // Jika episenter berada di luar batas Riau, lepas batasan maxBounds sementara agar peta dapat menampilkan episenter
+  // Peta selalu terkunci hanya di wilayah Provinsi Riau
   const isOutsideRiau = !RIAU_BOUNDS.contains([lat, lon]);
-  if (isOutsideRiau) {
-    map.setMaxBounds(null);
-  } else if (isMaskActive) {
-    map.setMaxBounds(RIAU_BOUNDS);
-  }
+  map.setMaxBounds(RIAU_BOUNDS);
 
   // Hubungkan episenter gempa dengan stasiun Riau terdekat via garis putus-putus
   const near = nearestStation(g);
@@ -2438,9 +2479,14 @@ function plotEarthquake(g, shouldFly = false) {
   }
 
   if (shouldFly) {
-    map.flyTo([lat, lon], Math.min(Math.max(map.getZoom(), 6), 9), { duration: 0.8 });
-    map.once('moveend', () => earthquakeMarker?.openTooltip());
-    setTimeout(() => earthquakeMarker?.openTooltip(), 900);
+    if (isOutsideRiau) {
+      showToast(`Episenter M${g.Magnitude} berada di luar wilayah Provinsi Riau (${g.Wilayah})`, 'info');
+      if (near && near.s) focusStation(near.s.kode_sta, near.s.kategori_bidang);
+    } else {
+      map.flyTo([lat, lon], Math.min(Math.max(map.getZoom(), 7), 10), { duration: 0.8 });
+      map.once('moveend', () => earthquakeMarker?.openTooltip());
+      setTimeout(() => earthquakeMarker?.openTooltip(), 900);
+    }
   }
 }
 
