@@ -120,19 +120,13 @@ function switchLegendTab(tab) {
  * Gaya visual mengikuti https://awscenter.bmkg.go.id/
  * ============================================================================
  *
- * Sumber data:
- *  - LIVE  : API publik InaTEWS BMKG (autogempa, gempaterkini, gempadirasakan)
- *  - LOKAL : data/geofisika_riau.json (metadata 13 stasiun)
- *  - SIMULASI: waktu data terakhir / latency stasiun (belum terhubung ke server
- *              telemetri BMKG). Ganti fungsi tickTelemetry() bila API tersedia.
+ * Sumber data live:
+ *  - SLMON Bali / InaTEWS : /api/slmon (Geofisika Riau)
+ *  - AWS Center BMKG      : /api/awscenter (Cuaca & Iklim Riau)
+ *  - Cache CDN Lokal      : data/geofisika_riau.json & data/aws_riau.json
  */
 
 // ── Konfigurasi ────────────────────────────────────────────────────────────
-const BMKG_API = {
-  latest: 'https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json',
-  m5: 'https://data.bmkg.go.id/DataMKG/TEWS/gempaterkini.json',
-  felt: 'https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.json',
-};
 const RIAU_CENTER = [0.55, 101.65];
 const RIAU_ZOOM = 8;
 const RIAU_BOUNDS = L.latLngBounds(L.latLng(-1.25, 99.90), L.latLng(2.65, 103.95));
@@ -972,10 +966,6 @@ let filters = { kota: '', tipe: 'all', cat: -1, slmonStatus: '' };
 let rawGeoCache = [];
 let rawAwsCache = [];
 let syncState = { slmon: 'loading', aws: 'loading', slmonAt: null, awsAt: null, awsErr: '' };
-let eqCache = { latest: null, m5: null, felt: null };
-let eqTab = 'latest';
-let earthquakeMarker = null;
-let earthquakeLine = null;
 let currentModalStation = null;
 
 function updateLiveSyncBadge() {
@@ -1013,13 +1003,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initClock();
   loadRiauBoundary();
   loadStationData();
-  loadEarthquakes();
   setupEvents();
 
   setInterval(tickTelemetry, 5000);                                                            // update umur data live tiap 5 detik tanpa memalsukan waktu
   setInterval(() => refreshLiveTelemetryInBackground({ slmon: true, aws: false }), 30000);     // SLMON Bali live tiap 30 detik
   setInterval(() => refreshLiveTelemetryInBackground({ slmon: false, aws: true }), 60000);     // AWS Center live tiap 60 detik
-  setInterval(loadEarthquakes, 180000);                                                        // refresh gempa tiap 3 menit
 });
 
 // ── Helper bentuk SVG ──────────────────────────────────────────────────────
@@ -1116,7 +1104,7 @@ function initMap() {
         if (isMaskActive) map.setMaxBounds(RIAU_BOUNDS);
         map.setView(RIAU_CENTER, RIAU_ZOOM);
       });
-      btn('<i class="fa fa-sync-alt"></i>', 'Muat ulang data', () => { loadStationData(); loadEarthquakes(); });
+      btn('<i class="fa fa-sync-alt"></i>', 'Muat ulang data', () => { loadStationData(); });
       return c;
     },
   });
@@ -2168,13 +2156,6 @@ function setupEvents() {
       el.addEventListener('click', () => selectBmkgIcon(ico.id));
     }
   });
-  document.querySelectorAll('.eq-tab').forEach(t => t.addEventListener('click', () => {
-    document.querySelectorAll('.eq-tab').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    eqTab = t.dataset.tab;
-    renderEarthquakeTab();
-  }));
-
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeStationModal();
   });
@@ -2261,274 +2242,6 @@ function toggleStationPanel() {
   body.classList.toggle('hidden');
   ch.classList.toggle('fa-chevron-up');
   ch.classList.toggle('fa-chevron-down');
-}
-
-// ── Gempa (LIVE dari BMKG) ─────────────────────────────────────────────────
-async function loadEarthquakes() {
-  const get = async url => {
-    try {
-      const r = await fetch(url);
-      return r.ok ? await r.json() : null;
-    } catch (err) {
-      console.warn('Gagal mengambil data dari:', url, err);
-      return null;
-    }
-  };
-
-  try {
-    const [latest, m5, felt] = await Promise.all([
-      get(BMKG_API.latest),
-      get(BMKG_API.m5),
-      get(BMKG_API.felt),
-    ]);
-
-    if (latest?.Infogempa?.gempa) eqCache.latest = latest.Infogempa.gempa;
-    if (m5?.Infogempa?.gempa) eqCache.m5 = [].concat(m5.Infogempa.gempa);
-    if (felt?.Infogempa?.gempa) eqCache.felt = [].concat(felt.Infogempa.gempa);
-
-    renderEarthquakeTab();
-    if (eqCache.latest) plotEarthquake(eqCache.latest, false);
-  } catch (e) {
-    console.warn('Gagal memuat gempa BMKG:', e);
-    renderEarthquakeTab();
-  }
-}
-
-function parseCoord(g) {
-  if (!g) return [NaN, NaN];
-  if (g.Coordinates && typeof g.Coordinates === 'string') {
-    const parts = g.Coordinates.split(',');
-    if (parts.length === 2) {
-      const la = parseFloat(parts[0].trim());
-      const lo = parseFloat(parts[1].trim());
-      if (!isNaN(la) && !isNaN(lo)) return [la, lo];
-    }
-  }
-  let lat = parseFloat(g.Lintang);
-  let lon = parseFloat(g.Bujur);
-  if (typeof g.Lintang === 'string' && /LS/i.test(g.Lintang)) lat = -Math.abs(lat);
-  if (typeof g.Bujur === 'string' && /BB/i.test(g.Bujur)) lon = -Math.abs(lon);
-  return [lat, lon];
-}
-
-function haversine(a, b) {
-  const R = 6371, toR = d => d * Math.PI / 180;
-  const dLat = toR(b[0] - a[0]), dLon = toR(b[1] - a[1]);
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(toR(a[0])) * Math.cos(toR(b[0])) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
-}
-
-function nearestStation(g) {
-  if (!stations.length) return null;
-  const p = parseCoord(g);
-  if (isNaN(p[0]) || isNaN(p[1])) return null;
-  return stations.map(s => ({ s, d: haversine(p, [s.lat, s.lon]) })).sort((a, b) => a.d - b.d)[0];
-}
-
-function magColor(m) { m = parseFloat(m); return m >= 5 ? 'bg-red-600' : m >= 4 ? 'bg-amber-500' : 'bg-emerald-500'; }
-
-function focusEarthquake(g) {
-  if (!g) return;
-  plotEarthquake(g, true);
-}
-
-function focusEarthquakeFromList(tab, index) {
-  const list = eqCache[tab];
-  if (list && list[index]) {
-    focusEarthquake(list[index]);
-  }
-}
-
-// ── Navigasi ke Titik Lokasi Saat Ini (Geolocation) ──────────────────────
-let userLocationMarker = null;
-let userLocationCircle = null;
-
-function goToCurrentLocation() {
-  if (!navigator.geolocation) {
-    showToast('Geolocation tidak didukung pada browser ini', 'info');
-    map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 1.0 });
-    return;
-  }
-
-  showToast('Mencari titik lokasi saat ini...', 'info');
-
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      const acc = pos.coords.accuracy || 0;
-
-      const isOutsideRiau = !isPointInRiauPolygon(lat, lon);
-      if (isMaskActive) {
-        map.setMaxBounds(RIAU_BOUNDS);
-        if (isOutsideRiau) {
-          showToast('Mode Fokus Riau aktif & lokasi Anda di luar Riau.', 'info');
-          map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 0.8 });
-          return;
-        }
-      }
-
-      if (userLocationMarker) {
-        map.removeLayer(userLocationMarker);
-      }
-      if (userLocationCircle) {
-        map.removeLayer(userLocationCircle);
-      }
-
-      if (acc > 0) {
-        userLocationCircle = L.circle([lat, lon], {
-          radius: acc,
-          color: '#2563eb',
-          fillColor: '#3b82f6',
-          fillOpacity: 0.15,
-          weight: 1
-        }).addTo(map);
-      }
-
-      const locIcon = L.divIcon({
-        className: 'user-loc-pin',
-        iconSize: [26, 26],
-        iconAnchor: [13, 13],
-        html: `<div style="position:relative;width:26px;height:26px;display:flex;align-items:center;justify-content:center;">
-          <span class="animate-ping" style="position:absolute;width:26px;height:26px;border-radius:50%;background:#3b82f6;opacity:0.75;"></span>
-          <div style="width:14px;height:14px;border-radius:50%;background:#2563eb;border:2.5px solid #ffffff;box-shadow:0 0 10px rgba(37,99,235,0.8);position:relative;z-index:2;"></div>
-        </div>`
-      });
-
-      userLocationMarker = L.marker([lat, lon], {
-        icon: locIcon,
-        zIndexOffset: 3000
-      }).bindPopup(`
-        <div class="text-xs p-1" style="min-width:160px;">
-          <div class="font-bold text-blue-900 flex items-center gap-1.5 mb-1">
-            <i class="fa fa-location-crosshairs text-blue-600"></i> Titik Lokasi Anda
-          </div>
-          <div class="text-gray-700 text-[11px] leading-tight">Koordinat: <b>${lat.toFixed(5)}, ${lon.toFixed(5)}</b></div>
-          ${acc ? `<div class="text-[10px] text-gray-500 mt-0.5">Akurasi: ±${Math.round(acc)} meter</div>` : ''}
-        </div>
-      `).addTo(map);
-
-      map.flyTo([lat, lon], Math.max(map.getZoom(), 13), { duration: 1.0 });
-      map.once('moveend', () => userLocationMarker && userLocationMarker.openPopup());
-      setTimeout(() => { if (userLocationMarker && !userLocationMarker.isPopupOpen()) userLocationMarker.openPopup(); }, 1200);
-
-      showToast('Berhasil diarahkan ke titik lokasi saat ini!', 'success');
-    },
-    err => {
-      console.warn('Geolocation error:', err);
-      if (err.code === 1) {
-        showToast('Izin lokasi ditolak pada browser. Mengarahkan ke pusat peta.', 'info');
-      } else {
-        showToast('Gagal mendeteksi lokasi saat ini. Mengarahkan ke pusat peta.', 'info');
-      }
-      map.flyTo(RIAU_CENTER, RIAU_ZOOM, { duration: 1.0 });
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
-  );
-}
-window.goToCurrentLocation = goToCurrentLocation;
-
-function renderEarthquakeTab() {
-  const el = document.getElementById('earthquake-content');
-  const failMsg = '<div class="py-2 text-center text-gray-400"><i class="fa fa-triangle-exclamation text-amber-500"></i> Data BMKG belum dapat diambil. Mencoba lagi otomatis.</div>';
-
-  if (eqTab === 'latest') {
-    const g = eqCache.latest;
-    if (!g) { el.innerHTML = failMsg; return; }
-    const near = nearestStation(g);
-    const hasShakemap = g.Shakemap &&
-      typeof g.Shakemap === 'string' &&
-      g.Shakemap.trim() !== '' &&
-      g.Shakemap.trim() !== '-' &&
-      g.Shakemap.trim() !== 'null' &&
-      !g.Shakemap.includes('undefined');
-
-    el.innerHTML = `
-      <div class="flex gap-3 cursor-pointer hover:bg-red-50/50 p-1 rounded transition" onclick="focusEarthquake(eqCache.latest)" title="Klik untuk fokus lokasi episenter gempa">
-        <div class="w-14 h-14 rounded-lg ${magColor(g.Magnitude)} text-white flex flex-col items-center justify-center shrink-0 shadow">
-          <span class="text-lg font-black leading-none">${g.Magnitude}</span><span class="text-[8px] font-bold">MAG</span>
-        </div>
-        <div class="flex-1 min-w-0 space-y-0.5">
-          <div class="text-[11px] font-bold text-gray-800 leading-snug">${g.Wilayah}</div>
-          <div class="text-[10px] text-gray-500"><i class="fa fa-clock w-3"></i> ${g.Tanggal} · ${g.Jam}</div>
-          <div class="text-[10px] text-gray-500"><i class="fa fa-arrows-down-to-line w-3"></i> Kedalaman ${g.Kedalaman} · ${g.Lintang} ${g.Bujur}</div>
-        </div>
-      </div>
-      <div class="flex gap-1.5 mt-2">
-        <button onclick="focusEarthquake(eqCache.latest)" class="flex-1 text-[10px] font-semibold bg-red-600 hover:bg-red-700 text-white rounded py-1 transition flex items-center justify-center">
-          <i class="fa fa-crosshairs mr-1"></i> Lihat di Peta
-        </button>
-        <button onclick="goToCurrentLocation()" class="flex-1 text-[10px] font-semibold bg-blue-50 border border-blue-200 hover:bg-blue-100 text-blue-900 rounded py-1 transition flex items-center justify-center" title="Arahkan peta ke titik lokasi saat ini">
-          <i class="fa fa-location-crosshairs mr-1"></i> Titik Lokasi
-        </button>
-      </div>
-      ${near ? `<div onclick="focusStation('${near.s.kode_sta}')" class="mt-1.5 text-[10px] bg-blue-50/60 border border-blue-100 text-blue-900 rounded px-2 py-1 cursor-pointer hover:bg-blue-100/70 transition" title="Klik untuk fokus stasiun ${near.s.kode_sta}">
-        Stasiun terdekat: <b>${near.s.kode_sta}</b> (${near.s.kota_kab}) — <b>${Math.round(near.d)} km</b></div>` : ''}
-      ${g.Potensi ? `<div class="mt-1.5 text-[10px] text-red-700 bg-red-50 border border-red-100 rounded px-2 py-1">${g.Potensi}</div>` : ''}
-      ${g.Dirasakan ? `<div class="mt-1.5 text-[10px] text-gray-600"><b>Dirasakan:</b> ${g.Dirasakan}</div>` : ''}
-      ${hasShakemap ? `<a class="block mt-1.5 text-[10px] text-blue-600 hover:underline" target="_blank" rel="noopener" href="https://data.bmkg.go.id/DataMKG/TEWS/${encodeURIComponent(g.Shakemap.trim())}"><i class="fa fa-image"></i> Lihat Shakemap BMKG</a>` : ''}`;
-    return;
-  }
-
-  const list = eqCache[eqTab];
-  if (!list || !list.length) { el.innerHTML = failMsg; return; }
-  el.innerHTML = list.map((g, idx) => `
-    <div class="flex items-center gap-2 py-1.5 border-b border-gray-100 hover:bg-amber-50 cursor-pointer px-1 rounded transition" onclick="focusEarthquakeFromList('${eqTab}', ${idx})" title="Klik untuk tampilkan di peta">
-      <span class="w-9 h-7 rounded ${magColor(g.Magnitude)} text-white text-[11px] font-bold flex items-center justify-center shrink-0">${g.Magnitude}</span>
-      <div class="flex-1 min-w-0">
-        <div class="text-[10.5px] font-semibold text-gray-800 truncate" title="${g.Wilayah}">${g.Wilayah}</div>
-        <div class="text-[9.5px] text-gray-500">${g.Tanggal} ${g.Jam} · ${g.Kedalaman}</div>
-        ${eqTab === 'felt' && g.Dirasakan ? `<div class="text-[9.5px] text-amber-700 truncate" title="${g.Dirasakan}">${g.Dirasakan}</div>` : ''}
-      </div>
-      <i class="fa fa-chevron-right text-[10px] text-gray-300"></i>
-    </div>`).join('');
-}
-
-function plotEarthquake(g, shouldFly = false) {
-  const [lat, lon] = parseCoord(g);
-  if (isNaN(lat) || isNaN(lon)) return;
-
-  if (earthquakeMarker) map.removeLayer(earthquakeMarker);
-  if (earthquakeLine) { map.removeLayer(earthquakeLine); earthquakeLine = null; }
-
-  earthquakeMarker = L.marker([lat, lon], {
-    zIndexOffset: 2000,
-    icon: L.divIcon({
-      className: '', iconSize: [30, 30], iconAnchor: [15, 15],
-      html: `<div style="position:relative;width:30px;height:30px;display:flex;align-items:center;justify-content:center">
-        <span class="animate-ping absolute h-full w-full rounded-full bg-red-500 opacity-75"></span>
-        <div style="width:16px;height:16px;border-radius:50%;background:#dc2626;border:2px solid #fff;box-shadow:0 0 10px rgba(220,38,38,1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:900;">M</div>
-      </div>`,
-    }),
-  }).bindTooltip(`<b>Gempa M${g.Magnitude}</b><br>${g.Wilayah}<br><span style="color:#6b7280">${g.Tanggal} ${g.Jam}</span>`, {
-    direction: 'top', offset: [0, -10]
-  }).addTo(map);
-
-  const isOutsideRiau = !RIAU_BOUNDS.contains([lat, lon]);
-  if (isMaskActive) {
-    map.setMaxBounds(RIAU_BOUNDS);
-  } else {
-    map.setMaxBounds(null);
-  }
-
-  // Hubungkan episenter gempa dengan stasiun Riau terdekat via garis putus-putus
-  const near = nearestStation(g);
-  if (near && near.s) {
-    earthquakeLine = L.polyline([[lat, lon], [near.s.lat, near.s.lon]], {
-      color: '#dc2626', weight: 2, dashArray: '5, 6', opacity: 0.8,
-    }).bindTooltip(`Jarak ke stasiun ${near.s.kode_sta}: ${Math.round(near.d)} km`, { sticky: true }).addTo(map);
-  }
-
-  if (shouldFly) {
-    if (isMaskActive && isOutsideRiau) {
-      showToast(`Mode Fokus Riau aktif: episenter M${g.Magnitude} berada di luar Riau`, 'info');
-      if (near && near.s) focusStation(near.s.kode_sta, near.s.kategori_bidang);
-    } else {
-      map.flyTo([lat, lon], Math.min(Math.max(map.getZoom(), 6), 9), { duration: 0.8 });
-      map.once('moveend', () => earthquakeMarker?.openTooltip());
-      setTimeout(() => earthquakeMarker?.openTooltip(), 900);
-    }
-  }
 }
 
 // ── Utilitas ───────────────────────────────────────────────────────────────

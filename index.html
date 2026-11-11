@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pusat Monitoring Alat Geofisika BMKG - Wilayah Riau</title>
-  <meta name="description" content="Pusat Monitoring Alat Geofisika BMKG Wilayah Riau - Pemantauan stasiun Seismograph dan Accelerograph serta info gempa terkini BMKG.">
+  <meta name="description" content="Pusat Monitoring Alat Geofisika dan AWS BMKG Wilayah Riau secara real-time dari SLMON Bali &amp; AWS Center BMKG.">
   <link rel="icon" href="https://awscenter.bmkg.go.id/public/assets/img/favicon.ico">
 
   <!-- Tailwind CSS via CDN -->
@@ -89,9 +89,6 @@
     .leaflet-popup-content { margin: 0; line-height: 1.4; }
     .leaflet-top.leaflet-left { margin-top: 4px; }
     .leaflet-bar a { color: #374151 !important; }
-
-    .eq-tab { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #6b7280; cursor: pointer; }
-    .eq-tab.active { background: #fee2e2; color: #b91c1c; }
 
     .thin-scroll::-webkit-scrollbar { width: 5px; }
     .thin-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
@@ -291,29 +288,6 @@
 
     </div>
 
-  </div>
-
-  <!-- Kiri bawah: Gempa BMKG -->
-  <div class="fixed bottom-4 left-4 z-[1000] w-[92%] sm:w-[340px]">
-    <div class="aws-panel border-red-200 px-3 py-2.5">
-      <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-100">
-        <div class="flex items-center gap-2">
-          <span class="relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span class="relative rounded-full h-2.5 w-2.5 bg-red-600"></span>
-          </span>
-          <span class="text-xs font-bold text-red-600 uppercase">Gempa BMKG</span>
-        </div>
-        <div class="flex gap-1">
-          <span class="eq-tab active" data-tab="latest">Terkini</span>
-          <span class="eq-tab" data-tab="m5">M 5.0+</span>
-          <span class="eq-tab" data-tab="felt">Dirasakan</span>
-        </div>
-      </div>
-      <div id="earthquake-content" class="text-xs text-gray-600 thin-scroll overflow-y-auto" style="max-height: 190px;">
-        <div class="py-2 text-center text-gray-400"><i class="fa fa-spinner fa-spin mr-1"></i> Mengambil data InaTEWS BMKG...</div>
-      </div>
-    </div>
   </div>
 
   <!-- Modal Detail Stasiun Komprehensif -->
