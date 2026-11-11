@@ -139,9 +139,10 @@
 
   <!-- Kiri atas: status & toggle -->
   <div class="fixed top-3 left-14 z-[1000] hidden md:flex items-center gap-2">
-    <div class="pill">
-      <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+    <div class="pill" title="Status sinkronisasi live server SLMON Bali &amp; AWS Center BMKG">
+      <span id="live-sync-dot" class="w-2.5 h-2.5 bg-amber-400 rounded-full animate-pulse"></span>
       <span>Live: <span id="clock-timestamp">-</span></span>
+      <span id="live-sync-badge" class="ml-1 px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-100 text-amber-800">Menyinkronkan...</span>
     </div>
     <button id="btn-toggle-mask" onclick="toggleRiauMask()" class="pill text-blue-900 font-semibold" title="Fokuskan ke wilayah Riau">
       <i class="fa fa-bullseye text-blue-600"></i><span id="mask-status-text">Fokus: Hanya Riau</span>
@@ -253,20 +254,20 @@
               Latensi SIMORA / SLMON
             </div>
             <ul class="text-[10px] text-gray-600 space-y-0.5">
-              <li class="flex items-center gap-1.5 cursor-pointer hover:font-semibold" onclick="filterByCat(0)" title="Klik filter data normal">
+              <li id="slmon-leg-green" class="flex items-center gap-1.5 cursor-pointer hover:font-semibold rounded px-1" onclick="filterBySlmonStatus('green')" title="Klik filter data normal SLMON Bali">
                 <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block shadow-xs"></span>
                 <span>Normal (&lt; 10s)</span>
-                <span id="slmon-cnt-green" class="font-bold text-gray-800 ml-auto">10</span>
+                <span id="slmon-cnt-green" class="font-bold text-gray-800 ml-auto">0</span>
               </li>
-              <li class="flex items-center gap-1.5 cursor-pointer hover:font-semibold" onclick="filterByCat(1)" title="Klik filter data delay">
+              <li id="slmon-leg-yellow" class="flex items-center gap-1.5 cursor-pointer hover:font-semibold rounded px-1" onclick="filterBySlmonStatus('yellow')" title="Klik filter data delay SLMON Bali">
                 <span class="w-2.5 h-2.5 rounded-sm bg-amber-400 inline-block shadow-xs"></span>
                 <span>Delay (10s - 60m)</span>
-                <span id="slmon-cnt-yellow" class="font-bold text-gray-800 ml-auto">2</span>
+                <span id="slmon-cnt-yellow" class="font-bold text-gray-800 ml-auto">0</span>
               </li>
-              <li class="flex items-center gap-1.5 cursor-pointer hover:font-semibold" onclick="filterByCat(4)" title="Klik filter data offline">
+              <li id="slmon-leg-red" class="flex items-center gap-1.5 cursor-pointer hover:font-semibold rounded px-1" onclick="filterBySlmonStatus('red')" title="Klik filter data offline SLMON Bali">
                 <span class="w-2.5 h-2.5 rounded-sm bg-red-500 inline-block shadow-xs"></span>
                 <span>Offline (&gt; 1h / 1d)</span>
-                <span id="slmon-cnt-red" class="font-bold text-gray-800 ml-auto">1</span>
+                <span id="slmon-cnt-red" class="font-bold text-gray-800 ml-auto">0</span>
               </li>
             </ul>
           </div>
@@ -276,7 +277,7 @@
             <svg id="donut-svg" class="w-full h-full -rotate-90" viewBox="0 0 36 36"></svg>
             <div class="absolute inset-0 flex flex-col items-center justify-center">
               <span id="donut-total" class="text-sm font-extrabold text-gray-800 leading-none">13</span>
-              <span class="text-[7px] text-amber-600 font-extrabold uppercase tracking-tight">AKSELERO</span>
+              <span id="donut-label" class="text-[7px] text-amber-600 font-extrabold uppercase tracking-tight">SIMORA</span>
             </div>
           </div>
         </div>

@@ -12,6 +12,25 @@ function formatBmkgUTC(dateOrTs) {
   return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}+00`;
 }
 
+/** Parse BMKG timestamp string ("2026-11-11 02:09:00+00", ISO, or "DD/MM/YYYY HH:mm:ss WIB") ke epoch ms */
+function parseBmkgTimestampMs(rawStr) {
+  if (!rawStr || typeof rawStr !== 'string') return NaN;
+  const s = rawStr.trim();
+  const isoCandidate = s.replace(' ', 'T').replace(/\+00(:00)?$/, 'Z');
+  const t = Date.parse(isoCandidate);
+  if (!Number.isNaN(t)) return t;
+  const mId = s.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})(?::(\d{2}))?(?:\s*WIB)?$/i);
+  if (mId) {
+    const [, dd, mm, yyyy, hh, mi, ss] = mId;
+    return Date.UTC(Number(yyyy), Number(mm) - 1, Number(dd), Number(hh) - 7, Number(mi), Number(ss || 0));
+  }
+  return NaN;
+}
+
+function stationKey(s) {
+  return `${s.kategori_bidang === 'AWS Center' ? 'AWS' : 'GEO'}:${s.kode_sta}`;
+}
+
 let currentLegendTab = 'slmon';
 function switchLegendTab(tab) {
   currentLegendTab = tab;
@@ -913,12 +932,44 @@ let stations = [];             // data stasiun + telemetri
 const markerByKode = {};
 let useClustering = false;
 let isMaskActive = true, isLabelsActive = true, isStationLabelsActive = true;
-let filters = { kota: '', tipe: 'all', cat: -1 };
+let filters = { kota: '', tipe: 'all', cat: -1, slmonStatus: '' };
+let rawGeoCache = [];
+let rawAwsCache = [];
+let syncState = { slmon: 'loading', aws: 'loading', slmonAt: null, awsAt: null, awsErr: '' };
 let eqCache = { latest: null, m5: null, felt: null };
 let eqTab = 'latest';
 let earthquakeMarker = null;
 let earthquakeLine = null;
 let currentModalStation = null;
+
+function updateLiveSyncBadge() {
+  const badge = document.getElementById('live-sync-badge');
+  const dot = document.getElementById('live-sync-dot');
+  if (!badge) return;
+  const bothOk = syncState.slmon === 'live' && syncState.aws === 'live';
+  const anyOk = syncState.slmon === 'live' || syncState.aws === 'live';
+  const anyLoading = syncState.slmon === 'loading' || syncState.aws === 'loading';
+  if (bothOk) {
+    badge.textContent = 'SLMON + AWS Live';
+    badge.className = 'ml-1 px-1.5 py-0.5 text-[9px] font-bold rounded bg-emerald-100 text-emerald-800';
+    if (dot) dot.className = 'w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse';
+  } else if (anyLoading) {
+    badge.textContent = syncState.slmon === 'live' ? 'SLMON Live · Sync AWS...' : 'Menyinkronkan BMKG...';
+    badge.className = 'ml-1 px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-100 text-amber-800';
+    if (dot) dot.className = 'w-2.5 h-2.5 bg-amber-400 rounded-full animate-pulse';
+  } else if (anyOk) {
+    badge.textContent = syncState.aws === 'live' ? 'AWS Live' : 'SLMON Live · AWS Cache';
+    badge.className = 'ml-1 px-1.5 py-0.5 text-[9px] font-bold rounded bg-sky-100 text-sky-800';
+    if (dot) dot.className = 'w-2.5 h-2.5 bg-sky-500 rounded-full animate-pulse';
+  } else {
+    badge.textContent = 'Mode Cache Lokal';
+    badge.className = 'ml-1 px-1.5 py-0.5 text-[9px] font-bold rounded bg-rose-100 text-rose-800';
+    if (dot) dot.className = 'w-2.5 h-2.5 bg-rose-500 rounded-full';
+  }
+  const slTime = syncState.slmonAt ? formatTime(syncState.slmonAt) : '-';
+  const awsTime = syncState.awsAt ? formatTime(syncState.awsAt) : (syncState.awsErr || '-');
+  badge.title = `SLMON Bali: ${syncState.slmon} (${slTime}) | AWS Center: ${syncState.aws} (${awsTime})`;
+}
 
 // ── Init ───────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -933,9 +984,10 @@ document.addEventListener('DOMContentLoaded', () => {
   loadEarthquakes();
   setupEvents();
 
-  setInterval(tickTelemetry, 5000);                     // simulasi heartbeat stasiun
-  setInterval(refreshLiveTelemetryInBackground, 60000); // sinkronisasi otomatis telemetri BMKG live tiap 60 detik
-  setInterval(loadEarthquakes, 180000);                 // refresh gempa tiap 3 menit
+  setInterval(tickTelemetry, 5000);                                                            // update umur data live tiap 5 detik tanpa memalsukan waktu
+  setInterval(() => refreshLiveTelemetryInBackground({ slmon: true, aws: false }), 30000);     // SLMON Bali live tiap 30 detik
+  setInterval(() => refreshLiveTelemetryInBackground({ slmon: false, aws: true }), 60000);     // AWS Center live tiap 60 detik
+  setInterval(loadEarthquakes, 180000);                                                        // refresh gempa tiap 3 menit
 });
 
 // ── Helper bentuk SVG ──────────────────────────────────────────────────────
@@ -1159,46 +1211,66 @@ function initClock() {
 }
 
 // ── Data stasiun + telemetri (Super Cepat < 50ms & Revalidasi Background) ────
+function mergeGeoStations(baseGeo, liveGeo) {
+  if (!Array.isArray(liveGeo) || !liveGeo.length) return baseGeo;
+  const byCode = new Map((baseGeo || []).map(s => [s.kode_sta, s]));
+  const seen = new Set();
+  const merged = liveGeo.map(l => {
+    seen.add(l.kode_sta);
+    const prev = byCode.get(l.kode_sta) || {};
+    return { ...prev, ...l };
+  });
+  for (const s of (baseGeo || [])) {
+    if (!seen.has(s.kode_sta)) merged.push(s);
+  }
+  return merged;
+}
+
 function processAndRenderStations(geoRaw, awsRaw, fit = false) {
   const now = Date.now();
+  rawGeoCache = geoRaw || rawGeoCache;
+  rawAwsCache = awsRaw || rawAwsCache;
 
-  const geoStations = (geoRaw || []).map(s => {
-    let ageMs = 5000;
+  const geoStations = (rawGeoCache || []).map(s => {
+    const latStr = String(s.slmon_latency || '5s').trim();
+    const col = String(s.slmon_color || 'green').trim().toLowerCase();
     let status = 'Online';
-    const latStr = s.slmon_latency || '5s';
-
-    if (s.slmon_color === 'black' || String(latStr).includes('d')) {
+    if (col === 'black' || col === 'grey' || col === 'red' || latStr.toLowerCase().includes('d') || latStr.toLowerCase().includes('h')) {
       status = 'Offline';
-      ageMs = (24 * 3600 + 7200) * 1000;
-    } else if (s.slmon_color === 'orange' || s.slmon_color === 'yellow' || String(latStr).includes('m')) {
-      status = 'Online';
-      const m = parseInt(latStr) || 2;
-      ageMs = (m * 60 + 15) * 1000;
-    } else {
-      status = 'Online';
-      const sec = parseInt(latStr) || 5;
-      ageMs = sec * 1000;
+    } else if (col === 'orange' || col === 'yellow' || latStr.toLowerCase().includes('m')) {
+      status = 'Delay';
     }
 
-    const stDate = new Date(now - ageMs);
+    let parsedTs = parseBmkgTimestampMs(s.last_data_iso) || parseBmkgTimestampMs(s.slmon_last_data);
+    if (Number.isNaN(parsedTs)) {
+      let ageMs = 5000;
+      if (latStr.includes('d')) ageMs = (parseInt(latStr, 10) || 1) * 86400000;
+      else if (latStr.includes('h')) ageMs = (parseInt(latStr, 10) || 1) * 3600000;
+      else if (latStr.includes('m')) ageMs = (parseInt(latStr, 10) || 1) * 60000;
+      else ageMs = (parseInt(latStr, 10) || 5) * 1000;
+      parsedTs = now - ageMs;
+    }
 
     return {
       ...s,
       base_latency: latStr,
+      slmon_color: col,
       status: status,
       kategori_bidang: 'Geofisika',
-      lastSeen: now - ageMs,
-      slmon_last_data: s.slmon_last_data || formatDateTimeID(stDate),
+      lastSeen: parsedTs,
+      slmon_last_data: s.slmon_last_data || formatDateTimeID(parsedTs),
       latency: 80 + Math.round(Math.random() * 250)
     };
   });
 
-  const awsMapped = (awsRaw || []).map(a => {
-    const dDay = a.diff_day !== undefined ? a.diff_day : 0;
-    const dHour = a.diff_hour !== undefined ? a.diff_hour : 0;
-    const dMin = a.diff_minute !== undefined ? a.diff_minute : 8;
-    const totalMin = (dDay * 1440) + (dHour * 60) + dMin;
-    const stDate = new Date(now - totalMin * 60000);
+  const awsMapped = (rawAwsCache || []).map(a => {
+    const parsedTs = parseBmkgTimestampMs(a.tanggal_iso) || parseBmkgTimestampMs(a.tanggal);
+    const fallbackTotalMin = ((a.diff_day || 0) * 1440) + ((a.diff_hour || 0) * 60) + (a.diff_minute || 0);
+    const lastSeenMs = !Number.isNaN(parsedTs) ? parsedTs : (now - fallbackTotalMin * 60000);
+    const realTotalMin = Math.max(0, Math.floor((now - lastSeenMs) / 60000));
+    const dDay = Math.floor(realTotalMin / 1440);
+    const dHour = Math.floor((realTotalMin % 1440) / 60);
+    const dMin = realTotalMin % 60;
     const tUpper = (a.type || 'aws').toUpperCase();
 
     return {
@@ -1211,28 +1283,46 @@ function processAndRenderStations(geoRaw, awsRaw, fit = false) {
       kategori_bidang: 'AWS Center',
       lat: Number(a.lat),
       lon: Number(a.lng),
-      lastSeen: now - totalMin * 60000,
+      lastSeen: lastSeenMs,
       diff_day: dDay,
       diff_hour: dHour,
       diff_minute: dMin,
-      diff_minutes_total: totalMin,
-      tanggal_data: formatBmkgUTC(stDate),
+      diff_minutes_total: realTotalMin,
+      tanggal_data: a.tanggal || formatBmkgUTC(lastSeenMs),
       klasifikasi: a.klasifikasi || '1',
       icon_file: a.icon || `status_${a.type}_1.png`,
-      status: totalMin <= 60 ? 'Online' : (totalMin <= 1440 ? 'Delay' : 'Offline')
+      status: realTotalMin <= 60 ? 'Online' : (realTotalMin <= 1440 ? 'Delay' : 'Offline')
     };
   });
 
   stations = [...geoStations, ...awsMapped];
+  if (currentModalStation) {
+    const updated = stations.find(x => stationKey(x) === stationKey(currentModalStation));
+    if (updated) currentModalStation = updated;
+  }
   populateDropdowns();
   renderMarkers(fit);
   refreshStatusUI();
+  refreshModalTelemetry();
+}
+
+async function fetchJsonWithTimeout(url, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const resp = await fetch(url, { signal: controller.signal, cache: 'no-store' });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok) throw new Error(data?.message || `HTTP ${resp.status}`);
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function loadStationData() {
   try {
-    // 1. INSTAN (< 50ms): Ambil data lokal CDN terlebih dahulu secara paralel agar peta langsung tayang tanpa jeda
-    let [resGeo, resAws] = await Promise.all([
+    // 1. INSTAN (< 50ms): Ambil data lokal CDN terlebih dahulu secara paralel agar peta langsung tayang
+    const [resGeo, resAws] = await Promise.all([
       fetch('data/geofisika_riau.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null),
       fetch('data/aws_riau.json?t=' + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null)
     ]);
@@ -1240,65 +1330,94 @@ async function loadStationData() {
     const geoInitial = (resGeo && Array.isArray(resGeo)) ? resGeo : DEFAULT_STATIONS;
     const awsInitial = (resAws && Array.isArray(resAws)) ? resAws : DEFAULT_AWS_STATIONS;
 
-    // Render seketika ke peta!
     processAndRenderStations(geoInitial, awsInitial, true);
 
-    // Hilangkan loading overlay seketika
     const overlay = document.getElementById('loading-overlay');
     if (overlay) overlay.classList.add('hidden');
 
-    // 2. LATAR BELAKANG: Ambil telemetri live dari server scraper tanpa menahan antarmuka
-    refreshLiveTelemetryInBackground();
+    // 2. LATAR BELAKANG: Tarik live SLMON Bali & AWS Center secara independen (tidak saling menjatuhkan)
+    refreshLiveTelemetryInBackground({ slmon: true, aws: true });
 
   } catch (e) {
     console.error('Gagal memuat data stasiun:', e);
-    processAndRenderStations(DEFAULT_STATIONS, DEFAULT_AWS_STATIONS);
+    processAndRenderStations(DEFAULT_STATIONS, DEFAULT_AWS_STATIONS, true);
     const overlay = document.getElementById('loading-overlay');
     if (overlay) overlay.classList.add('hidden');
   }
 }
 
-async function refreshLiveTelemetryInBackground() {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000); // 6 detik batas maksimum
+async function refreshLiveTelemetryInBackground({ slmon = true, aws = true } = {}) {
+  if (slmon) syncState.slmon = syncState.slmon === 'live' ? 'live' : 'loading';
+  if (aws) syncState.aws = syncState.aws === 'live' ? 'live' : 'loading';
+  updateLiveSyncBadge();
 
-    const [resSlmon, resAws] = await Promise.allSettled([
-      fetch('/api/slmon?t=' + Date.now(), { signal: controller.signal, cache: 'no-store' }),
-      fetch('/api/awscenter?t=' + Date.now(), { signal: controller.signal, cache: 'no-store' })
-    ]);
-    clearTimeout(timeout);
+  const tasks = [];
 
-    let hasUpdate = false;
-    let liveGeo = null;
-    let liveAws = null;
+  if (slmon) {
+    tasks.push(
+      fetchJsonWithTimeout('/api/slmon?t=' + Date.now(), 22000)
+        .then(data => {
+          if (data && Array.isArray(data.stations) && data.stations.length > 0) {
+            const mergedGeo = mergeGeoStations(rawGeoCache, data.stations);
+            syncState.slmon = 'live';
+            syncState.slmonAt = Date.now();
+            processAndRenderStations(mergedGeo, rawAwsCache, false);
+            updateLiveSyncBadge();
+          }
+        })
+        .catch(() => {
+          if (syncState.slmon !== 'live') syncState.slmon = 'cache';
+          updateLiveSyncBadge();
+        })
+    );
+  }
 
-    if (resSlmon.status === 'fulfilled' && resSlmon.value && resSlmon.value.ok) {
-      const data = await resSlmon.value.json();
-      if (data && Array.isArray(data.stations) && data.stations.length > 0) {
-        liveGeo = data.stations;
-        hasUpdate = true;
-      }
-    }
+  if (aws) {
+    tasks.push(
+      fetchJsonWithTimeout('/api/awscenter?t=' + Date.now(), 45000)
+        .then(data => {
+          if (data && Array.isArray(data.stations) && data.stations.length > 0) {
+            syncState.aws = 'live';
+            syncState.awsAt = Date.now();
+            syncState.awsErr = '';
+            processAndRenderStations(rawGeoCache, data.stations, false);
+            updateLiveSyncBadge();
+          }
+        })
+        .catch(err => {
+          syncState.awsErr = err?.message || 'Timeout';
+          if (syncState.aws !== 'live') syncState.aws = 'cache';
+          updateLiveSyncBadge();
+        })
+    );
+  }
 
-    if (resAws.status === 'fulfilled' && resAws.value && resAws.value.ok) {
-      const data = await resAws.value.json();
-      if (data && Array.isArray(data.stations) && data.stations.length > 0) {
-        liveAws = data.stations;
-        hasUpdate = true;
-      }
-    }
-
-    if (hasUpdate) {
-      const currentGeo = liveGeo || stations.filter(s => s.kategori_bidang === 'Geofisika');
-      const currentAws = liveAws || stations.filter(s => s.kategori_bidang === 'AWS Center');
-      processAndRenderStations(currentGeo, currentAws, false);
-    }
-  } catch (_) {}
+  await Promise.allSettled(tasks);
 }
 
-function ageMinutes(s) { return (Date.now() - s.lastSeen) / 60000; }
-function catIndex(s) { const a = ageMinutes(s); return STATUS_CATS.findIndex(c => a <= c.max); }
+function ageMinutes(s) { return Math.max(0, (Date.now() - s.lastSeen) / 60000); }
+function catIndex(s) { const a = ageMinutes(s); const idx = STATUS_CATS.findIndex(c => a <= c.max); return idx === -1 ? 4 : idx; }
+
+function slmonBucket(s) {
+  const c = (s.slmon_color || '').toLowerCase();
+  if (c === 'green') return 'green';
+  if (c === 'yellow' || c === 'orange') return 'yellow';
+  if (c === 'red' || c === 'black' || c === 'grey') return 'red';
+  const ci = catIndex(s);
+  return ci === 0 ? 'green' : (ci <= 2 ? 'yellow' : 'red');
+}
+
+function getMarkerColor(s) {
+  if (s.kategori_bidang === 'Geofisika') {
+    const c = (s.slmon_color || '').toLowerCase();
+    if (c === 'green') return '#43a047';
+    if (c === 'yellow') return '#fdd835';
+    if (c === 'orange') return '#ffb74d';
+    if (c === 'red') return '#f44336';
+    if (c === 'black' || c === 'grey') return '#374151';
+  }
+  return STATUS_CATS[catIndex(s)].color;
+}
 
 function formatAge(s) {
   const m = ageMinutes(s);
@@ -1378,34 +1497,20 @@ function tickTelemetry() {
   stations.forEach(s => {
     const before = catIndex(s);
 
-    if (s.kategori_bidang === 'Geofisika') {
-      // Untuk stasiun Geofisika yang streaming (Online/Green)
-      if (s.status === 'Online' && (!s.slmon_color || s.slmon_color === 'green')) {
-        const baseNum = parseInt(s.base_latency) || 5;
-        // Jitter natural antara (baseNum - 1) dan (baseNum + 2)
-        const curSec = Math.max(2, baseNum + Math.floor(Math.random() * 3) - 1);
-        s.slmon_latency = `${curSec}s`;
-        s.lastSeen = now - curSec * 1000;
-        s.slmon_last_data = formatDateTimeID(new Date(s.lastSeen));
-      } else if (s.slmon_color === 'orange' || (s.slmon_latency && s.slmon_latency.includes('m'))) {
-        // Stasiun Delay (1m - 2m)
-        const curMin = parseInt(s.base_latency) || 1;
-        s.lastSeen = now - (curMin * 60 + 15) * 1000;
-        s.slmon_last_data = formatDateTimeID(new Date(s.lastSeen));
-      }
-    } else if (s.kategori_bidang === 'AWS Center') {
-      // Stasiun AWS Center yang Online (< 60 menit)
-      if (s.status === 'Online') {
-        const totalMin = (s.diff_day || 0) * 1440 + (s.diff_hour || 0) * 60 + (s.diff_minute || 8);
-        s.lastSeen = now - totalMin * 60000;
-        s.tanggal_data = formatBmkgUTC(new Date(s.lastSeen));
-      }
+    if (s.kategori_bidang === 'AWS Center') {
+      // Hitung umur nyata dari tanggal_data BMKG (tanpa memalsukan jam!)
+      const totalMin = Math.max(0, Math.floor((now - s.lastSeen) / 60000));
+      s.diff_day = Math.floor(totalMin / 1440);
+      s.diff_hour = Math.floor((totalMin % 1440) / 60);
+      s.diff_minute = totalMin % 60;
+      s.diff_minutes_total = totalMin;
+      s.status = totalMin <= 60 ? 'Online' : (totalMin <= 1440 ? 'Delay' : 'Offline');
     }
 
     const after = catIndex(s);
     if (after !== before) {
       anyCatChanged = true;
-      const m = markerByKode[s.kode_sta];
+      const m = markerByKode[stationKey(s)];
       if (m) m.setIcon(stationIcon(s));
     }
   });
@@ -1423,7 +1528,7 @@ function tickTelemetry() {
 function stationIcon(s) {
   const shape = getStationShape(s);
   const cat = catIndex(s);
-  const color = STATUS_CATS[cat].color;
+  const color = getMarkerColor(s);
   const codeDisplay = isStationLabelsActive ? 'block' : 'none';
   return L.divIcon({
     className: '',
@@ -1492,6 +1597,9 @@ function filteredStations() {
       }
     }
     if (filters.cat >= 0 && catIndex(s) !== filters.cat) return false;
+    if (filters.slmonStatus) {
+      if (s.kategori_bidang !== 'Geofisika' || slmonBucket(s) !== filters.slmonStatus) return false;
+    }
     return true;
   });
 }
@@ -1504,11 +1612,14 @@ function renderMarkers(fit = false) {
   const list = filteredStations();
   list.forEach(s => {
     const m = L.marker([s.lat, s.lon], { icon: stationIcon(s), riseOnHover: true });
-    m.bindTooltip(() => `<b>${s.kode_sta}</b> - ${s.nama_sta}<br><span style="color:#d97706;font-weight:600">Akselerograf: ${s.tipe}</span><br><span style="color:#6b7280">Data terakhir: ${formatAge(s)}</span>`,
+    const srcLabel = s.kategori_bidang === 'AWS Center'
+      ? `<span style="color:#0284c7;font-weight:600">AWS Center: ${s.tipe}</span>`
+      : `<span style="color:#d97706;font-weight:600">SLMON Bali: ${s.tipe}</span>`;
+    m.bindTooltip(() => `<b>${s.kode_sta}</b> - ${s.nama_sta}<br>${srcLabel}<br><span style="color:#6b7280">Data terakhir: ${formatAge(s)}</span>`,
       { direction: 'top', offset: [0, -8] });
     m.bindPopup(() => popupHTML(s), { minWidth: 295, maxWidth: 350 });
     (useClustering ? clusterGroup : plainGroup).addLayer(m);
-    markerByKode[s.kode_sta] = m;
+    markerByKode[stationKey(s)] = m;
   });
 
   if (useClustering) { map.addLayer(clusterGroup); map.removeLayer(plainGroup); }
@@ -1546,15 +1657,16 @@ function popupHTML(s) {
           <span style="font-weight: 800; font-size: 14px; color: #0f172a; font-family: monospace;">${s.kode_sta}</span>
           <span style="font-size: 11px; color: #64748b; margin-left: 4px;">${s.kota_kab}</span>
         </div>
-        <span class="bmkg-popup-tag" style="background: ${s.status === 'Online' ? '#ecfdf5' : '#fef2f2'}; color: ${s.status === 'Online' ? '#059669' : '#dc2626'}; border: 1px solid ${s.status === 'Online' ? '#a7f3d0' : '#fecaca'};">
-          <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${s.status === 'Online' ? '#10b981' : '#ef4444'}; margin-right:3px;"></span>
-          ${s.status} ${s.slmon_latency ? `(${s.slmon_latency})` : ''}
+        <span class="bmkg-popup-tag" style="background: ${s.status === 'Online' ? '#ecfdf5' : (s.status === 'Delay' ? '#fffbeb' : '#fef2f2')}; color: ${s.status === 'Online' ? '#059669' : (s.status === 'Delay' ? '#d97706' : '#dc2626')}; border: 1px solid ${s.status === 'Online' ? '#a7f3d0' : (s.status === 'Delay' ? '#fde68a' : '#fecaca')};">
+          <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${s.status === 'Online' ? '#10b981' : (s.status === 'Delay' ? '#f59e0b' : '#ef4444')}; margin-right:3px;"></span>
+          ${s.status} ${s.slmon_latency ? `(${s.slmon_latency})` : `(${formatAge(s)})`}
         </span>
       </div>
 
       <!-- Data fields: Hanya menampilkan Site dan Lat/Lon -->
       <div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: #334155; margin-bottom: 6px;">
         <div><strong style="color: #0f172a;">Name Station :</strong> ${siteName}</div>
+        <div><strong style="color: #0f172a;">Update (${s.kategori_bidang === 'AWS Center' ? 'UTC' : 'WIB'}) :</strong> <span style="font-family:monospace;font-size:11px;">${s.kategori_bidang === 'AWS Center' ? (s.tanggal_data || '-') : (s.slmon_last_data || '-')}</span></div>
         <div style="display: flex; align-items: center; justify-content: space-between;">
           <div><strong style="color: #0f172a;">Lat/Lon :</strong> ${latStr}, ${lonStr}</div>
           <button onclick="copyCoords(${s.lat}, ${s.lon}, this)" title="Salin koordinat" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 1px 6px; font-size: 10px; color: #0284c7; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
@@ -1571,7 +1683,7 @@ function popupHTML(s) {
         <a href="https://www.google.com/maps?q=${s.lat},${s.lon}" target="_blank" rel="noopener" style="text-align: center; padding: 5px 6px; background: #ffffff; color: #475569; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 4px;">
           <i class="fa fa-route" style="color: #f59e0b;"></i> Maps
         </a>
-        <button onclick="openStationModal('${s.kode_sta}')" style="padding: 5px 6px; background: #0284c7; color: #ffffff; border: none; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+        <button onclick="openStationModal('${s.kode_sta}', '${s.kategori_bidang}')" style="padding: 5px 6px; background: #0284c7; color: #ffffff; border: none; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
           <i class="fa fa-chart-line"></i> Detail Lengkap
         </button>
       </div>
@@ -1580,8 +1692,9 @@ function popupHTML(s) {
 }
 
 // ── Modal Detail Stasiun Komprehensif ──────────────────────────────────────
-function openStationModal(kode) {
-  const s = stations.find(x => x.kode_sta === kode || x.alias === kode);
+function openStationModal(kode, bidang) {
+  const s = stations.find(x => (x.kode_sta === kode || x.alias === kode) && (!bidang || x.kategori_bidang === bidang))
+         || stations.find(x => x.kode_sta === kode || x.alias === kode);
   if (!s) return;
   currentModalStation = s;
 
@@ -1627,26 +1740,29 @@ function openStationModal(kode) {
   const elLast = document.getElementById('modal-slmon-lastdata');
   const elUpt = document.getElementById('modal-slmon-upt');
 
+  const badgeCls = isOnline ? 'bg-emerald-100 text-emerald-700' : (isOffline ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700');
+  const badgeTxt = isOnline ? 'Real-time' : (isOffline ? 'Offline' : 'Delay');
+
   if (isAws) {
     if (elTitle) elTitle.innerHTML = '<i class="fa fa-cloud-sun text-blue-500 mr-1.5"></i> Telemetri AWS Center';
     if (elBadge) {
-      elBadge.className = isOnline ? 'px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700' : 'px-2 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-700';
-      elBadge.textContent = isOnline ? 'Real-time' : 'Offline';
+      elBadge.className = `px-2 py-0.5 rounded text-[9px] font-bold ${badgeCls}`;
+      elBadge.textContent = badgeTxt;
     }
     const latAws = `${s.diff_day > 0 ? s.diff_day + 'd ' : ''}${s.diff_hour > 0 ? s.diff_hour + 'h ' : ''}${s.diff_minute || 0}m`;
     if (elLat) {
       elLat.textContent = latAws;
-      elLat.className = `font-mono text-lg font-extrabold mt-1 ${isOnline ? 'text-emerald-600' : 'text-red-600'}`;
+      elLat.className = `font-mono text-lg font-extrabold mt-1 ${isOnline ? 'text-emerald-600' : (isOffline ? 'text-red-600' : 'text-amber-600')}`;
     }
-    if (elLatDesc) elLatDesc.textContent = `Pembaruan AWS Center`;
+    if (elLatDesc) elLatDesc.textContent = syncState.aws === 'live' ? 'Live AWS Center BMKG' : 'Data Cache AWS Center';
     if (elLast) elLast.textContent = s.tanggal_data || '-';
     if (elUpt) elUpt.textContent = s.kota_kab || 'Provinsi Riau';
   } else {
     // Geofisika: Last Data & Data Latency asli dari SLMON Bali
     if (elTitle) elTitle.innerHTML = '<i class="fa fa-wave-square text-amber-500 mr-1.5"></i> Telemetri SLMON Bali';
     if (elBadge) {
-      elBadge.className = isOnline ? 'px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700' : 'px-2 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-700';
-      elBadge.textContent = isOnline ? 'Real-time' : 'Offline';
+      elBadge.className = `px-2 py-0.5 rounded text-[9px] font-bold ${badgeCls}`;
+      elBadge.textContent = badgeTxt;
     }
     const latStr = s.slmon_latency || '5s';
     if (elLat) {
@@ -1791,25 +1907,31 @@ function refreshStatusUI() {
       <span class="font-bold w-5 text-right">${counts[i]}</span>
     </li>`).join('');
 
+  // Update SLMON Bali counts (khusus Geofisika agar tidak tercampur AWS!)
+  const geoList = typeFiltered.filter(s => s.kategori_bidang === 'Geofisika');
+  const cntGreen = geoList.filter(s => slmonBucket(s) === 'green').length;
+  const cntYellow = geoList.filter(s => slmonBucket(s) === 'yellow').length;
+  const cntRed = geoList.filter(s => slmonBucket(s) === 'red').length;
+
   const C = 2 * Math.PI * 14;
   let offset = 0;
   let svg = `<circle cx="18" cy="18" r="14" fill="none" stroke="#e5e7eb" stroke-width="7"/>`;
-  if (total > 0) {
-    counts.forEach((n, i) => {
-      if (!n) return;
-      const len = (n / total) * C;
-      svg += `<circle cx="18" cy="18" r="14" fill="none" stroke="${STATUS_CATS[i].color}" stroke-width="7"
+  const slmonDonut = [
+    { n: cntGreen, color: '#10b981' },
+    { n: cntYellow, color: '#f59e0b' },
+    { n: cntRed, color: '#ef4444' },
+  ];
+  if (geoList.length > 0) {
+    slmonDonut.forEach(item => {
+      if (!item.n) return;
+      const len = (item.n / geoList.length) * C;
+      svg += `<circle cx="18" cy="18" r="14" fill="none" stroke="${item.color}" stroke-width="7"
         stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-offset}"/>`;
       offset += len;
     });
   }
   document.getElementById('donut-svg').innerHTML = svg;
-  document.getElementById('donut-total').textContent = total;
-
-  // Update SLMON Bali counts
-  const cntGreen = typeFiltered.filter(s => (s.slmon_color ? s.slmon_color === 'green' : catIndex(s) === 0)).length;
-  const cntYellow = typeFiltered.filter(s => (s.slmon_color ? (s.slmon_color === 'orange' || s.slmon_color === 'yellow') : (catIndex(s) === 1 || catIndex(s) === 2))).length;
-  const cntRed = typeFiltered.filter(s => (s.slmon_color ? (s.slmon_color === 'black' || s.slmon_color === 'red') : catIndex(s) >= 3)).length;
+  document.getElementById('donut-total').textContent = geoList.length;
 
   const elG = document.getElementById('slmon-cnt-green');
   const elY = document.getElementById('slmon-cnt-yellow');
@@ -1818,18 +1940,31 @@ function refreshStatusUI() {
   if (elY) elY.textContent = cntYellow;
   if (elR) elR.textContent = cntRed;
 
+  ['green', 'yellow', 'red'].forEach(k => {
+    const li = document.getElementById(`slmon-leg-${k}`);
+    if (li) li.classList.toggle('bg-amber-100', filters.slmonStatus === k);
+  });
+
   const elCol = document.getElementById('slmon-cnt-col');
   const el2020 = document.getElementById('slmon-cnt-2020');
   const elNon = document.getElementById('slmon-cnt-non');
-  if (elCol) elCol.textContent = typeFiltered.filter(s => s.tipe === 'Accelerograph Colocated').length;
-  if (el2020) el2020.textContent = typeFiltered.filter(s => s.tipe === 'Accelerograph 2020').length;
-  if (elNon) elNon.textContent = typeFiltered.filter(s => s.tipe === 'Accelerograph Non Colocated').length;
+  if (elCol) elCol.textContent = geoList.filter(s => s.tipe === 'Accelerograph Colocated').length;
+  if (el2020) el2020.textContent = geoList.filter(s => s.tipe === 'Accelerograph 2020').length;
+  if (elNon) elNon.textContent = geoList.filter(s => s.tipe === 'Accelerograph Non Colocated').length;
 
   renderStationList();
 }
 
 function filterByCat(i) {
+  filters.slmonStatus = '';
   filters.cat = filters.cat === i ? -1 : i;
+  renderMarkers();
+  refreshStatusUI();
+}
+
+function filterBySlmonStatus(bucket) {
+  filters.cat = -1;
+  filters.slmonStatus = filters.slmonStatus === bucket ? '' : bucket;
   renderMarkers();
   refreshStatusUI();
 }
@@ -1994,23 +2129,27 @@ function renderStationList() {
   const countEl = document.getElementById('station-count');
   if (countEl) countEl.textContent = list.length;
   ul.innerHTML = list.map(s => {
-    const c = STATUS_CATS[catIndex(s)];
+    const colHex = getMarkerColor(s);
     const cfg = TYPE_CONFIG[s.tipe] || TYPE_CONFIG['Accelerograph Colocated'];
+    const stBadge = s.status === 'Online'
+      ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+      : (s.status === 'Delay' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-red-50 text-red-600 border-red-200');
+    const stDot = s.status === 'Online' ? 'bg-emerald-500' : (s.status === 'Delay' ? 'bg-amber-500' : 'bg-red-500');
     return `
-      <li class="flex items-center gap-2 px-3 py-1.5 border-b border-gray-50 hover:bg-amber-50 cursor-pointer group" onclick="focusStation('${s.kode_sta}')">
-        ${shapeSVG(getStationShape(s), c.color, 14, '#fff', 2)}
+      <li class="flex items-center gap-2 px-3 py-1.5 border-b border-gray-50 hover:bg-amber-50 cursor-pointer group" onclick="focusStation('${s.kode_sta}', '${s.kategori_bidang}')">
+        ${shapeSVG(getStationShape(s), colHex, 14, '#fff', 2)}
         <div class="flex-1 min-w-0">
           <div class="text-[11px] font-bold text-gray-800 flex items-center gap-1.5">
             <span>${s.kode_sta}</span>
             <span class="font-normal text-gray-400">&bull; ${cfg.short}</span>
-            <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[8.5px] font-bold ${s.status === 'Online' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-red-50 text-red-600 border border-red-200'}">
-              <span class="w-1 h-1 rounded-full ${s.status === 'Online' ? 'bg-emerald-500' : 'bg-red-500'} mr-1"></span>${s.status}
+            <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[8.5px] font-bold border ${stBadge}">
+              <span class="w-1 h-1 rounded-full ${stDot} mr-1"></span>${s.status}
             </span>
           </div>
           <div class="text-[10px] text-gray-500 truncate">${s.nama_sta} &bull; ${s.kota_kab}</div>
         </div>
-        <span class="text-[9px] ${s.status === 'Online' ? 'text-gray-400' : 'text-red-500 font-semibold'} whitespace-nowrap">${s.slmon_latency ? s.slmon_latency : formatAge(s)}</span>
-        <button onclick="event.stopPropagation(); openStationModal('${s.kode_sta}')" class="text-gray-300 group-hover:text-blue-600 hover:text-blue-800 p-0.5 ml-0.5 transition" title="Lihat detail lengkap ${s.kode_sta}">
+        <span class="text-[9px] ${s.status === 'Online' ? 'text-gray-400' : (s.status === 'Delay' ? 'text-amber-600 font-semibold' : 'text-red-500 font-semibold')} whitespace-nowrap">${s.slmon_latency ? s.slmon_latency : formatAge(s)}</span>
+        <button onclick="event.stopPropagation(); openStationModal('${s.kode_sta}', '${s.kategori_bidang}')" class="text-gray-300 group-hover:text-blue-600 hover:text-blue-800 p-0.5 ml-0.5 transition" title="Lihat detail lengkap ${s.kode_sta}">
           <i class="fa fa-circle-info text-[11px]"></i>
         </button>
       </li>`;
@@ -2020,18 +2159,27 @@ function renderStationList() {
   ul.scrollTop = prevScrollTop;
 }
 
-function focusStation(kode) {
-  let m = markerByKode[kode];
+function findMarkerByCode(kode, bidang) {
+  if (bidang) {
+    const exact = markerByKode[`${bidang === 'AWS Center' ? 'AWS' : 'GEO'}:${kode}`];
+    if (exact) return exact;
+  }
+  return markerByKode[`GEO:${kode}`] || markerByKode[`AWS:${kode}`];
+}
+
+function focusStation(kode, bidang) {
+  let m = findMarkerByCode(kode, bidang);
   // Jika stasiun tidak ditemukan karena sedang difilter (kota/tipe/kategori), reset filter agar marker muncul
   if (!m) {
     filters.kota = '';
     filters.tipe = 'all';
     filters.cat = -1;
+    filters.slmonStatus = '';
     const selKota = document.getElementById('select-kota');
     if (selKota) selKota.value = '';
     syncBmkgIconsFromDropdown('all');
     renderMarkers();
-    m = markerByKode[kode];
+    m = findMarkerByCode(kode, bidang);
   }
   if (!m) return;
 

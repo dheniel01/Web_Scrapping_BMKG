@@ -1,36 +1,36 @@
 id_station;name_station;nama_kota;nama_provinsi;type;lat;lng;tanggal;diff_day;diff_hour;diff_minute;klasifikasi
-STA0150;ARG Tanah Putih;Kab. Rokan Hilir;Riau;arg;1.5586775;101.0003386;2026-11-08 17:00:00+00;0;0;5;1
-STA3202;AAWS Tambang Kampar;Kab. Kampar;Riau;aaws;0.40751419;101.21727325;2026-11-08 16:40:00+00;0;0;25;1
-STA2176;AWS Pekan Arba Indragiri Hilir;Kab. Indragri Hilir;Riau;aws;-0.297028;103.13228;2026-11-08 17:00:00+00;0;0;5;1
-STW1145;AWS Bukit Raya Pekanbaru;Kota Pekanbaru;Riau;aws;0.47019412;101.45804555;2026-11-08 17:00:00+00;0;0;5;1
-STA0155;ARG XIII Koto Kampar;Kab. Kampar;Riau;arg;0.317775;100.735327;2026-11-08 16:50:00+00;0;0;15;1
-STA0152;ARG Siak;Kab. Siak;Riau;arg;0.814548;102.021211;2026-11-08 14:10:00+00;0;2;55;1
-STA0207;ARG Tebing Tinggi;Kab. Kep. Meranti;Riau;arg;1.007886;102.716065;2026-11-08 17:00:00+00;0;0;5;1
-STA3259;ARG SMPK Bunga Raya;Kab. Siak;Riau;arg;0.960321;102.072948;2026-11-01 11:00:00+00;7;6;5;1
-150118;ARG Pusako;Kab. Siak;Riau;arg;1.017705;102.116015;2026-11-08 16:59:00+00;0;0;6;1
-STA0202;ARG Bukit Batu;Kab. Bengkalis;Riau;arg;1.364224;102.154964;2026-11-08 16:50:00+00;0;0;15;1
-STW1054;AWS Bandar Laksamana Bengkalis;Kab. Bengkalis;Riau;aws;1.594608;101.817134;2026-11-08 12:00:00+00;0;5;5;1
-STA0154;ARG Pasir Pangaraian;Kab. Rokan Hulu;Riau;arg;0.896111;100.3039;2026-11-08 17:00:00+00;0;0;5;1
-150119;ARG Tandun;Kab. Rokan Hulu;Riau;arg;0.611507;100.55404;2026-11-08 17:00:00+00;0;0;5;1
-150120;ARG Tambusai;Kab. Rokan Hulu;Riau;arg;1.056944;100.2611;2026-11-08 16:50:00+00;0;0;15;1
-STA0174;ARG Teluk Meranti;Kab. Pelalawan;Riau;arg;0.149333;102.5604;2026-11-08 17:00:00+00;0;0;5;1
-50015;Iklim Mikro Stasiun Klimatologi Riau;Kab. Kampar;Riau;ikro;0.40751419;101.21727325;2026-11-07 16:20:00+00;1;0;45;1
-STM1026;Soil Moisture Stasiun Klimatologi Riau;Kab. Kampar;Riau;soil;0.40721;101.216989;2026-11-08 13:00:00+00;0;4;5;1
-STA6024;ASRS Stasiun Klimatologi Riau;Kab. Kampar;Riau;asrs;0.40751419;101.21727325;2026-11-08 17:00:00+00;0;0;5;1
-STW1032;AWS Mesonetwork Rokan Hulu;Kab. Rokan Hulu;Riau;aws;0.841434;100.3375;2026-11-04 21:59:00+00;3;19;6;1
-STA0151;ARG Bantan;Kab. Bengkalis;Riau;arg;1.499444;102.1459;2026-11-08 17:00:00+00;0;0;5;1
-150116;ARG Kuala Kampar;Kab. Pelalawan;Riau;arg;0.531027;103.2677;2026-11-08 16:59:00+00;0;0;6;1
-STAL041;ARG BPP Rumbai Timur;Kota Pekanbaru;Riau;arg;0.566667;101.46;2026-11-08 16:50:00+00;0;0;15;1
-150117;ARG Minas;Kab. Siak;Riau;arg;0.699143;101.438512;2026-11-08 17:00:00+00;0;0;5;1
-STA0205;ARG Rokan IV Koto;Kab. Rokan Hilir;Riau;arg;0.571355;100.427113;2026-11-08 17:00:00+00;0;0;5;1
-STA0133;ARG Kandis;Kab. Siak;Riau;arg;0.8896927;101.2369606;2026-11-08 16:50:00+00;0;0;15;1
-STA0201;ARG SMPK Bangkinang;Kab. Kampar;Riau;arg;0.326326;101.039558;2026-11-08 17:00:00+00;0;0;5;1
-STA0153;ARG Kuantan Tengah;Kab. Kuantan Singingi;Riau;arg;-0.540839;101.554764;2026-11-08 16:50:00+00;0;0;15;1
-AAWS0356;AAWS Gunung Toar Kuantan Singingi;Kab. Kuantan Singingi;Riau;aaws;-0.598066;101.48648;2026-11-08 16:40:00+00;0;0;25;1
-STW1037;AWS  Mesonetwork  Kampar;Kab. Kampar;Riau;aws;0.614;100.9734;2026-11-02 14:56:00+00;6;2;9;1
-STA0209;ARG Dumai Timur;Kota Dumai;Riau;arg;1.669771;101.459353;2026-11-08 17:00:00+00;0;0;5;1
-STA0208;ARG Batang Cenaku;Kab. Indragiri Hulu;Riau;arg;-0.663637;102.278824;2026-11-08 17:00:00+00;0;0;5;1
-STA5021;AWS Digi Stamet Pekanbaru;Kota Pekanbaru;Riau;aws;0.46083;101.444;2026-11-08 17:00:00+00;0;0;5;1
-STA3203;AAWS Rimba Melintang Rokan Hilir;Kab. Rokan Hilir;Riau;aaws;1.84561319;100.97833333;2026-11-08 16:46:00+00;0;0;19;1
-STA0206;ARG Tembilahan;Kab. Indragri Hilir;Riau;arg;-0.324388;103.157754;2026-11-08 17:00:00+00;0;0;5;1
-STAL042;ARG BPP Kampar Kiri;Kab. Kampar;Riau;arg;0.04721;101.204541;2026-11-08 16:59:00+00;0;0;6;1
+STA0150;ARG Tanah Putih;Kab. Rokan Hilir;Riau;arg;1.5586775;101.0003386;2026-11-11 02:20:00+00;0;0;10;1
+STA3202;AAWS Tambang Kampar;Kab. Kampar;Riau;aaws;0.40751419;101.21727325;2026-11-11 02:00:00+00;0;0;30;1
+STA2176;AWS Pekan Arba Indragiri Hilir;Kab. Indragri Hilir;Riau;aws;-0.297028;103.13228;2026-11-11 02:20:00+00;0;0;10;1
+STW1145;AWS Bukit Raya Pekanbaru;Kota Pekanbaru;Riau;aws;0.47019412;101.45804555;2026-11-10 13:30:00+00;0;13;0;1
+STA0155;ARG XIII Koto Kampar;Kab. Kampar;Riau;arg;0.317775;100.735327;2026-11-11 02:10:00+00;0;0;20;1
+STA0152;ARG Siak;Kab. Siak;Riau;arg;0.814548;102.021211;2026-11-11 02:20:00+00;0;0;10;1
+STA0207;ARG Tebing Tinggi;Kab. Kep. Meranti;Riau;arg;1.007886;102.716065;2026-11-11 02:20:00+00;0;0;10;1
+STA3259;ARG SMPK Bunga Raya;Kab. Siak;Riau;arg;0.960321;102.072948;2026-11-11 02:10:00+00;0;0;20;1
+150118;ARG Pusako;Kab. Siak;Riau;arg;1.017705;102.116015;2026-11-11 02:20:00+00;0;0;10;1
+STA0202;ARG Bukit Batu;Kab. Bengkalis;Riau;arg;1.364224;102.154964;2026-11-11 02:10:00+00;0;0;20;1
+STW1054;AWS Bandar Laksamana Bengkalis;Kab. Bengkalis;Riau;aws;1.594608;101.817134;2026-11-08 12:00:00+00;2;14;30;1
+STA0154;ARG Pasir Pangaraian;Kab. Rokan Hulu;Riau;arg;0.896111;100.3039;2026-11-11 02:20:00+00;0;0;10;1
+150119;ARG Tandun;Kab. Rokan Hulu;Riau;arg;0.611507;100.55404;2026-11-11 02:20:00+00;0;0;10;1
+150120;ARG Tambusai;Kab. Rokan Hulu;Riau;arg;1.056944;100.2611;2026-11-11 02:10:00+00;0;0;20;1
+STA0174;ARG Teluk Meranti;Kab. Pelalawan;Riau;arg;0.149333;102.5604;2026-11-10 20:30:00+00;0;6;0;1
+50015;Iklim Mikro Stasiun Klimatologi Riau;Kab. Kampar;Riau;ikro;0.40751419;101.21727325;2026-11-11 02:10:00+00;0;0;20;1
+STM1026;Soil Moisture Stasiun Klimatologi Riau;Kab. Kampar;Riau;soil;0.40721;101.216989;2026-11-10 23:00:00+00;0;3;30;1
+STA6024;ASRS Stasiun Klimatologi Riau;Kab. Kampar;Riau;asrs;0.40751419;101.21727325;2026-11-11 02:20:00+00;0;0;10;1
+STW1032;AWS Mesonetwork Rokan Hulu;Kab. Rokan Hulu;Riau;aws;0.841434;100.3375;2026-11-04 21:59:00+00;6;4;31;1
+STA0151;ARG Bantan;Kab. Bengkalis;Riau;arg;1.499444;102.1459;2026-11-11 02:20:00+00;0;0;10;1
+150116;ARG Kuala Kampar;Kab. Pelalawan;Riau;arg;0.531027;103.2677;2026-11-11 02:20:00+00;0;0;10;1
+STAL041;ARG BPP Rumbai Timur;Kota Pekanbaru;Riau;arg;0.566667;101.46;2026-11-11 02:10:00+00;0;0;20;1
+150117;ARG Minas;Kab. Siak;Riau;arg;0.699143;101.438512;2026-11-11 02:20:00+00;0;0;10;1
+STA0205;ARG Rokan IV Koto;Kab. Rokan Hilir;Riau;arg;0.571355;100.427113;2026-11-11 02:20:00+00;0;0;10;1
+STA0133;ARG Kandis;Kab. Siak;Riau;arg;0.8896927;101.2369606;2026-11-11 02:10:00+00;0;0;20;1
+STA0201;ARG SMPK Bangkinang;Kab. Kampar;Riau;arg;0.326326;101.039558;2026-11-11 02:20:00+00;0;0;10;1
+STA0153;ARG Kuantan Tengah;Kab. Kuantan Singingi;Riau;arg;-0.540839;101.554764;2026-11-11 02:10:00+00;0;0;20;1
+AAWS0356;AAWS Gunung Toar Kuantan Singingi;Kab. Kuantan Singingi;Riau;aaws;-0.598066;101.48648;2026-11-11 02:00:00+00;0;0;30;1
+STW1037;AWS  Mesonetwork  Kampar;Kab. Kampar;Riau;aws;0.614;100.9734;2026-11-02 14:56:00+00;8;11;34;1
+STA0209;ARG Dumai Timur;Kota Dumai;Riau;arg;1.669771;101.459353;2026-11-11 02:20:00+00;0;0;10;1
+STA0208;ARG Batang Cenaku;Kab. Indragiri Hulu;Riau;arg;-0.663637;102.278824;2026-11-11 02:20:00+00;0;0;10;1
+STA5021;AWS Digi Stamet Pekanbaru;Kota Pekanbaru;Riau;aws;0.46083;101.444;2026-11-10 09:40:00+00;0;16;50;1
+STA3203;AAWS Rimba Melintang Rokan Hilir;Kab. Rokan Hilir;Riau;aaws;1.84561319;100.97833333;2026-11-11 01:56:00+00;0;0;34;1
+STA0206;ARG Tembilahan;Kab. Indragri Hilir;Riau;arg;-0.324388;103.157754;2026-11-11 02:20:00+00;0;0;10;1
+STAL042;ARG BPP Kampar Kiri;Kab. Kampar;Riau;arg;0.04721;101.204541;2026-11-11 02:19:00+00;0;0;11;1

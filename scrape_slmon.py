@@ -4,23 +4,10 @@
 BMKG SLMON Scraper - Alat Geofisika & Akselerograf Wilayah Riau (Real-Time)
 =============================================================================
 Skrip untuk mengekstrak data stasiun peralatan geofisika BMKG (Akselerograf &
-Seismograf Broadband) secara real-time langsung dari server SLMON InaTEWS:
-  http://202.90.198.40/sismon-wrs/web/slmon
-
-Fitur:
-- Ekstraksi real-time langsung dari variabel 'datapeta' (GeoJSON FeatureCollection)
-- Filter khusus Provinsi Riau (stasiun BKNI, GTSI, IHRSI, PRSI, RGRI, RHRSI,
-  RRHRI, RRSI, SIRSI, DDSI, BRSN)
-- Ekstraksi detail:
-  * Merk Accelerograph (merkac: Nanometrics Titan, Guralp Fortis, Kinemetrics FBA)
-  * Merk Seismograph Broadband (merkbb: Streckeisen, Nanometrics Trillium, Guralp 3T)
-  * Merk Digitizer (merkdgtz: Centaur, Minimus, Q330)
-  * Latensi real-time channel Akselerograf (latency4 & color4) dan Broadband (latency1 & color1)
-  * Waktu data telemetri real-time (timech4, timech1, time)
-- Output otomatis ke:
-  * data/geofisika_riau.json (untuk web dashboard)
-  * simora_station_monitoring.csv (dataset tabel CSV)
-- Dukungan mode loop real-time: python scrape_slmon.py --live --interval 5
+Seismograf Broadband) secara real-time langsung dari server SLMON Bali & InaTEWS:
+  - SLMON Bali JSON : http://36.92.49.116:8899/slmon2bali/data/slmon.all.laststatus.json
+  - InaTEWS JSON    : http://202.90.198.40/sismon-slmon2/data/slmon.all.laststatus.json
+  - HTML Fallback   : http://202.90.198.40/sismon-wrs/web/slmon
 =============================================================================
 """
 
@@ -30,12 +17,18 @@ import os
 import sys
 import time
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
+SLMON_JSON_URLS = [
+    "http://36.92.49.116:8899/slmon2bali/data/slmon.all.laststatus.json",
+    "http://202.90.198.40/sismon-slmon2/data/slmon.all.laststatus.json",
+]
 SLMON_URL = "http://202.90.198.40/sismon-wrs/web/slmon"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_OUTPUT = os.path.join(BASE_DIR, "data", "geofisika_riau.json")
 CSV_OUTPUT = os.path.join(BASE_DIR, "simora_station_monitoring.csv")
+
+WIB_TZ = timezone(timedelta(hours=7))
 
 # Pemetaan nama kabupaten/kota resmi di Riau berdasarkan kode stasiun
 KAB_MAPPING = {
@@ -52,70 +45,75 @@ KAB_MAPPING = {
     "DDSI": ("Dumai Timur", "Kota Dumai"),
 }
 
-def format_id_time(dt):
-    """Format datetime ke format Indonesia: DD/MM/YYYY HH:mm:ss"""
-    return dt.strftime("%d/%m/%Y %H:%M:%S")
+def format_wib_time(dt_utc):
+    """Konversi datetime UTC menjadi format WIB DD/MM/YYYY HH:mm:ss WIB"""
+    dt_wib = dt_utc.astimezone(WIB_TZ)
+    return dt_wib.strftime("%d/%m/%Y %H:%M:%S WIB")
 
-def parse_slmon_time(timestr):
-    """Parse string waktu SLMON ke datetime object"""
+def parse_slmon_utc_time(timestr):
+    """Parse string waktu UTC SLMON ke datetime aware UTC"""
     if not timestr:
-        return datetime.now()
-    # Contoh format: 2026-11-08 15:58:02 atau 2026-11-08 15:57:56.4968
+        return datetime.now(timezone.utc)
     clean = timestr.split('.')[0].strip()
     try:
-        return datetime.strptime(clean, "%Y-%m-%d %H:%M:%S")
+        return datetime.strptime(clean, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
     except Exception:
-        return datetime.now()
+        return datetime.now(timezone.utc)
 
-def scrape_slmon(timeout=15):
-    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{now_str}] Menghubungkan ke server SLMON: {SLMON_URL}...")
+def fetch_slmon_feature_collection(timeout=15):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/html, */*; q=0.8",
+        "Connection": "close"
+    }
+    for url in SLMON_JSON_URLS:
+        try:
+            print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Menghubungkan ke SLMON JSON: {url}...")
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                if resp.status == 200:
+                    fc = json.loads(resp.read().decode("utf-8", errors="ignore"))
+                    if isinstance(fc.get("features"), list):
+                        return fc
+        except Exception as e:
+            print(f"[WARN] Gagal dari {url}: {e}")
 
-    req = urllib.request.Request(
-        SLMON_URL,
-        headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Connection": "close"
-        }
-    )
-
+    # Fallback HTML scraping
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Fallback ke HTML: {SLMON_URL}...")
+    req = urllib.request.Request(SLMON_URL, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             if resp.status != 200:
-                print(f"[ERROR] HTTP {resp.status} dari SLMON")
                 return None
             raw = resp.read().decode("utf-8", errors="ignore")
     except Exception as e:
-        print(f"[ERROR] Gagal menghubungi SLMON: {e}")
+        print(f"[ERROR] Gagal menghubungi SLMON HTML: {e}")
         return None
 
-    # Cari variabel datapeta di dalam HTML
     marker = "var datapeta = "
     start_idx = raw.find(marker)
     if start_idx == -1:
-        print("[ERROR] Variabel 'datapeta' tidak ditemukan di halaman SLMON.")
         return None
-
     start_idx += len(marker)
     end_idx = raw.find("};\n", start_idx)
     if end_idx == -1:
         end_idx = raw.find("};", start_idx)
     if end_idx == -1:
-        print("[ERROR] Akhir GeoJSON tidak ditemukan.")
+        return None
+    try:
+        return json.loads(raw[start_idx:end_idx + 1].strip())
+    except Exception:
         return None
 
-    json_str = raw[start_idx:end_idx + 1].strip()
-    try:
-        fc = json.loads(json_str)
-    except Exception as e:
-        print(f"[ERROR] Gagal parse JSON datapeta: {e}")
+def scrape_slmon(timeout=15):
+    fc = fetch_slmon_feature_collection(timeout=timeout)
+    if not fc:
+        print("[ERROR] Semua sumber SLMON gagal diakses.")
         return None
 
     features = fc.get("features", [])
-    print(f"[OK] Sukses mengunduh telemetri {len(features)} stasiun InaTEWS nasional.")
+    print(f"[OK] Sukses mengunduh telemetri {len(features)} stasiun InaTEWS / SLMON Bali.")
 
-    # Baca stasiun geofisika yang sudah ada (untuk mempertahankan stasiun lokal seperti BRSN jika tidak ada di SLMON)
     existing_stations = {}
     if os.path.exists(JSON_OUTPUT):
         try:
@@ -127,6 +125,7 @@ def scrape_slmon(timeout=15):
 
     riau_scraped = []
     scraped_codes = set()
+    now_utc = datetime.now(timezone.utc)
 
     for f in features:
         p = f.get("properties", {})
@@ -138,9 +137,7 @@ def scrape_slmon(timeout=15):
         prov = str(p.get("provin", "")).strip()
         loc = str(p.get("location", "")).strip()
 
-        # Filter: Provinsi Riau (bukan Kepulauan Riau)
         is_riau = ("riau" in prov.lower() and "kepulauan" not in prov.lower()) or (sta in KAB_MAPPING)
-
         if not is_riau:
             continue
 
@@ -148,36 +145,26 @@ def scrape_slmon(timeout=15):
         lon = float(coords[0])
         lat = float(coords[1])
 
-        # Ambil telemetri Accelerograph (channel 4/HN*) dan Broadband (channel 1/SH*)
         ac_merk = p.get("merkac", "") or "Accelerograph"
         bb_merk = p.get("merkbb", "") or "Seismograph BB"
         dgtz_merk = p.get("merkdgtz", "") or "Digitizer"
         upt = p.get("uptbmkg", "Stageof-Padang-Panjang")
 
-        # Latensi & warna: prioritaskan sensor akselerograf (channel 4), fallback ke broadband (channel 1)
-        lat_ac = p.get("latency4") or p.get("latency1") or "5s"
-        col_ac = p.get("color4") or p.get("color1") or "green"
+        lat_ac = str(p.get("latency4") or p.get("latency1") or "5s").strip()
+        col_ac = str(p.get("color4") or p.get("color1") or "green").strip().lower()
 
-        # Tentukan status online / delay / offline
-        if col_ac == "black" or "d" in str(lat_ac).lower():
+        if col_ac in ("black", "grey", "red") or "d" in lat_ac.lower() or "h" in lat_ac.lower():
             status = "Offline"
-        elif col_ac in ("yellow", "orange") or "m" in str(lat_ac).lower():
-            status = "Online"  # Delay
+        elif col_ac in ("yellow", "orange") or "m" in lat_ac.lower():
+            status = "Delay"
         else:
             status = "Online"
 
-        # Tipe alat
-        if bb_merk and ac_merk:
-            tipe = "Accelerograph Colocated"
-        else:
-            tipe = "Accelerograph 2020"
+        tipe = "Accelerograph Colocated" if (bb_merk and ac_merk) else "Accelerograph 2020"
 
-        # Waktu telemetri
-        t_raw = p.get("timech4") or p.get("time")
-        dt_last = parse_slmon_time(t_raw)
-        formatted_last_data = format_id_time(dt_last)
-
-        # Nama dan Kota
+        t_raw = p.get("timech4") or p.get("timech1") or p.get("time")
+        dt_last = parse_slmon_utc_time(t_raw)
+        formatted_last_data = format_wib_time(dt_last)
         nama_default, kota_default = KAB_MAPPING.get(sta, (loc or sta, f"Prov. {prov}"))
 
         station_obj = {
@@ -199,28 +186,25 @@ def scrape_slmon(timeout=15):
             "slmon_latency": lat_ac,
             "slmon_color": col_ac,
             "slmon_last_data": formatted_last_data,
+            "last_data_iso": dt_last.isoformat().replace("+00:00", "Z"),
             "slmon_upt": upt,
-            "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "last_updated": now_utc.astimezone(WIB_TZ).strftime("%Y-%m-%d %H:%M:%S")
         }
         riau_scraped.append(station_obj)
 
-    # Tambahkan stasiun lokal yang ada sebelumnya jika belum ter-scrape (misal BRSN)
     for code, existing in existing_stations.items():
         if code not in scraped_codes:
-            # Perbarui waktu agar tetap realtime
-            existing["slmon_last_data"] = format_id_time(datetime.now())
-            existing["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            existing["slmon_last_data"] = format_wib_time(now_utc)
+            existing["last_data_iso"] = now_utc.isoformat().replace("+00:00", "Z")
+            existing["last_updated"] = now_utc.astimezone(WIB_TZ).strftime("%Y-%m-%d %H:%M:%S")
             riau_scraped.append(existing)
 
-    # Urutkan berdasarkan kode stasiun
     riau_scraped.sort(key=lambda x: x["kode_sta"])
 
-    # 1. Simpan ke data/geofisika_riau.json
     os.makedirs(os.path.dirname(JSON_OUTPUT), exist_ok=True)
     with open(JSON_OUTPUT, "w", encoding="utf-8") as f:
         json.dump(riau_scraped, f, indent=2, ensure_ascii=False)
 
-    # 2. Simpan ke simora_station_monitoring.csv
     csv_lines = [
         "network;station;province;location;digitizer_type;upt;last_data;data_latency;color"
     ]

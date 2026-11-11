@@ -13,13 +13,14 @@
     "sensor": "Kinemetrics",
     "sensor_accelerograph": "Kinemetrics-FBA-ES-T-2016",
     "sensor_broadband": "Streckeisen-STS-2-2016",
-    "status": "Online",
+    "status": "Delay",
     "tanggal_instalasi": "14/03/2008",
-    "slmon_latency": "8s",
-    "slmon_color": "green",
-    "slmon_last_data": "08/11/2026 17:05:55",
+    "slmon_latency": "12s",
+    "slmon_color": "yellow",
+    "slmon_last_data": "11/11/2026 09:32:49 WIB",
+    "last_data_iso": "2026-11-11T02:32:49Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "BRSN",
@@ -37,8 +38,9 @@
     "slmon_color": "green",
     "slmon_upt": "Stageof-Padang-Panjang",
     "slmon_latency": "3s",
-    "slmon_last_data": "09/11/2026 00:06:18",
-    "last_updated": "2026-11-09 00:06:18"
+    "slmon_last_data": "11/11/2026 09:33:14 WIB",
+    "last_updated": "2026-11-11 09:33:14",
+    "last_data_iso": "2026-11-11T02:33:14.656158Z"
   },
   {
     "kode_sta": "DDSI",
@@ -56,11 +58,12 @@
     "sensor_broadband": "Nanometrics-Horizon-2019",
     "status": "Offline",
     "tanggal_instalasi": "2019",
-    "slmon_latency": "26d",
+    "slmon_latency": "28d",
     "slmon_color": "black",
-    "slmon_last_data": "13/10/2026 13:11:07",
+    "slmon_last_data": "13/10/2026 20:11:07 WIB",
+    "last_data_iso": "2026-10-13T13:11:07Z",
     "slmon_upt": "Stageof-Deli-Serdang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "GTSI",
@@ -80,9 +83,10 @@
     "tanggal_instalasi": "2019",
     "slmon_latency": "3s",
     "slmon_color": "green",
-    "slmon_last_data": "08/11/2026 17:06:00",
+    "slmon_last_data": "11/11/2026 09:32:58 WIB",
+    "last_data_iso": "2026-11-11T02:32:58Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "IHRSI",
@@ -100,11 +104,12 @@
     "sensor_broadband": "Guralp3T-120Posthole-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "9s",
+    "slmon_latency": "5s",
     "slmon_color": "green",
-    "slmon_last_data": "08/11/2026 17:05:54",
+    "slmon_last_data": "11/11/2026 09:32:56 WIB",
+    "last_data_iso": "2026-11-11T02:32:56Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "PATU",
@@ -122,8 +127,9 @@
     "slmon_color": "green",
     "slmon_upt": "Stageof-Padang-Panjang",
     "slmon_latency": "6s",
-    "slmon_last_data": "09/11/2026 00:06:18",
-    "last_updated": "2026-11-09 00:06:18"
+    "slmon_last_data": "11/11/2026 09:33:14 WIB",
+    "last_updated": "2026-11-11 09:33:14",
+    "last_data_iso": "2026-11-11T02:33:14.656158Z"
   },
   {
     "kode_sta": "PESI",
@@ -141,8 +147,9 @@
     "slmon_color": "green",
     "slmon_upt": "Stageof-Padang-Panjang",
     "slmon_latency": "4s",
-    "slmon_last_data": "09/11/2026 00:06:18",
-    "last_updated": "2026-11-09 00:06:18"
+    "slmon_last_data": "11/11/2026 09:33:14 WIB",
+    "last_updated": "2026-11-11 09:33:14",
+    "last_data_iso": "2026-11-11T02:33:14.656158Z"
   },
   {
     "kode_sta": "PRSI",
@@ -160,11 +167,12 @@
     "sensor_broadband": "Guralp-3T120-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "10s",
+    "slmon_latency": "7s",
     "slmon_color": "green",
-    "slmon_last_data": "08/11/2026 17:05:53",
+    "slmon_last_data": "11/11/2026 09:32:54 WIB",
+    "last_data_iso": "2026-11-11T02:32:54Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "RGRI",
@@ -182,11 +190,12 @@
     "sensor_broadband": "NanometricsTrillium120Q-2019",
     "status": "Online",
     "tanggal_instalasi": "11/29/2019",
-    "slmon_latency": "5s",
+    "slmon_latency": "2s",
     "slmon_color": "green",
-    "slmon_last_data": "08/11/2026 17:05:58",
+    "slmon_last_data": "11/11/2026 09:32:59 WIB",
+    "last_data_iso": "2026-11-11T02:32:59Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "RHRSI",
@@ -204,11 +213,12 @@
     "sensor_broadband": "Guralp-CMG3T-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "9s",
+    "slmon_latency": "7s",
     "slmon_color": "green",
-    "slmon_last_data": "08/11/2026 17:05:54",
+    "slmon_last_data": "11/11/2026 09:32:54 WIB",
+    "last_data_iso": "2026-11-11T02:32:54Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "RRHRI",
@@ -226,11 +236,12 @@
     "sensor_broadband": "Nanometrics-Trillium120PH-Gen3-2022",
     "status": "Online",
     "tanggal_instalasi": "2022",
-    "slmon_latency": "4s",
+    "slmon_latency": "3s",
     "slmon_color": "green",
-    "slmon_last_data": "08/11/2026 17:05:59",
+    "slmon_last_data": "11/11/2026 09:32:58 WIB",
+    "last_data_iso": "2026-11-11T02:32:58Z",
     "slmon_upt": "Stageof-Padang-Pajang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "RRSI",
@@ -248,11 +259,12 @@
     "sensor_broadband": "Nanometrics-Trillium120Q-2019",
     "status": "Online",
     "tanggal_instalasi": "2019",
-    "slmon_latency": "3s",
+    "slmon_latency": "1s",
     "slmon_color": "green",
-    "slmon_last_data": "08/11/2026 17:06:00",
+    "slmon_last_data": "11/11/2026 09:33:00 WIB",
+    "last_data_iso": "2026-11-11T02:33:00Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "SIRSI",
@@ -270,11 +282,12 @@
     "sensor_broadband": "Guralp-CMG3T-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "8s",
+    "slmon_latency": "9s",
     "slmon_color": "green",
-    "slmon_last_data": "08/11/2026 17:05:55",
+    "slmon_last_data": "11/11/2026 09:32:52 WIB",
+    "last_data_iso": "2026-11-11T02:32:52Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14"
   },
   {
     "kode_sta": "STA6024",
@@ -292,8 +305,9 @@
     "slmon_color": "green",
     "slmon_upt": "Stageof-Padang-Panjang",
     "slmon_latency": "8s",
-    "slmon_last_data": "09/11/2026 00:06:18",
+    "slmon_last_data": "11/11/2026 09:33:14 WIB",
     "alias": "KRSN",
-    "last_updated": "2026-11-09 00:06:18"
+    "last_updated": "2026-11-11 09:33:14",
+    "last_data_iso": "2026-11-11T02:33:14.656158Z"
   }
 ]

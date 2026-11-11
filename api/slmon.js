@@ -1,6 +1,94 @@
 // api/slmon.js - Vercel Serverless Function
-// Live Real-Time Scraper for BMKG SLMON InaTEWS (Alat Geofisika & Akselerograf Riau)
-// Source: http://202.90.198.40/sismon-wrs/web/slmon
+// Live Real-Time Scraper for BMKG SLMON Bali & InaTEWS (Alat Geofisika & Akselerograf Riau)
+// Primary JSON: http://36.92.49.116:8899/slmon2bali/data/slmon.all.laststatus.json
+// Mirror JSON : http://202.90.198.40/sismon-slmon2/data/slmon.all.laststatus.json
+
+const SLMON_ENDPOINTS = [
+  'http://36.92.49.116:8899/slmon2bali/data/slmon.all.laststatus.json',
+  'http://202.90.198.40/sismon-slmon2/data/slmon.all.laststatus.json',
+];
+
+const SLMON_HTML_FALLBACK = 'http://202.90.198.40/sismon-wrs/web/slmon';
+
+const KAB_MAPPING = {
+  'BKNI': { nama: 'Bangkinang', kota: 'Kab. Kampar' },
+  'BRSN': { nama: 'BPBD Prov. Riau', kota: 'Kota Pekanbaru' },
+  'GTSI': { nama: 'Gunung Toar', kota: 'Kab. Kuantan Singingi' },
+  'IHRSI': { nama: 'Indragiri Hilir', kota: 'Kab. Indragiri Hilir' },
+  'PRSI': { nama: 'Pelalawan', kota: 'Kab. Pelalawan' },
+  'RGRI': { nama: 'Rengat', kota: 'Kab. Indragiri Hulu' },
+  'RHRSI': { nama: 'Rokan Hilir', kota: 'Kab. Rokan Hilir' },
+  'RRHRI': { nama: 'Rokan Hulu', kota: 'Kab. Rokan Hulu' },
+  'RRSI': { nama: 'Rambah', kota: 'Kab. Rokan Hulu' },
+  'SIRSI': { nama: 'Siak', kota: 'Kab. Siak' },
+  'DDSI': { nama: 'Dumai Timur', kota: 'Kota Dumai' },
+  'PESI': { nama: 'Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru', kota: 'Kota Pekanbaru' },
+  'PATU': { nama: 'Stasiun Meteorologi Klas IV Maritim Teluk Bayur', kota: 'Kota Padang (Sumbar)' }
+};
+
+const pad = n => String(n).padStart(2, '0');
+
+/** Parse UTC timestamp string like "2026-11-11 02:25:50.3931" into Date */
+function parseSlmonUtcTime(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  const clean = raw.split('.')[0].trim();
+  const match = clean.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/);
+  if (!match) return null;
+  const [, y, m, d, hh, mm, ss] = match;
+  return new Date(Date.UTC(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm), Number(ss)));
+}
+
+/** Format Date as WIB (UTC+7) DD/MM/YYYY HH:mm:ss */
+function formatWibID(dateObj) {
+  const d = new Date(dateObj.getTime() + 7 * 3600 * 1000);
+  return `${pad(d.getUTCDate())}/${pad(d.getUTCMonth() + 1)}/${d.getUTCFullYear()} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())} WIB`;
+}
+
+async function fetchSlmonJson(url, timeoutMs = 20000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const resp = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*'
+      }
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (!data || !Array.isArray(data.features)) throw new Error('Format JSON SLMON tidak valid');
+    return { fc: data, source: url };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function fetchSlmonHtmlFallback(timeoutMs = 20000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const resp = await fetch(SLMON_HTML_FALLBACK, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+      }
+    });
+    if (!resp.ok) throw new Error(`SLMON HTML HTTP ${resp.status}`);
+    const html = await resp.text();
+    const marker = 'var datapeta = ';
+    const startIdx = html.indexOf(marker);
+    if (startIdx === -1) throw new Error("Variabel 'datapeta' tidak ditemukan");
+    const jsonStart = startIdx + marker.length;
+    let jsonEnd = html.indexOf('};\n', jsonStart);
+    if (jsonEnd === -1) jsonEnd = html.indexOf('};', jsonStart);
+    if (jsonEnd === -1) throw new Error('Akhir GeoJSON tidak ditemukan');
+    const fc = JSON.parse(html.substring(jsonStart, jsonEnd + 1).trim());
+    return { fc, source: SLMON_HTML_FALLBACK };
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -12,62 +100,18 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const SLMON_URL = 'http://202.90.198.40/sismon-wrs/web/slmon';
-
-  const KAB_MAPPING = {
-    'BKNI': { nama: 'Bangkinang', kota: 'Kab. Kampar' },
-    'BRSN': { nama: 'BPBD Prov. Riau', kota: 'Kota Pekanbaru' },
-    'GTSI': { nama: 'Gunung Toar', kota: 'Kab. Kuantan Singingi' },
-    'IHRSI': { nama: 'Indragiri Hilir', kota: 'Kab. Indragiri Hilir' },
-    'PRSI': { nama: 'Pelalawan', kota: 'Kab. Pelalawan' },
-    'RGRI': { nama: 'Rengat', kota: 'Kab. Indragiri Hulu' },
-    'RHRSI': { nama: 'Rokan Hilir', kota: 'Kab. Rokan Hilir' },
-    'RRHRI': { nama: 'Rokan Hulu', kota: 'Kab. Rokan Hulu' },
-    'RRSI': { nama: 'Rambah', kota: 'Kab. Rokan Hulu' },
-    'SIRSI': { nama: 'Siak', kota: 'Kab. Siak' },
-    'DDSI': { nama: 'Dumai Timur', kota: 'Kota Dumai' }
-  };
-
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 9000);
-
-    const resp = await fetch(SLMON_URL, {
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-      }
-    });
-    clearTimeout(timeout);
-
-    if (!resp.ok) {
-      throw new Error(`SLMON HTTP error: ${resp.status}`);
+    let result;
+    try {
+      // Balap paralel antara server SLMON Bali JSON dan InaTEWS JSON
+      result = await Promise.any(SLMON_ENDPOINTS.map(u => fetchSlmonJson(u, 22000)));
+    } catch {
+      result = await fetchSlmonHtmlFallback(20000);
     }
 
-    const html = await resp.text();
-    const marker = 'var datapeta = ';
-    const startIdx = html.indexOf(marker);
-
-    if (startIdx === -1) {
-      throw new Error("Variabel 'datapeta' tidak ditemukan di SLMON");
-    }
-
-    const jsonStart = startIdx + marker.length;
-    let jsonEnd = html.indexOf('};\n', jsonStart);
-    if (jsonEnd === -1) jsonEnd = html.indexOf('};', jsonStart);
-
-    if (jsonEnd === -1) {
-      throw new Error('Akhir GeoJSON tidak ditemukan');
-    }
-
-    const fc = JSON.parse(html.substring(jsonStart, jsonEnd + 1).trim());
+    const { fc, source } = result;
     const features = fc.features || [];
-
-    const pad = n => String(n).padStart(2, '0');
     const now = new Date();
-    const formatID = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-
     const riauStations = [];
 
     for (const f of features) {
@@ -83,22 +127,23 @@ export default async function handler(req, res) {
       if (!isRiau) continue;
 
       const acMerk = p.merkac || 'Accelerograph';
-      const bbMerk = p.merkbb || 'Seismograph BB';
+      const bbMerk = p.merkbb || '';
       const dgtzMerk = p.merkdgtz || 'Digitizer';
       const upt = p.uptbmkg || 'Stageof-Padang-Panjang';
 
-      const latAc = p.latency4 || p.latency1 || '5s';
-      const colAc = p.color4 || p.color1 || 'green';
+      const latAc = String(p.latency4 || p.latency1 || '5s').trim();
+      const colAc = String(p.color4 || p.color1 || 'green').trim().toLowerCase();
 
       let status = 'Online';
-      if (colAc === 'black' || String(latAc).toLowerCase().includes('d')) {
+      if (colAc === 'black' || colAc === 'grey' || colAc === 'red' || latAc.toLowerCase().includes('d') || latAc.toLowerCase().includes('h')) {
         status = 'Offline';
-      } else if (colAc === 'yellow' || colAc === 'orange' || String(latAc).toLowerCase().includes('m')) {
-        status = 'Online';
+      } else if (colAc === 'yellow' || colAc === 'orange' || latAc.toLowerCase().includes('m')) {
+        status = 'Delay';
       }
 
       const tipe = (bbMerk && acMerk) ? 'Accelerograph Colocated' : 'Accelerograph 2020';
-
+      const rawTime = p.timech4 || p.timech1 || p.time;
+      const dtLast = parseSlmonUtcTime(rawTime) || now;
       const mapInfo = KAB_MAPPING[sta] || { nama: loc || sta, kota: `Kab. ${loc || prov}` };
 
       riauStations.push({
@@ -114,11 +159,12 @@ export default async function handler(req, res) {
         digitizer_full: dgtzMerk,
         sensor: acMerk.split('-')[0],
         sensor_accelerograph: acMerk,
-        sensor_broadband: bbMerk,
+        sensor_broadband: bbMerk || 'Seismograph BB',
         status: status,
         slmon_latency: latAc,
         slmon_color: colAc,
-        slmon_last_data: formatID(now),
+        slmon_last_data: formatWibID(dtLast),
+        last_data_iso: dtLast.toISOString(),
         slmon_upt: upt,
         last_updated: now.toISOString()
       });
@@ -126,16 +172,16 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       status: 'success',
-      source: SLMON_URL,
+      source,
       timestamp: now.toISOString(),
       total: riauStations.length,
       stations: riauStations
     });
 
   } catch (err) {
-    return res.status(500).json({
+    return res.status(502).json({
       status: 'error',
-      message: err.message || 'Gagal mengambil data dari server SLMON InaTEWS'
+      message: err.message || 'Gagal mengambil data dari server SLMON Bali / InaTEWS'
     });
   }
 }
