@@ -740,24 +740,6 @@ const DEFAULT_STATIONS = [
     "alias": "KRSN"
   },
   {
-    "kode_sta": "PATU",
-    "site_id": "Stasiun Meteorologi Klas IV Maritim Teluk Bayur",
-    "nama_sta": "Stasiun Meteorologi Klas IV Maritim Teluk Bayur",
-    "tipe": "Accelerograph Non Colocated",
-    "lat": -1.0,
-    "lon": 100.37,
-    "kota_kab": "Kab. Rokan Hulu",
-    "provinsi": "Riau",
-    "digitizer": "Centaur",
-    "sensor": "TSA-100",
-    "status": "Online",
-    "tanggal_instalasi": "2009",
-    "slmon_color": "green",
-    "slmon_upt": "Stageof-Padang-Panjang",
-    "slmon_latency": "6s",
-    "slmon_last_data": "29/10/2026 03:55"
-  },
-  {
     "kode_sta": "PESI",
     "site_id": "Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru",
     "nama_sta": "Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru",
@@ -1231,7 +1213,7 @@ function processAndRenderStations(geoRaw, awsRaw, fit = false) {
   rawGeoCache = geoRaw || rawGeoCache;
   rawAwsCache = awsRaw || rawAwsCache;
 
-  const geoStations = (rawGeoCache || []).map(s => {
+  const geoStations = (rawGeoCache || []).filter(s => s && s.kode_sta !== 'PATU').map(s => {
     const latStr = String(s.slmon_latency || '5s').trim();
     const col = String(s.slmon_color || 'green').trim().toLowerCase();
     let status = 'Online';
@@ -1972,7 +1954,7 @@ function filterBySlmonStatus(bucket) {
 // ── Tombol tipe alat BMKG (Persis awscenter.bmkg.go.id) ───────────────────
 // Mapping bentuk simbol BMKG ke tipe akselerograf:
 // AWS  = Bulat         -> Accelerograph 2020 (2 stasiun: BRSN, STA6024)
-// ARG  = Segitiga      -> Accelerograph Non Colocated (2 stasiun: PATU, PESI)
+// ARG  = Segitiga      -> Accelerograph Non Colocated (1 stasiun: PESI)
 // AAWS = Belah Ketupat -> Accelerograph Colocated (9 stasiun: BKNI, GTSI, IHRSI, PRSI, RGRI, RHRSI, RRHRI, RRSI, SIRSI)
 // ALL  = Semua Tipe    -> 13 stasiun
 // ASRS, IKRO, SHIP, SOIL = Tipe cuaca (0 stasiun di geofisika Riau)

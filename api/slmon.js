@@ -22,8 +22,7 @@ const KAB_MAPPING = {
   'RRSI': { nama: 'Rambah', kota: 'Kab. Rokan Hulu' },
   'SIRSI': { nama: 'Siak', kota: 'Kab. Siak' },
   'DDSI': { nama: 'Dumai Timur', kota: 'Kota Dumai' },
-  'PESI': { nama: 'Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru', kota: 'Kota Pekanbaru' },
-  'PATU': { nama: 'Stasiun Meteorologi Klas IV Maritim Teluk Bayur', kota: 'Kota Padang (Sumbar)' }
+  'PESI': { nama: 'Stasiun Meteorologi Klas II Simpang Tiga Pekanbaru', kota: 'Kota Pekanbaru' }
 };
 
 const pad = n => String(n).padStart(2, '0');

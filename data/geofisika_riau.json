@@ -13,14 +13,14 @@
     "sensor": "Kinemetrics",
     "sensor_accelerograph": "Kinemetrics-FBA-ES-T-2016",
     "sensor_broadband": "Streckeisen-STS-2-2016",
-    "status": "Delay",
+    "status": "Online",
     "tanggal_instalasi": "14/03/2008",
-    "slmon_latency": "12s",
-    "slmon_color": "yellow",
-    "slmon_last_data": "11/11/2026 09:32:49 WIB",
-    "last_data_iso": "2026-11-11T02:32:49Z",
+    "slmon_latency": "4s",
+    "slmon_color": "green",
+    "slmon_last_data": "11/11/2026 09:40:57 WIB",
+    "last_data_iso": "2026-11-11T02:40:57Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:33:14"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "BRSN",
@@ -38,9 +38,9 @@
     "slmon_color": "green",
     "slmon_upt": "Stageof-Padang-Panjang",
     "slmon_latency": "3s",
-    "slmon_last_data": "11/11/2026 09:33:14 WIB",
-    "last_updated": "2026-11-11 09:33:14",
-    "last_data_iso": "2026-11-11T02:33:14.656158Z"
+    "slmon_last_data": "11/11/2026 09:41:07 WIB",
+    "last_updated": "2026-11-11 09:41:07",
+    "last_data_iso": "2026-11-11T02:41:07.554175Z"
   },
   {
     "kode_sta": "DDSI",
@@ -63,7 +63,7 @@
     "slmon_last_data": "13/10/2026 20:11:07 WIB",
     "last_data_iso": "2026-10-13T13:11:07Z",
     "slmon_upt": "Stageof-Deli-Serdang",
-    "last_updated": "2026-11-11 09:33:14"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "GTSI",
@@ -81,12 +81,12 @@
     "sensor_broadband": "Nanometrics-Horizon-2019",
     "status": "Online",
     "tanggal_instalasi": "2019",
-    "slmon_latency": "3s",
+    "slmon_latency": "5s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:32:58 WIB",
-    "last_data_iso": "2026-11-11T02:32:58Z",
+    "slmon_last_data": "11/11/2026 09:40:56 WIB",
+    "last_data_iso": "2026-11-11T02:40:56Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:33:14"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "IHRSI",
@@ -104,32 +104,12 @@
     "sensor_broadband": "Guralp3T-120Posthole-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "5s",
+    "slmon_latency": "9s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:32:56 WIB",
-    "last_data_iso": "2026-11-11T02:32:56Z",
+    "slmon_last_data": "11/11/2026 09:40:52 WIB",
+    "last_data_iso": "2026-11-11T02:40:52Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:33:14"
-  },
-  {
-    "kode_sta": "PATU",
-    "site_id": "Stasiun Meteorologi Klas IV Maritim Teluk Bayur",
-    "nama_sta": "Stasiun Meteorologi Klas IV Maritim Teluk Bayur",
-    "tipe": "Accelerograph Non Colocated",
-    "lat": -1.0,
-    "lon": 100.37,
-    "kota_kab": "Kab. Rokan Hulu",
-    "provinsi": "Riau",
-    "digitizer": "Centaur",
-    "sensor": "TSA-100",
-    "status": "Online",
-    "tanggal_instalasi": "2009",
-    "slmon_color": "green",
-    "slmon_upt": "Stageof-Padang-Panjang",
-    "slmon_latency": "6s",
-    "slmon_last_data": "11/11/2026 09:33:14 WIB",
-    "last_updated": "2026-11-11 09:33:14",
-    "last_data_iso": "2026-11-11T02:33:14.656158Z"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "PESI",
@@ -147,9 +127,9 @@
     "slmon_color": "green",
     "slmon_upt": "Stageof-Padang-Panjang",
     "slmon_latency": "4s",
-    "slmon_last_data": "11/11/2026 09:33:14 WIB",
-    "last_updated": "2026-11-11 09:33:14",
-    "last_data_iso": "2026-11-11T02:33:14.656158Z"
+    "slmon_last_data": "11/11/2026 09:41:07 WIB",
+    "last_updated": "2026-11-11 09:41:07",
+    "last_data_iso": "2026-11-11T02:41:07.554175Z"
   },
   {
     "kode_sta": "PRSI",
@@ -167,12 +147,12 @@
     "sensor_broadband": "Guralp-3T120-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "7s",
+    "slmon_latency": "9s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:32:54 WIB",
-    "last_data_iso": "2026-11-11T02:32:54Z",
+    "slmon_last_data": "11/11/2026 09:40:52 WIB",
+    "last_data_iso": "2026-11-11T02:40:52Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:33:14"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "RGRI",
@@ -190,12 +170,12 @@
     "sensor_broadband": "NanometricsTrillium120Q-2019",
     "status": "Online",
     "tanggal_instalasi": "11/29/2019",
-    "slmon_latency": "2s",
+    "slmon_latency": "4s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:32:59 WIB",
-    "last_data_iso": "2026-11-11T02:32:59Z",
+    "slmon_last_data": "11/11/2026 09:40:57 WIB",
+    "last_data_iso": "2026-11-11T02:40:57Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:33:14"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "RHRSI",
@@ -213,12 +193,12 @@
     "sensor_broadband": "Guralp-CMG3T-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "7s",
+    "slmon_latency": "8s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:32:54 WIB",
-    "last_data_iso": "2026-11-11T02:32:54Z",
+    "slmon_last_data": "11/11/2026 09:40:53 WIB",
+    "last_data_iso": "2026-11-11T02:40:53Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:33:14"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "RRHRI",
@@ -238,10 +218,10 @@
     "tanggal_instalasi": "2022",
     "slmon_latency": "3s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:32:58 WIB",
-    "last_data_iso": "2026-11-11T02:32:58Z",
+    "slmon_last_data": "11/11/2026 09:40:58 WIB",
+    "last_data_iso": "2026-11-11T02:40:58Z",
     "slmon_upt": "Stageof-Padang-Pajang",
-    "last_updated": "2026-11-11 09:33:14"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "RRSI",
@@ -259,12 +239,12 @@
     "sensor_broadband": "Nanometrics-Trillium120Q-2019",
     "status": "Online",
     "tanggal_instalasi": "2019",
-    "slmon_latency": "1s",
+    "slmon_latency": "3s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:33:00 WIB",
-    "last_data_iso": "2026-11-11T02:33:00Z",
+    "slmon_last_data": "11/11/2026 09:40:58 WIB",
+    "last_data_iso": "2026-11-11T02:40:58Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:33:14"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "SIRSI",
@@ -282,12 +262,12 @@
     "sensor_broadband": "Guralp-CMG3T-2021",
     "status": "Online",
     "tanggal_instalasi": "-",
-    "slmon_latency": "9s",
+    "slmon_latency": "10s",
     "slmon_color": "green",
-    "slmon_last_data": "11/11/2026 09:32:52 WIB",
-    "last_data_iso": "2026-11-11T02:32:52Z",
+    "slmon_last_data": "11/11/2026 09:40:52 WIB",
+    "last_data_iso": "2026-11-11T02:40:52Z",
     "slmon_upt": "Stageof-Padang-Panjang",
-    "last_updated": "2026-11-11 09:33:14"
+    "last_updated": "2026-11-11 09:41:07"
   },
   {
     "kode_sta": "STA6024",
@@ -305,9 +285,9 @@
     "slmon_color": "green",
     "slmon_upt": "Stageof-Padang-Panjang",
     "slmon_latency": "8s",
-    "slmon_last_data": "11/11/2026 09:33:14 WIB",
+    "slmon_last_data": "11/11/2026 09:41:07 WIB",
     "alias": "KRSN",
-    "last_updated": "2026-11-11 09:33:14",
-    "last_data_iso": "2026-11-11T02:33:14.656158Z"
+    "last_updated": "2026-11-11 09:41:07",
+    "last_data_iso": "2026-11-11T02:41:07.554175Z"
   }
 ]

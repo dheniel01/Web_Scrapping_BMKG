@@ -114,12 +114,15 @@ def scrape_slmon(timeout=15):
     features = fc.get("features", [])
     print(f"[OK] Sukses mengunduh telemetri {len(features)} stasiun InaTEWS / SLMON Bali.")
 
+    excluded_codes = {"PATU"}
     existing_stations = {}
     if os.path.exists(JSON_OUTPUT):
         try:
             with open(JSON_OUTPUT, "r", encoding="utf-8") as f:
                 for item in json.load(f):
-                    existing_stations[item.get("kode_sta")] = item
+                    code = item.get("kode_sta")
+                    if code and code not in excluded_codes:
+                        existing_stations[code] = item
         except Exception:
             pass
 
@@ -137,7 +140,7 @@ def scrape_slmon(timeout=15):
         prov = str(p.get("provin", "")).strip()
         loc = str(p.get("location", "")).strip()
 
-        is_riau = ("riau" in prov.lower() and "kepulauan" not in prov.lower()) or (sta in KAB_MAPPING)
+        is_riau = (sta not in excluded_codes) and (("riau" in prov.lower() and "kepulauan" not in prov.lower()) or (sta in KAB_MAPPING))
         if not is_riau:
             continue
 
