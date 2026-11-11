@@ -1499,7 +1499,6 @@ function refreshModalTelemetry() {
   if (!modal || modal.classList.contains('hidden')) return;
 
   const isAws = (s.kategori_bidang === 'AWS Center');
-  const elLat = document.getElementById('modal-slmon-latency');
   const elLast = document.getElementById('modal-slmon-lastdata');
   const elTanggal = document.getElementById('modal-detail-tanggal');
   const elDiffDay = document.getElementById('modal-detail-diff-day');
@@ -1507,8 +1506,6 @@ function refreshModalTelemetry() {
   const elDiffMin = document.getElementById('modal-detail-diff-minute');
 
   if (isAws) {
-    const latAws = `${s.diff_day > 0 ? s.diff_day + 'd ' : ''}${s.diff_hour > 0 ? s.diff_hour + 'h ' : ''}${s.diff_minute || 0}m`;
-    if (elLat) elLat.textContent = latAws;
     if (elLast) elLast.textContent = s.tanggal_data || '-';
     if (elTanggal) elTanggal.textContent = s.tanggal_data || '-';
     if (elDiffDay) elDiffDay.textContent = `${s.diff_day || 0} hari`;
@@ -1516,7 +1513,6 @@ function refreshModalTelemetry() {
     if (elDiffMin) elDiffMin.textContent = `${s.diff_minute || 0} menit`;
   } else {
     const latStr = s.slmon_latency || '5s';
-    if (elLat) elLat.textContent = latStr;
     if (elLast) elLast.textContent = s.slmon_last_data || '-';
     if (elTanggal) elTanggal.textContent = s.slmon_last_data || '-';
 
@@ -1783,53 +1779,32 @@ function openStationModal(kode, bidang) {
   document.getElementById('modal-info-kab').textContent = `${s.kota_kab}, ${s.provinsi || 'Riau'}`;
   document.getElementById('modal-info-coords').textContent = `${Number(s.lat).toFixed(6)}, ${Number(s.lon).toFixed(6)}`;
 
-  // Sub-seksi Telemetri: Last Data dan Data Latency (Sesuai SLMON Bali)
+  // Sub-seksi Telemetri: Last Data dengan indikator putih statis
   const elTitle = document.getElementById('modal-telemetry-title');
   const elBadge = document.getElementById('modal-telemetry-badge');
-  const elLat = document.getElementById('modal-slmon-latency');
-  const elLatDesc = document.getElementById('modal-slmon-latency-desc');
   const elLast = document.getElementById('modal-slmon-lastdata');
   const elUpt = document.getElementById('modal-slmon-upt');
 
   const badgeCls = isOnline ? 'bg-emerald-100 text-emerald-700' : (isOffline ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700');
   const badgeTxt = isOnline ? 'Real-time' : (isOffline ? 'Offline' : 'Delay');
+  const staticWhiteDot = '<span class="inline-block w-2.5 h-2.5 rounded-full bg-white border border-slate-400 shrink-0 mr-1"></span>';
 
   if (isAws) {
-    if (elTitle) elTitle.innerHTML = '<i class="fa fa-cloud-sun text-blue-500 mr-1.5"></i> Telemetri AWS Center';
+    if (elTitle) elTitle.innerHTML = `${staticWhiteDot} Telemetri AWS Center`;
     if (elBadge) {
       elBadge.className = `px-2 py-0.5 rounded text-[9px] font-bold ${badgeCls}`;
       elBadge.textContent = badgeTxt;
     }
-    const latAws = `${s.diff_day > 0 ? s.diff_day + 'd ' : ''}${s.diff_hour > 0 ? s.diff_hour + 'h ' : ''}${s.diff_minute || 0}m`;
-    if (elLat) {
-      elLat.textContent = latAws;
-      elLat.className = `font-mono text-lg font-extrabold mt-1 ${isOnline ? 'text-emerald-600' : (isOffline ? 'text-red-600' : 'text-amber-600')}`;
-    }
-    if (elLatDesc) elLatDesc.textContent = syncState.aws === 'live' ? 'Live AWS Center BMKG' : 'Data Cache AWS Center';
     if (elLast) elLast.textContent = s.tanggal_data || '-';
     if (elUpt) elUpt.textContent = s.kota_kab || 'Provinsi Riau';
   } else {
-    // Geofisika: Last Data & Data Latency asli dari SLMON Bali
-    if (elTitle) elTitle.innerHTML = '<i class="fa fa-wave-square text-amber-500 mr-1.5"></i> Telemetri SLMON Bali';
+    // Geofisika: Telemetri SLMON Bali
+    if (elTitle) elTitle.innerHTML = `${staticWhiteDot} Telemetri SLMON Bali`;
     if (elBadge) {
       elBadge.className = `px-2 py-0.5 rounded text-[9px] font-bold ${badgeCls}`;
       elBadge.textContent = badgeTxt;
     }
-    const latStr = s.slmon_latency || '5s';
-    if (elLat) {
-      elLat.textContent = latStr;
-      if (isOffline || latStr.includes('d')) {
-        elLat.className = 'font-mono text-lg font-extrabold mt-1 text-red-600';
-      } else if (latStr.includes('m')) {
-        elLat.className = 'font-mono text-lg font-extrabold mt-1 text-amber-600';
-      } else {
-        elLat.className = 'font-mono text-lg font-extrabold mt-1 text-emerald-600';
-      }
-    }
-    if (elLatDesc) {
-      elLatDesc.textContent = isOffline ? 'Data Terputus' : (latStr.includes('m') ? 'Delay Normal' : 'Real-time Streaming');
-    }
-    if (elLast) elLast.textContent = s.slmon_last_data || '29/10/2026 03:55';
+    if (elLast) elLast.textContent = s.slmon_last_data || '-';
     if (elUpt) elUpt.textContent = s.slmon_upt || 'Stageof-Padang-Panjang';
   }
 
