@@ -67,8 +67,8 @@
 
     /* Marker stasiun */
     .sta-marker { position: relative; display: flex; flex-direction: column; align-items: center; }
-    .sta-marker svg { filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); transition: transform .2s; }
-    .sta-marker:hover svg { transform: scale(1.35); }
+    .sta-marker svg, .sta-marker img { filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); transition: transform .2s; }
+    .sta-marker:hover svg, .sta-marker:hover img { transform: scale(1.35); }
     .sta-marker .code {
       margin-top: 1px; font-size: 9px; font-weight: 700; color: #1e3a8a;
       background: rgba(255,255,255,.85); padding: 0 3px; border-radius: 3px; white-space: nowrap;
@@ -290,6 +290,7 @@
           <img src="https://awscenter.bmkg.go.id/public/assets/img/logo_bmkg_with_text.png" alt="BMKG" class="h-9 brightness-0 invert">
           <div>
             <div class="flex items-center gap-2">
+              <img id="modal-station-icon" src="" alt="Icon" class="w-6 h-6 object-contain hidden">
               <span id="modal-station-code" class="text-base font-black tracking-wider text-amber-400 font-mono">-</span>
               <span id="modal-station-type" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30">Broadband Seismograph</span>
               <span id="modal-station-status" class="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">

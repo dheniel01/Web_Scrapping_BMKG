@@ -989,6 +989,60 @@ function getStationShape(s) {
   return cfg.shape || 'circle';
 }
 
+// ── Sumber Ikon Resmi Server BMKG (AWS Center & SLMON InaTEWS) ────────────
+function getStationOfficialIcon(s) {
+  if (!s) {
+    return {
+      name: 'aws.png',
+      officialUrl: 'https://awscenter.bmkg.go.id/public/assets/img/icon/aws.png',
+      localUrl: 'assets/icon/aws.png',
+      source: 'AWS Center'
+    };
+  }
+
+  // 1. Geofisika (SLMON InaTEWS BMKG)
+  if (s.kategori_bidang === 'Geofisika' || s.slmon_color) {
+    const col = String(s.slmon_color || '').toLowerCase().trim();
+    let imgName = 't1_green.png';
+    if (col === 'black') imgName = 't1_off2.png';
+    else if (col === 'red') imgName = 't1_red.png';
+    else if (col === 'orange') imgName = 't1_orange.png';
+    else if (col === 'yellow') imgName = 't1_yellow.png';
+    else if (col === 'grey' || col === 'gray') imgName = 't1_off.png';
+    else imgName = 't1_green.png';
+
+    return {
+      name: imgName,
+      officialUrl: `http://202.90.198.40/sismon-wrs/assets_wrs/icon/${imgName}`,
+      localUrl: `assets/icon/status/${imgName}`,
+      source: 'SLMON InaTEWS BMKG'
+    };
+  }
+
+  // 2. Cuaca & Iklim (AWS Center BMKG)
+  const t = String(s.type || s.tipe || 'aws').toLowerCase().trim();
+  const folder = (t === 'ikro' || t === 'iklimmikro') ? 'iklimmikro'
+               : (t === 'ship' || t === 'awsship') ? 'awsship'
+               : t;
+
+  let iconName = s.icon || s.icon_file;
+  if (!iconName) {
+    const cat = catIndex(s);
+    const suffix = cat === 0 ? '1.png' : cat === 1 ? '2_5.png' : cat === 2 ? '6_10.png' : cat === 3 ? '11_30.png' : '30.png';
+    const prefix = (t === 'ikro' || t === 'iklimmikro') ? 'status_ikro_'
+                 : (t === 'ship' || t === 'awsship') ? 'v_ship_'
+                 : `status_${t}_`;
+    iconName = prefix + suffix;
+  }
+
+  return {
+    name: iconName,
+    officialUrl: `https://awscenter.bmkg.go.id/public/assets/img/icon/statusdata/${folder}/${iconName}`,
+    localUrl: `assets/icon/status/${iconName}`,
+    source: 'AWS Center BMKG'
+  };
+}
+
 // ── Peta ───────────────────────────────────────────────────────────────────
 function initMap() {
   map = L.map('map', {
@@ -1510,19 +1564,23 @@ function tickTelemetry() {
 
 // ── Marker ─────────────────────────────────────────────────────────────────
 function stationIcon(s) {
-  const shape = getStationShape(s);
+  const iconInfo = getStationOfficialIcon(s);
   const cat = catIndex(s);
-  const color = getMarkerColor(s);
   const codeDisplay = isStationLabelsActive ? 'block' : 'none';
   return L.divIcon({
     className: '',
-    iconSize: [40, 34],
-    iconAnchor: [20, 10],
-    popupAnchor: [0, -10],
+    iconSize: [40, 36],
+    iconAnchor: [20, 12],
+    popupAnchor: [0, -12],
     html: `
       <div class="sta-marker">
-        ${cat === 0 ? '<div class="ring"></div>' : ''}
-        ${shapeSVG(shape, color, 20, '#ffffff', 2.2)}
+        ${cat === 0 ? '<div class="ring" style="width:24px;height:24px;margin-left:-12px;top:0;"></div>' : ''}
+        <img src="${iconInfo.localUrl}"
+             data-official-url="${iconInfo.officialUrl}"
+             alt="${s.kode_sta}"
+             style="width:24px; height:24px; object-fit:contain; display:block;"
+             onerror="if (this.src !== '${iconInfo.localUrl}') { this.src = '${iconInfo.localUrl}'; }"
+        />
         <div class="code" style="display:${codeDisplay}">${s.kode_sta}</div>
       </div>`,
   });
@@ -1632,15 +1690,19 @@ function popupHTML(s) {
   const lonStr = Number(s.lon).toFixed(8);
   const cat = catIndex(s);
   const catObj = STATUS_CATS[cat] || STATUS_CATS[0];
+  const iconInfo = getStationOfficialIcon(s);
 
   return `
     <div class="bmkg-popup" style="padding: 12px 14px 10px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; color: #1e293b; line-height: 1.5; min-width: 275px; max-width: 325px;">
       
       <!-- Header stasiun -->
       <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px;">
-        <div>
-          <span style="font-weight: 800; font-size: 14px; color: #0f172a; font-family: monospace;">${s.kode_sta}</span>
-          <span style="font-size: 11px; color: #64748b; margin-left: 4px;">${s.kota_kab}</span>
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <img src="${iconInfo.localUrl}" alt="" style="width: 22px; height: 22px; object-fit: contain; flex-shrink: 0;" />
+          <div>
+            <span style="font-weight: 800; font-size: 14px; color: #0f172a; font-family: monospace;">${s.kode_sta}</span>
+            <span style="font-size: 11px; color: #64748b; margin-left: 4px;">${s.kota_kab}</span>
+          </div>
         </div>
         <span class="bmkg-popup-tag" style="background: ${s.status === 'Online' ? '#ecfdf5' : (s.status === 'Delay' ? '#fffbeb' : '#fef2f2')}; color: ${s.status === 'Online' ? '#059669' : (s.status === 'Delay' ? '#d97706' : '#dc2626')}; border: 1px solid ${s.status === 'Online' ? '#a7f3d0' : (s.status === 'Delay' ? '#fde68a' : '#fecaca')};">
           <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${s.status === 'Online' ? '#10b981' : (s.status === 'Delay' ? '#f59e0b' : '#ef4444')}; margin-right:3px;"></span>
@@ -1657,6 +1719,12 @@ function popupHTML(s) {
           <button onclick="copyCoords(${s.lat}, ${s.lon}, this)" title="Salin koordinat" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 1px 6px; font-size: 10px; color: #0284c7; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
             <i class="fa fa-copy"></i> Salin
           </button>
+        </div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+          <strong style="color: #0f172a;">Ikon Resmi :</strong> 
+          <a href="${iconInfo.officialUrl}" target="_blank" rel="noopener" style="color: #0284c7; text-decoration: underline;" title="Buka tautan ikon di server resmi BMKG">
+            ${iconInfo.name} (${iconInfo.source})
+          </a>
         </div>
       </div>
 
@@ -1692,6 +1760,13 @@ function openStationModal(kode, bidang) {
   const isAws = (s.kategori_bidang === 'AWS Center');
 
   // Header info: ID Station & Nama
+  const iconInfo = getStationOfficialIcon(s);
+  const modalIcon = document.getElementById('modal-station-icon');
+  if (modalIcon) {
+    modalIcon.src = iconInfo.localUrl;
+    modalIcon.title = `Sumber: ${iconInfo.source} (${iconInfo.name})`;
+    modalIcon.classList.remove('hidden');
+  }
   document.getElementById('modal-station-code').textContent = s.kode_sta;
   document.getElementById('modal-station-name').textContent = s.nama_sta;
   document.getElementById('modal-station-type').textContent = s.tipe;
@@ -2081,13 +2156,14 @@ function renderStationList() {
   ul.innerHTML = list.map(s => {
     const colHex = getMarkerColor(s);
     const cfg = TYPE_CONFIG[s.tipe] || TYPE_CONFIG['Accelerograph Colocated'];
+    const iconInfo = getStationOfficialIcon(s);
     const stBadge = s.status === 'Online'
       ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
       : (s.status === 'Delay' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-red-50 text-red-600 border-red-200');
     const stDot = s.status === 'Online' ? 'bg-emerald-500' : (s.status === 'Delay' ? 'bg-amber-500' : 'bg-red-500');
     return `
       <li class="flex items-center gap-2 px-3 py-1.5 border-b border-gray-50 hover:bg-amber-50 cursor-pointer group" onclick="focusStation('${s.kode_sta}', '${s.kategori_bidang}')">
-        ${shapeSVG(getStationShape(s), colHex, 14, '#fff', 2)}
+        <img src="${iconInfo.localUrl}" alt="" class="w-4 h-4 object-contain flex-shrink-0" />
         <div class="flex-1 min-w-0">
           <div class="text-[11px] font-bold text-gray-800 flex items-center gap-1.5">
             <span>${s.kode_sta}</span>
