@@ -1720,12 +1720,6 @@ function popupHTML(s) {
             <i class="fa fa-copy"></i> Salin
           </button>
         </div>
-        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
-          <strong style="color: #0f172a;">Ikon Resmi :</strong> 
-          <a href="${iconInfo.officialUrl}" target="_blank" rel="noopener" style="color: #0284c7; text-decoration: underline;" title="Buka tautan ikon di server resmi BMKG">
-            ${iconInfo.name} (${iconInfo.source})
-          </a>
-        </div>
       </div>
 
       <!-- Action buttons -->
