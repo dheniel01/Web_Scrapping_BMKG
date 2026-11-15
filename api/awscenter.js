@@ -59,12 +59,9 @@ export default async function handler(req, res) {
         const lng = parseFloat(item.lng);
         if (Number.isNaN(lat) || Number.isNaN(lng)) continue;
 
-        let tType = String(item.type || '').toLowerCase().trim();
-        if (tType === 'iklimmikro') tType = 'ikro';
-
-        const dDay = parseInt(item.diff_day || 0, 10);
-        const dHour = parseInt(item.diff_hour || 0, 10);
-        const dMin = parseInt(item.diff_minute || 0, 10);
+        const dDay = parseInt(item.diff_day ?? 0, 10);
+        const dHour = parseInt(item.diff_hour ?? 0, 10);
+        const dMin = parseInt(item.diff_minute ?? 0, 10);
         const totalMin = (dDay * 1440) + (dHour * 60) + dMin;
 
         riauStations.push({
@@ -72,7 +69,8 @@ export default async function handler(req, res) {
           name_station: String(item.name_station || '').trim(),
           nama_kota: String(item.nama_kota || '').trim(),
           nama_provinsi: 'Riau',
-          type: tType,
+          kode_provinsi: 'PR005',
+          type: item.type, // type asli BMKG: arg, aws, aaws, iklimmikro, soil, asrs
           lat: lat,
           lng: lng,
           tanggal: item.tanggal || '',

@@ -33,7 +33,8 @@ function stationKey(s) {
 
 const RIAU_KAB_REGEX = /(pekanbaru|dumai|kampar|bengkalis|siak|pelalawan|rokan\s*(hulu|hilir)|indragiri|indragri|kuantan\s*singingi|meranti|riau)/i;
 const NON_RIAU_REGEX = /(kepulauan\s*riau|kepri|padang|sumatera\s*(barat|utara|selatan)|sumbar|sumut|jambi|batam|bintan|karimun|lingga|natuna|anambas|tanjungpinang)/i;
-const EXCLUDED_NON_RIAU_CODES = new Set(['PATU']);
+const EXCLUDED_NON_RIAU_CODES = new Set(['PATU']);
+
 const EXCLUDED_NON_API_GEO_CODES = new Set(['BRSN', 'PESI', 'STA6024']);
 
 function pointInRing(lon, lat, ring) {
@@ -139,560 +140,560 @@ const DEFAULT_AWS_STATIONS = [
     "id_station": "STA0150",
     "name_station": "ARG Tanah Putih",
     "nama_kota": "Kab. Rokan Hilir",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 1.5586775,
-    "lng": 101.0003386,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "1.5586775",
+    "lng": "101.0003386",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA3202",
     "name_station": "AAWS Tambang Kampar",
     "nama_kota": "Kab. Kampar",
-    "nama_provinsi": "Riau",
-    "type": "aaws",
-    "lat": 0.40751419,
-    "lng": 101.21727325,
-    "tanggal": "2026-11-02 20:20:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 25,
-    "diff_minutes_total": 25,
+    "lat": "0.40751419",
+    "lng": "101.21727325",
     "icon": "status_aaws_1.png",
+    "type": "aaws",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "28",
+    "tanggal": "2026-11-15 03:20:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA2176",
     "name_station": "AWS Pekan Arba Indragiri Hilir",
     "nama_kota": "Kab. Indragri Hilir",
-    "nama_provinsi": "Riau",
-    "type": "aws",
-    "lat": -0.297028,
-    "lng": 103.13228,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "-0.297028",
+    "lng": "103.13228",
     "icon": "status_aws_1.png",
+    "type": "aws",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STW1145",
     "name_station": "AWS Bukit Raya Pekanbaru",
     "nama_kota": "Kota Pekanbaru",
-    "nama_provinsi": "Riau",
+    "lat": "0.47019412",
+    "lng": "101.45804555",
+    "icon": "status_aws_11_30.png",
     "type": "aws",
-    "lat": 0.47019412,
-    "lng": 101.45804555,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
-    "icon": "status_aws_1.png",
+    "diff_day": "4",
+    "diff_hour": "14",
+    "diff_minute": "18",
+    "tanggal": "2026-11-10 13:30:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0155",
     "name_station": "ARG XIII Koto Kampar",
     "nama_kota": "Kab. Kampar",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.317775,
-    "lng": 100.735327,
-    "tanggal": "2026-11-02 20:30:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 15,
-    "diff_minutes_total": 15,
+    "lat": "0.317775",
+    "lng": "100.735327",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "18",
+    "tanggal": "2026-11-15 03:30:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0152",
     "name_station": "ARG Siak",
     "nama_kota": "Kab. Siak",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.814548,
-    "lng": 102.021211,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.814548",
+    "lng": "102.021211",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0207",
     "name_station": "ARG Tebing Tinggi",
     "nama_kota": "Kab. Kep. Meranti",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 1.007886,
-    "lng": 102.716065,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "1.007886",
+    "lng": "102.716065",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA3259",
     "name_station": "ARG SMPK Bunga Raya",
     "nama_kota": "Kab. Siak",
-    "nama_provinsi": "Riau",
+    "lat": "0.960321",
+    "lng": "102.072948",
+    "icon": "status_arg_1.png",
     "type": "arg",
-    "lat": 0.960321,
-    "lng": 102.072948,
-    "tanggal": "2026-11-01 11:00:00+00",
-    "diff_day": 1,
-    "diff_hour": 9,
-    "diff_minute": 45,
-    "diff_minutes_total": 2025,
-    "icon": "status_arg_11_30.png",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "18",
+    "tanggal": "2026-11-15 03:30:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "150118",
     "name_station": "ARG Pusako",
     "nama_kota": "Kab. Siak",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 1.017705,
-    "lng": 102.116015,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "1.017705",
+    "lng": "102.116015",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "9",
+    "tanggal": "2026-11-15 03:39:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0202",
     "name_station": "ARG Bukit Batu",
     "nama_kota": "Kab. Bengkalis",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 1.364224,
-    "lng": 102.154964,
-    "tanggal": "2026-11-02 20:30:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 15,
-    "diff_minutes_total": 15,
+    "lat": "1.364224",
+    "lng": "102.154964",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "18",
+    "tanggal": "2026-11-15 03:30:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STW1054",
     "name_station": "AWS Bandar Laksamana Bengkalis",
     "nama_kota": "Kab. Bengkalis",
-    "nama_provinsi": "Riau",
-    "type": "aws",
-    "lat": 1.594608,
-    "lng": 101.817134,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "1.594608",
+    "lng": "101.817134",
     "icon": "status_aws_1.png",
+    "type": "aws",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0154",
     "name_station": "ARG Pasir Pangaraian",
     "nama_kota": "Kab. Rokan Hulu",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.896111,
-    "lng": 100.3039,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.896111",
+    "lng": "100.3039",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "150119",
     "name_station": "ARG Tandun",
     "nama_kota": "Kab. Rokan Hulu",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.611507,
-    "lng": 100.55404,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.611507",
+    "lng": "100.55404",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "150120",
     "name_station": "ARG Tambusai",
     "nama_kota": "Kab. Rokan Hulu",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 1.056944,
-    "lng": 100.2611,
-    "tanggal": "2026-11-02 20:30:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 15,
-    "diff_minutes_total": 15,
+    "lat": "1.056944",
+    "lng": "100.2611",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "18",
+    "tanggal": "2026-11-15 03:30:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0174",
     "name_station": "ARG Teluk Meranti",
     "nama_kota": "Kab. Pelalawan",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.149333,
-    "lng": 102.5604,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.149333",
+    "lng": "102.5604",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "50015",
     "name_station": "Iklim Mikro Stasiun Klimatologi Riau",
     "nama_kota": "Kab. Kampar",
+    "lat": "0.40751419",
+    "lng": "101.21727325",
+    "icon": "status_ikro_11_30.png",
+    "type": "iklimmikro",
+    "diff_day": "2",
+    "diff_hour": "18",
+    "diff_minute": "58",
+    "tanggal": "2026-11-12 08:50:00+00",
+    "kode_provinsi": "PR005",
     "nama_provinsi": "Riau",
-    "type": "ikro",
-    "lat": 0.40751419,
-    "lng": 101.21727325,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
-    "icon": "status_ikro_1.png",
     "klasifikasi": "1"
   },
   {
     "id_station": "STM1026",
     "name_station": "Soil Moisture Stasiun Klimatologi Riau",
     "nama_kota": "Kab. Kampar",
-    "nama_provinsi": "Riau",
+    "lat": "0.4072100",
+    "lng": "101.2169890",
+    "icon": "status_soil_11_30.png",
     "type": "soil",
-    "lat": 0.40721,
-    "lng": 101.216989,
-    "tanggal": "2026-11-02 20:30:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 15,
-    "diff_minutes_total": 15,
-    "icon": "status_soil_1.png",
+    "diff_day": "1",
+    "diff_hour": "19",
+    "diff_minute": "48",
+    "tanggal": "2026-11-13 08:00:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA6024",
     "name_station": "ASRS Stasiun Klimatologi Riau",
     "nama_kota": "Kab. Kampar",
-    "nama_provinsi": "Riau",
-    "type": "asrs",
-    "lat": 0.40751419,
-    "lng": 101.21727325,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.40751419",
+    "lng": "101.21727325",
     "icon": "status_asrs_1.png",
+    "type": "asrs",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STW1032",
     "name_station": "AWS Mesonetwork Rokan Hulu",
     "nama_kota": "Kab. Rokan Hulu",
-    "nama_provinsi": "Riau",
+    "lat": "0.841434",
+    "lng": "100.3375",
+    "icon": "status_aws_11_30.png",
     "type": "aws",
-    "lat": 0.841434,
-    "lng": 100.3375,
-    "tanggal": "2026-11-02 20:32:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 13,
-    "diff_minutes_total": 13,
-    "icon": "status_aws_1.png",
+    "diff_day": "10",
+    "diff_hour": "5",
+    "diff_minute": "49",
+    "tanggal": "2026-11-04 21:59:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0151",
     "name_station": "ARG Bantan",
     "nama_kota": "Kab. Bengkalis",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 1.499444,
-    "lng": 102.1459,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "1.499444",
+    "lng": "102.1459",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "150116",
     "name_station": "ARG Kuala Kampar",
     "nama_kota": "Kab. Pelalawan",
-    "nama_provinsi": "Riau",
+    "lat": "0.531027",
+    "lng": "103.2677",
+    "icon": "status_arg_6_10.png",
     "type": "arg",
-    "lat": 0.531027,
-    "lng": 103.2677,
-    "tanggal": "2026-11-02 20:39:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 6,
-    "diff_minutes_total": 6,
-    "icon": "status_arg_1.png",
+    "diff_day": "0",
+    "diff_hour": "4",
+    "diff_minute": "38",
+    "tanggal": "2026-11-14 23:10:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STAL041",
     "name_station": "ARG BPP Rumbai Timur",
     "nama_kota": "Kota Pekanbaru",
-    "nama_provinsi": "Riau",
+    "lat": "0.566667",
+    "lng": "101.46",
+    "icon": "status_arg_1.png",
     "type": "arg",
-    "lat": 0.566667,
-    "lng": 101.46,
-    "tanggal": "2026-10-28 14:20:00+00",
-    "diff_day": 5,
-    "diff_hour": 6,
-    "diff_minute": 25,
-    "diff_minutes_total": 7585,
-    "icon": "status_arg_11_30.png",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "18",
+    "tanggal": "2026-11-15 03:30:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "150117",
     "name_station": "ARG Minas",
     "nama_kota": "Kab. Siak",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.699143,
-    "lng": 101.438512,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.699143",
+    "lng": "101.438512",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0205",
     "name_station": "ARG Rokan IV Koto",
     "nama_kota": "Kab. Rokan Hilir",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.571355,
-    "lng": 100.427113,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.571355",
+    "lng": "100.427113",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0133",
     "name_station": "ARG Kandis",
     "nama_kota": "Kab. Siak",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.8896927,
-    "lng": 101.2369606,
-    "tanggal": "2026-11-02 20:30:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 15,
-    "diff_minutes_total": 15,
+    "lat": "0.8896927",
+    "lng": "101.2369606",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "18",
+    "tanggal": "2026-11-15 03:30:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0201",
     "name_station": "ARG SMPK Bangkinang",
     "nama_kota": "Kab. Kampar",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.326326,
-    "lng": 101.039558,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.3263260",
+    "lng": "101.0395580",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0153",
     "name_station": "ARG Kuantan Tengah",
     "nama_kota": "Kab. Kuantan Singingi",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": -0.540839,
-    "lng": 101.554764,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "-0.540839",
+    "lng": "101.554764",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "18",
+    "tanggal": "2026-11-15 03:30:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "AAWS0356",
     "name_station": "AAWS Gunung Toar Kuantan Singingi",
     "nama_kota": "Kab. Kuantan Singingi",
-    "nama_provinsi": "Riau",
+    "lat": "-0.598066",
+    "lng": "101.48648",
+    "icon": "status_aaws_2_5.png",
     "type": "aaws",
-    "lat": -0.598066,
-    "lng": 101.48648,
-    "tanggal": "2026-11-02 20:20:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 25,
-    "diff_minutes_total": 25,
-    "icon": "status_aaws_1.png",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "38",
+    "tanggal": "2026-11-15 03:10:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STW1037",
     "name_station": "AWS  Mesonetwork  Kampar",
     "nama_kota": "Kab. Kampar",
-    "nama_provinsi": "Riau",
+    "lat": "0.614",
+    "lng": "100.9734",
+    "icon": "status_aws_11_30.png",
     "type": "aws",
-    "lat": 0.614,
-    "lng": 100.9734,
+    "diff_day": "12",
+    "diff_hour": "12",
+    "diff_minute": "52",
     "tanggal": "2026-11-02 14:56:00+00",
-    "diff_day": 0,
-    "diff_hour": 5,
-    "diff_minute": 49,
-    "diff_minutes_total": 349,
-    "icon": "status_aws_6_10.png",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0209",
     "name_station": "ARG Dumai Timur",
     "nama_kota": "Kota Dumai",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 1.669771,
-    "lng": 101.459353,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "1.669771",
+    "lng": "101.459353",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0208",
     "name_station": "ARG Batang Cenaku",
     "nama_kota": "Kab. Indragiri Hulu",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": -0.663637,
-    "lng": 102.278824,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "-0.663637",
+    "lng": "102.278824",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA5021",
     "name_station": "AWS Digi Stamet Pekanbaru",
     "nama_kota": "Kota Pekanbaru",
-    "nama_provinsi": "Riau",
-    "type": "aws",
-    "lat": 0.46083,
-    "lng": 101.444,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.460830",
+    "lng": "101.444000",
     "icon": "status_aws_1.png",
+    "type": "aws",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA3203",
     "name_station": "AAWS Rimba Melintang Rokan Hilir",
     "nama_kota": "Kab. Rokan Hilir",
-    "nama_provinsi": "Riau",
+    "lat": "1.84561319",
+    "lng": "100.97833333",
+    "icon": "status_aaws_2_5.png",
     "type": "aaws",
-    "lat": 1.84561319,
-    "lng": 100.97833333,
-    "tanggal": "2026-11-02 20:16:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 29,
-    "diff_minutes_total": 29,
-    "icon": "status_aaws_1.png",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "32",
+    "tanggal": "2026-11-15 03:16:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STA0206",
     "name_station": "ARG Tembilahan",
     "nama_kota": "Kab. Indragri Hilir",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": -0.324388,
-    "lng": 103.157754,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "-0.324388",
+    "lng": "103.157754",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   },
   {
     "id_station": "STAL042",
     "name_station": "ARG BPP Kampar Kiri",
     "nama_kota": "Kab. Kampar",
-    "nama_provinsi": "Riau",
-    "type": "arg",
-    "lat": 0.04721,
-    "lng": 101.204541,
-    "tanggal": "2026-11-02 20:40:00+00",
-    "diff_day": 0,
-    "diff_hour": 0,
-    "diff_minute": 5,
-    "diff_minutes_total": 5,
+    "lat": "0.047210",
+    "lng": "101.204541",
     "icon": "status_arg_1.png",
+    "type": "arg",
+    "diff_day": "0",
+    "diff_hour": "0",
+    "diff_minute": "8",
+    "tanggal": "2026-11-15 03:40:00+00",
+    "kode_provinsi": "PR005",
+    "nama_provinsi": "Riau",
     "klasifikasi": "1"
   }
 ];
@@ -1020,18 +1021,18 @@ function getStationOfficialIcon(s) {
   }
 
   // 2. Cuaca & Iklim (AWS Center BMKG)
-  const t = String(s.type || s.tipe || 'aws').toLowerCase().trim();
-  const folder = (t === 'ikro' || t === 'iklimmikro') ? 'iklimmikro'
-               : (t === 'ship' || t === 'awsship') ? 'awsship'
-               : t;
+  const rawType = String(s.raw_type || s.type || s.tipe || 'aws').toLowerCase().trim();
+  const folder = (rawType === 'ikro' || rawType === 'iklimmikro') ? 'iklimmikro'
+               : (rawType === 'ship' || rawType === 'awsship') ? 'awsship'
+               : rawType;
 
   let iconName = s.icon || s.icon_file;
   if (!iconName) {
     const cat = catIndex(s);
     const suffix = cat === 0 ? '1.png' : cat === 1 ? '2_5.png' : cat === 2 ? '6_10.png' : cat === 3 ? '11_30.png' : '30.png';
-    const prefix = (t === 'ikro' || t === 'iklimmikro') ? 'status_ikro_'
-                 : (t === 'ship' || t === 'awsship') ? 'v_ship_'
-                 : `status_${t}_`;
+    const prefix = (folder === 'iklimmikro') ? 'status_ikro_'
+                 : (folder === 'awsship') ? 'v_ship_'
+                 : `status_${folder}_`;
     iconName = prefix + suffix;
   }
 
@@ -1307,14 +1308,28 @@ function processAndRenderStations(geoRaw, awsRaw, fit = false) {
   });
 
   const awsMapped = (rawAwsCache || []).map(a => {
+    // Ambil nilai selisih waktu 100% langsung dari API resmi awscenter.bmkg.go.id
+    const dDay = parseInt(a.diff_day ?? 0, 10);
+    const dHour = parseInt(a.diff_hour ?? 0, 10);
+    const dMin = parseInt(a.diff_minute ?? 0, 10);
+    const totalMin = (dDay * 1440) + (dHour * 60) + dMin;
+
+    const rawType = String(a.type || 'aws').toLowerCase().trim();
+    let displayType = rawType.toUpperCase();
+    if (rawType === 'iklimmikro' || rawType === 'ikro') displayType = 'IKRO';
+
+    // Status: persis klasifikasi awscenter.bmkg.go.id
+    let status = 'Online';
+    if (totalMin <= 60) {
+      status = 'Online';
+    } else if (totalMin <= 1440) {
+      status = 'Delay';
+    } else {
+      status = 'Offline';
+    }
+
     const parsedTs = parseBmkgTimestampMs(a.tanggal_iso) || parseBmkgTimestampMs(a.tanggal);
-    const fallbackTotalMin = ((a.diff_day || 0) * 1440) + ((a.diff_hour || 0) * 60) + (a.diff_minute || 0);
-    const lastSeenMs = !Number.isNaN(parsedTs) ? parsedTs : (now - fallbackTotalMin * 60000);
-    const realTotalMin = Math.max(0, Math.floor((now - lastSeenMs) / 60000));
-    const dDay = Math.floor(realTotalMin / 1440);
-    const dHour = Math.floor((realTotalMin % 1440) / 60);
-    const dMin = realTotalMin % 60;
-    const tUpper = (a.type || 'aws').toUpperCase();
+    const lastSeenMs = !Number.isNaN(parsedTs) ? parsedTs : (now - totalMin * 60000);
 
     return {
       kode_sta: a.id_station,
@@ -1322,7 +1337,10 @@ function processAndRenderStations(geoRaw, awsRaw, fit = false) {
       nama_sta: a.name_station,
       kota_kab: a.nama_kota,
       provinsi: 'Riau',
-      tipe: tUpper,
+      kode_provinsi: a.kode_provinsi || 'PR005',
+      type: rawType,
+      raw_type: rawType,
+      tipe: displayType,
       kategori_bidang: 'AWS Center',
       lat: Number(a.lat),
       lon: Number(a.lng),
@@ -1330,11 +1348,12 @@ function processAndRenderStations(geoRaw, awsRaw, fit = false) {
       diff_day: dDay,
       diff_hour: dHour,
       diff_minute: dMin,
-      diff_minutes_total: realTotalMin,
-      tanggal_data: a.tanggal || formatBmkgUTC(lastSeenMs),
+      diff_minutes_total: totalMin,
+      tanggal_data: a.tanggal || '',
       klasifikasi: a.klasifikasi || '1',
-      icon_file: a.icon || `status_${a.type}_1.png`,
-      status: realTotalMin <= 60 ? 'Online' : (realTotalMin <= 1440 ? 'Delay' : 'Offline')
+      icon_file: a.icon || `status_${rawType}_1.png`,
+      icon: a.icon || '',
+      status: status
     };
   }).filter(isRiauStation);
 
@@ -1437,7 +1456,19 @@ async function refreshLiveTelemetryInBackground({ slmon = true, aws = true } = {
   await Promise.allSettled(tasks);
 }
 
-function ageMinutes(s) { return Math.max(0, (Date.now() - s.lastSeen) / 60000); }
+function ageMinutes(s) {
+  if (!s) return 0;
+  if (s.kategori_bidang === 'AWS Center') {
+    if (typeof s.diff_minutes_total === 'number') {
+      return s.diff_minutes_total;
+    }
+    const d = parseInt(s.diff_day || 0, 10);
+    const h = parseInt(s.diff_hour || 0, 10);
+    const m = parseInt(s.diff_minute || 0, 10);
+    return (d * 1440) + (h * 60) + m;
+  }
+  return Math.max(0, (Date.now() - s.lastSeen) / 60000);
+}
 function catIndex(s) { const a = ageMinutes(s); const idx = STATUS_CATS.findIndex(c => a <= c.max); return idx === -1 ? 4 : idx; }
 
 function slmonBucket(s) {
@@ -1462,6 +1493,14 @@ function getMarkerColor(s) {
 }
 
 function formatAge(s) {
+  if (s.kategori_bidang === 'AWS Center') {
+    const d = s.diff_day || 0;
+    const h = s.diff_hour || 0;
+    const m = s.diff_minute || 0;
+    if (d > 0) return `${d}h ${h}j lalu`;
+    if (h > 0) return `${h} jam lalu`;
+    return `${m} mnt lalu`;
+  }
   const m = ageMinutes(s);
   if (m < 1) return `${Math.round(m * 60)} detik lalu`;
   if (m < 60) return `${Math.floor(m)} menit lalu`;
@@ -1475,8 +1514,14 @@ function formatTime(ts) {
 
 // formatBmkgUTC didefinisikan di awal berkas
 
-// Format selisih waktu standar BMKG: 0 Hari 0 Jam 5 Menit (persis screenshot)
+// Format selisih waktu standar BMKG: 0 Hari 0 Jam 5 Menit (persis standar awscenter.bmkg.go.id)
 function formatBmkgDiff(s) {
+  if (s.kategori_bidang === 'AWS Center') {
+    const d = s.diff_day != null ? s.diff_day : 0;
+    const h = s.diff_hour != null ? s.diff_hour : 0;
+    const m = s.diff_minute != null ? s.diff_minute : 0;
+    return `${d} Hari ${h} Jam ${m} Menit`;
+  }
   const totalMin = Math.max(0, Math.floor(ageMinutes(s)));
   const days = Math.floor(totalMin / 1440);
   const hours = Math.floor((totalMin % 1440) / 60);
@@ -1535,15 +1580,13 @@ function tickTelemetry() {
   stations.forEach(s => {
     const before = catIndex(s);
 
-    if (s.kategori_bidang === 'AWS Center') {
-      // Hitung umur nyata dari tanggal_data BMKG (tanpa memalsukan jam!)
-      const totalMin = Math.max(0, Math.floor((now - s.lastSeen) / 60000));
-      s.diff_day = Math.floor(totalMin / 1440);
-      s.diff_hour = Math.floor((totalMin % 1440) / 60);
-      s.diff_minute = totalMin % 60;
+    if (s.kategori_bidang === 'Geofisika') {
+      const ageMs = Math.max(0, now - s.lastSeen);
+      const totalMin = Math.floor(ageMs / 60000);
       s.diff_minutes_total = totalMin;
-      s.status = totalMin <= 60 ? 'Online' : (totalMin <= 1440 ? 'Delay' : 'Offline');
     }
+    // Nilai diff_day, diff_hour, diff_minute stasiun AWS Center murni dari API resmi BMKG
+    // dan disinkronkan tiap 60 detik melalui /api/awscenter
 
     const after = catIndex(s);
     if (after !== before) {
@@ -1685,12 +1728,16 @@ function getChannelCode(tipe) {
 // ── Popup Ringkas (Standar BMKG: Site, Lat/Lon + Quick Actions) ─────────────
 function popupHTML(s) {
   if (!isRiauStation(s)) return '';
-  const siteName = s.site_id || `${s.kode_sta}-${s.nama_sta}`;
   const latStr = Number(s.lat).toFixed(8);
   const lonStr = Number(s.lon).toFixed(8);
-  const cat = catIndex(s);
-  const catObj = STATUS_CATS[cat] || STATUS_CATS[0];
   const iconInfo = getStationOfficialIcon(s);
+  const isAws = (s.kategori_bidang === 'AWS Center');
+
+  // Format selisih persis seperti di web resmi awscenter.bmkg.go.id:
+  // "Diff : 0 Hari 0 Jam 5 Menit"
+  const diffStr = isAws
+    ? `${s.diff_day || 0} Hari ${s.diff_hour || 0} Jam ${s.diff_minute || 0} Menit`
+    : (s.slmon_latency ? `Latency ${s.slmon_latency}` : formatAge(s));
 
   return `
     <div class="bmkg-popup" style="padding: 12px 14px 10px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; color: #1e293b; line-height: 1.5; min-width: 275px; max-width: 325px;">
@@ -1706,20 +1753,22 @@ function popupHTML(s) {
         </div>
         <span class="bmkg-popup-tag" style="background: ${s.status === 'Online' ? '#ecfdf5' : (s.status === 'Delay' ? '#fffbeb' : '#fef2f2')}; color: ${s.status === 'Online' ? '#059669' : (s.status === 'Delay' ? '#d97706' : '#dc2626')}; border: 1px solid ${s.status === 'Online' ? '#a7f3d0' : (s.status === 'Delay' ? '#fde68a' : '#fecaca')};">
           <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${s.status === 'Online' ? '#10b981' : (s.status === 'Delay' ? '#f59e0b' : '#ef4444')}; margin-right:3px;"></span>
-          ${s.status} ${s.slmon_latency ? `(${s.slmon_latency})` : `(${formatAge(s)})`}
+          ${s.status}
         </span>
       </div>
 
-      <!-- Data fields: Hanya menampilkan Site dan Lat/Lon -->
-      <div style="display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: #334155; margin-bottom: 6px;">
-        <div><strong style="color: #0f172a;">Name Station :</strong> ${siteName}</div>
-        <div><strong style="color: #0f172a;">Update (${s.kategori_bidang === 'AWS Center' ? 'UTC' : 'WIB'}) :</strong> <span style="font-family:monospace;font-size:11px;">${s.kategori_bidang === 'AWS Center' ? (s.tanggal_data || '-') : (s.slmon_last_data || '-')}</span></div>
+      <!-- Data fields: Persis standar awscenter.bmkg.go.id -->
+      <div style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #334155; margin-bottom: 6px;">
+        <div><strong style="color: #0f172a;">Site :</strong> ${s.kode_sta} - ${s.nama_sta}</div>
+        <div><strong style="color: #0f172a;">Tipe :</strong> ${s.tipe}</div>
         <div style="display: flex; align-items: center; justify-content: space-between;">
           <div><strong style="color: #0f172a;">Lat/Lon :</strong> ${latStr}, ${lonStr}</div>
           <button onclick="copyCoords(${s.lat}, ${s.lon}, this)" title="Salin koordinat" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 1px 6px; font-size: 10px; color: #0284c7; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
             <i class="fa fa-copy"></i> Salin
           </button>
         </div>
+        <div><strong style="color: #0f172a;">Last update :</strong> <span style="font-family:monospace;font-size:11px;">${isAws ? (s.tanggal_data || '-') : (s.slmon_last_data || '-')}</span></div>
+        <div><strong style="color: #0f172a;">Diff :</strong> <span style="color:#0369a1; font-weight:600;">${diffStr}</span></div>
       </div>
 
       <!-- Action buttons -->
